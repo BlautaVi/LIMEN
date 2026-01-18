@@ -30,7 +30,7 @@ const QUESTIONS = [
   {
     id: 3,
     question: 'Чи легко Вам ділитися своїми емоціями з іншими?',
-    options: ['Так, я відкрита книга', 'Тільки з близькими', 'Мені важко відкриватись', 'Тримаю все в собі'],
+    options: ['Так, я відверта/ий зі всіма', 'Тільки з близькими', 'Мені важко ділитись з іншими', 'Тримаю все в собі'],
   },
   {
     id: 4,
@@ -72,40 +72,64 @@ const QUESTIONS = [
 export function OnboardingPage() {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(0);
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const [selectedOptionIndex, setSelectedOptionIndex] = useState<number | null>(null);
+  const [answers, setAnswers] = useState<{ id: number, answer: string, index: number }[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const currentQuestion = QUESTIONS[currentStep];
   const isLastQuestion = currentStep === QUESTIONS.length - 1;
 
-  const handleNext = () => {
-    if (!selectedOption) return;
+  const handleNext = async () => {
+    if (selectedOptionIndex === null) return;
+    const newAnswer = {
+      id: currentQuestion.id,
+      answer: currentQuestion.options[selectedOptionIndex],
+      index: selectedOptionIndex
+    };
+    
+    const updatedAnswers = [...answers, newAnswer];
+    setAnswers(updatedAnswers);
 
     if (isLastQuestion) {
-      navigate('/dashboard'); 
+      setLoading(true);
+      try {
+        const res = await api.post('/users/onboarding', { answers: updatedAnswers });
+      
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        user.isOnboarded = true;
+        user.personalityType = res.data.personalityType;
+        localStorage.setItem('user', JSON.stringify(user));
+
+        navigate('/dashboard');
+      } catch (error) {
+        console.error(error);
+        alert('Помилка збереження результатів');
+      } finally {
+        setLoading(false);
+      }
     } else {
       setCurrentStep((prev) => prev + 1);
-      setSelectedOption(null); 
+      setSelectedOptionIndex(null);
     }
   };
 
   return (
-    <Box style={{ backgroundColor: '#fff', minHeight: '100vh', padding: '40px 0' }}>
+    <Box style={{ backgroundColor: '#fff', minHeight: '100vh', padding: '40px 0', position: 'relative' }}>
+      <LoadingOverlay visible={loading} overlayProps={{ radius: "sm", blur: 2 }} />
       <Container size="lg">
-        
         <Title ta="center" order={1} style={{ color: '#0F7EAA', marginBottom: '10px' }}>
-          Дайте відповідь на кілька питань
+          Крок {currentStep + 1} з {QUESTIONS.length}
         </Title>
         <Text ta="center" size="lg" c="dimmed" mb={50} style={{ color: '#0F7EAA' }}>
-          Це допоможе нам покращити ваш досвід
+          Аналізуємо ваш стан...
         </Text>
 
         <Grid align="center" gutter={50}>
-          
           <Grid.Col span={{ base: 12, md: 6 }}>
             <Center>
-              <Image 
-                src="https://img.freepik.com/free-vector/colleagues-giving-high-five_23-2148380453.jpg"
-                alt="High five"
+              <Image
+                src="https://st4.depositphotos.com/17134304/26411/v/600/depositphotos_264114218-stock-illustration-friends-giving-high-five-flat.jpg"
+                alt="Illustration"
                 style={{ maxWidth: '400px', width: '100%' }} 
               />
             </Center>
@@ -113,27 +137,20 @@ export function OnboardingPage() {
 
           <Grid.Col span={{ base: 12, md: 6 }}>
             <Box style={{ maxWidth: '500px', margin: '0 auto' }}>
-              
-              <Paper 
-                shadow="md" 
-                radius="md" 
-                style={{ overflow: 'hidden', border: '1px solid #eee' }}
-              >
-                
+              <Paper shadow="md" radius="md" style={{ overflow: 'hidden', border: '1px solid #eee' }}>
                 <Box p="xl" bg="white">
                   <Text fw={700} size="lg" style={{ color: '#0F7EAA' }}>
-                    {currentQuestion.id}. {currentQuestion.question}
+                    {currentQuestion.question}
                   </Text>
                 </Box>
-
-                <Box p="xl" style={{ backgroundColor: '#E0F7FA' }}> 
+                <Box p="xl" style={{ backgroundColor: '#E0F7FA' }}>
                   <Stack gap="sm">
-                    {currentQuestion.options.map((option) => {
-                      const isSelected = selectedOption === option;
+                    {currentQuestion.options.map((option, index) => {
+                      const isSelected = selectedOptionIndex === index;
                       return (
                         <Box
                           key={option}
-                          onClick={() => setSelectedOption(option)}
+                          onClick={() => setSelectedOptionIndex(index)}
                           style={{
                             backgroundColor: 'white',
                             borderRadius: '8px',
@@ -145,16 +162,9 @@ export function OnboardingPage() {
                             transition: 'all 0.2s'
                           }}
                         >
-                          <ThemeIcon 
-                            size={24} 
-                            radius="md" 
-                            variant="filled" 
-                            color={isSelected ? 'cyan' : 'gray.3'}
-                            style={{ marginRight: '15px' }}
-                          >
+                          <ThemeIcon size={24} radius="md" variant="filled" color={isSelected ? 'cyan' : 'gray.3'} style={{ marginRight: '15px' }}>
                              {isSelected && <IconCheck size={16} />}
                           </ThemeIcon>
-                          
                           <Text style={{ color: '#0F7EAA', fontWeight: 500 }}>{option}</Text>
                         </Box>
                       );
@@ -162,25 +172,14 @@ export function OnboardingPage() {
                   </Stack>
                 </Box>
               </Paper>
-
-              {/* КНОПКА ПІДТВЕРДЖЕННЯ */}
               <Button 
-                fullWidth 
-                size="lg" 
-                radius="xl" 
-                mt="xl"
+                fullWidth size="lg" radius="xl" mt="xl"
                 onClick={handleNext}
-                disabled={!selectedOption} 
-                style={{ 
-                  backgroundColor: '#4FCDFF',
-                  boxShadow: '0 4px 10px #0F7EAA',
-                  color: '#fff',
-                  transition: 'opacity 0.2s'
-                }}
+                disabled={selectedOptionIndex === null}
+                style={{ backgroundColor: '#4FCDFF', boxShadow: '0 4px 10px #0F7EAA', color: '#fff' }}
               >
-                {isLastQuestion ? 'Завершити' : 'Підтвердити відповідь'}
+                {isLastQuestion ? 'Отримати результат' : 'Далі'}
               </Button>
-
             </Box>
           </Grid.Col>
         </Grid>

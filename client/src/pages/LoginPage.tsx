@@ -35,8 +35,15 @@ export function LoginPage() {
 
       if (response.data.access_token) {
         localStorage.setItem('token', response.data.access_token);
-        localStorage.setItem('user', JSON.stringify(response.data.user));
-        navigate('/onboarding');
+        const user = response.data.user;
+        localStorage.setItem('user', JSON.stringify(user));
+
+        alert(isRegister ? 'Успішна реєстрація!' : 'Успішний вхід!');
+        if (user.isOnboarded) {
+          navigate('/dashboard');
+        } else {
+          navigate('/onboarding');
+        }
       }
     } catch (error: any) {
       alert('Помилка: ' + (error.response?.data?.message || 'Щось пішло не так'));
@@ -45,7 +52,6 @@ export function LoginPage() {
 
   return (
     <Grid minHeight="100vh" gutter={0}>
-      {/* Ліва частина з зображенням */}
       <Grid.Col 
         span={{ base: 0, md: 6 }} 
         style={{ 
@@ -66,7 +72,6 @@ export function LoginPage() {
         </Box>
       </Grid.Col>
 
-      {/* Права частина з формою */}
       <Grid.Col 
         span={{ base: 12, md: 6 }} 
         style={{ 
@@ -79,7 +84,6 @@ export function LoginPage() {
       >
         <Container size="xs" style={{ width: '100%', maxWidth: '420px' }}>
           
-          {/* Заголовок */}
           <Title 
             order={1} 
             ta="center" 
@@ -94,7 +98,6 @@ export function LoginPage() {
             Вітаємо в LIMEN!
           </Title>
           
-          {/* Підзаголовок */}
           <Text 
             c="#0F7EAA" 
             size="lg" 
@@ -106,7 +109,6 @@ export function LoginPage() {
             {isRegister ? 'Заповніть поля для реєстрації:' : 'Заповніть поля:'}
           </Text>
 
-          {/* Форма */}
           <Stack gap="lg">
             {isRegister && (
                <TextInput 
@@ -179,7 +181,6 @@ export function LoginPage() {
                 onChange={(e) => setPassword(e.currentTarget.value)}
             />
 
-            {/* Кнопка */}
             <Button 
               fullWidth 
               mt="md" 
@@ -212,7 +213,6 @@ export function LoginPage() {
             </Button>
           </Stack>
 
-          {/* Посилання на реєстрацію/вхід */}
           <Group justify="center" mt="xl">
             <Text size="sm" style={{ color: '#0F7EAA', fontSize: '15px' }}>
               {isRegister ? 'Вже маєте акаунт? ' : 'Немає акаунту? '}
