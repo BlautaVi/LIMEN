@@ -11,10 +11,12 @@ import {
   Image,
   Center,
   Box,
-  ThemeIcon
+  ThemeIcon,
+  LoadingOverlay
 } from '@mantine/core';
 import { IconCheck } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
+import api from '../services/api';
 
 const QUESTIONS = [
   {
@@ -137,13 +139,18 @@ export function OnboardingPage() {
 
           <Grid.Col span={{ base: 12, md: 6 }}>
             <Box style={{ maxWidth: '500px', margin: '0 auto' }}>
-              <Paper shadow="md" radius="md" style={{ overflow: 'hidden', border: '1px solid #eee' }}>
-                <Box p="xl" bg="white">
+              <Paper shadow="md" radius="md" style={{ 
+                overflow: 'hidden', 
+                border: '1px solid #eee', 
+                minHeight: '400px',
+                display: 'flex', 
+                flexDirection: 'column' }}>
+                <Box p="xl" bg="white" style={{ minHeight: '100px' }}>
                   <Text fw={700} size="lg" style={{ color: '#0F7EAA' }}>
                     {currentQuestion.question}
                   </Text>
                 </Box>
-                <Box p="xl" style={{ backgroundColor: '#E0F7FA' }}>
+                <Box p="xl" style={{ backgroundColor: '#E0F7FA', flex: 1 }}>
                   <Stack gap="sm">
                     {currentQuestion.options.map((option, index) => {
                       const isSelected = selectedOptionIndex === index;

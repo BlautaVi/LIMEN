@@ -35,6 +35,7 @@ export function LoginPage() {
 
       if (response.data.access_token) {
         localStorage.setItem('token', response.data.access_token);
+        
         const user = response.data.user;
         localStorage.setItem('user', JSON.stringify(user));
 
