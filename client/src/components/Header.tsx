@@ -1,6 +1,7 @@
 import { Group, ActionIcon, Box } from '@mantine/core';
 import { IconArrowLeft, IconUserCircle, IconHelpCircle } from '@tabler/icons-react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { IconBook, IconMessageCircle } from '@tabler/icons-react';
 
 export function Header() {
   const navigate = useNavigate();
@@ -39,7 +40,16 @@ export function Header() {
           >
             <IconUserCircle style={{ width: '32px', height: '32px', strokeWidth: 2 }} />
           </ActionIcon>
-
+          <ActionIcon 
+            variant="transparent" 
+            onClick={() => navigate('/diary')} 
+            title="Мій щоденник емоцій"
+          >
+            <IconBook size={28} color="#0F7EAA" stroke={2.5} />
+          </ActionIcon>
+          <ActionIcon variant="transparent" onClick={() => navigate('/chats')} title="Мої повідомлення">
+            <IconMessageCircle size={28} color="#0F7EAA" stroke={2.5} />
+          </ActionIcon>
           <ActionIcon 
             variant="transparent" 
             size="lg"

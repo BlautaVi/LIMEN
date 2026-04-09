@@ -4,7 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { MantineProvider } from '@mantine/core';
 import App from './App.tsx';
 import '@mantine/core/styles.css';
-
+import '@mantine/dates/styles.css';
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <MantineProvider>

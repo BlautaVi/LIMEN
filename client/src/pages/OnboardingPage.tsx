@@ -114,7 +114,17 @@ export function OnboardingPage() {
       setSelectedOptionIndex(null);
     }
   };
-
+  const handleSkip = async () => {
+    try {
+      const response = await api.post('/users/onboarding', { answers: [] });
+      
+      localStorage.setItem('user', JSON.stringify(response.data));
+      navigate('/dashboard');
+    } catch (error) {
+      console.error('Помилка при пропуску тесту', error);
+      navigate('/dashboard'); 
+    }
+  };
   return (
     <Box style={{ backgroundColor: '#fff', minHeight: '100vh', padding: '40px 0', position: 'relative' }}>
       <LoadingOverlay visible={loading} overlayProps={{ radius: "sm", blur: 2 }} />
@@ -178,6 +188,7 @@ export function OnboardingPage() {
                     })}
                   </Stack>
                 </Box>
+                
               </Paper>
               <Button 
                 fullWidth size="lg" radius="xl" mt="xl"
@@ -187,6 +198,11 @@ export function OnboardingPage() {
               >
                 {isLastQuestion ? 'Отримати результат' : 'Далі'}
               </Button>
+             <Center mt="md">
+                <Button variant="subtle" color="gray" onClick={handleSkip}>
+                  Пропустити тест
+                </Button>
+              </Center>
             </Box>
           </Grid.Col>
         </Grid>
