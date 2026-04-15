@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Container, Paper, Text, Avatar, Center, Loader, Button, Group, Badge, Box, Stack, Divider,ThemeIcon, Title, ActionIcon, SimpleGrid } from '@mantine/core';
-import { IconMessageCircle, IconHeart, IconHeartFilled, IconArrowLeft, IconCertificate, IconUser, IconCalendarStats, IconBrain } from '@tabler/icons-react';
+import { Container, Paper, Text, Avatar, Center, Loader, Button, Group, Badge, Box, Stack, Divider, ThemeIcon, Title, ActionIcon, SimpleGrid } from '@mantine/core';
+import { IconMessageCircle, IconHeart, IconHeartFilled, IconArrowLeft, IconCertificate, IconUser, IconBrain } from '@tabler/icons-react';
 import { Header } from '../components/Header';
 import api from '../services/api';
 
@@ -13,7 +13,6 @@ export function SpecialistProfilePage() {
   const [isFavorite, setIsFavorite] = useState(false);
 
   useEffect(() => {
-
     const fetchSpecialist = async () => {
       try {
         const response = await api.get(`/users/${id}`);
@@ -28,7 +27,8 @@ export function SpecialistProfilePage() {
     };
     fetchSpecialist();
   }, [id]);
-   const handleSendMessage = async () => {
+
+  const handleSendMessage = async () => {
     try {
       const response = await api.post('/conversations/find-or-create', { participantId: id });
       const conversationId = response.data._id;
@@ -38,80 +38,121 @@ export function SpecialistProfilePage() {
       alert('Не вдалося створити чат');
     }
   };
-  if (loading) return <Center h="100vh"><Loader color="cyan" /></Center>;
+
+  if (loading) return <Center h="100vh" bg="var(--lm-bg)"><Loader color="orange" size="xl" /></Center>;
   if (!specialist) return null;
 
   const displayName = specialist.fullName || `${specialist.firstName || ''} ${specialist.lastName || ''}`.trim() || 'Анонімний спеціаліст';
 
   return (
-    <Box style={{ minHeight: '100vh', backgroundColor: '#F5FDFF' }}>
+    <Box style={{ minHeight: '100vh', backgroundColor: 'var(--lm-bg)' }}>
       <Header />
-      <Container size="md" pt={40} pb={60}>
-        
-        <Group mb="lg">
-          <Button variant="subtle" color="cyan" leftSection={<IconArrowLeft size={18} />} onClick={() => navigate(-1)} style={{ paddingLeft: 0 }}>
-            Назад
+      <Container size="md" pt={{ base: 20, md: 40 }} pb={80}>
+
+        <Group mb="xl">
+          <Button
+            variant="subtle" color="gray" leftSection={<IconArrowLeft size={18} />}
+            onClick={() => navigate(-1)}
+            style={{ paddingLeft: 0, color: 'var(--lm-muted)', transition: 'all 0.2s var(--lm-ease)', '&:hover': { transform: 'translateX(-4px)', color: 'var(--lm-dark)' } }}
+          >
+            Назад до списку
           </Button>
         </Group>
 
-        <Paper shadow="xl" radius="lg" p={40} style={{ border: '1px solid #E1F5FE', backgroundColor: '#fff', position: 'relative' }}>
-          
-          <ActionIcon size="xl" variant="subtle" color="red" style={{ position: 'absolute', top: 20, right: 20 }} onClick={() => setIsFavorite(!isFavorite)}>
-            {isFavorite ? <IconHeartFilled size={28} /> : <IconHeart size={28} />}
+        <Paper
+          shadow="none"
+          radius="30px"
+          p={{ base: 24, md: 50 }}
+          className="animate-slideUp"
+          style={{
+            border: '1px solid var(--lm-border)',
+            backgroundColor: '#fff',
+            position: 'relative',
+            boxShadow: 'var(--lm-shadow-lg)'
+          }}
+        >
+
+          <ActionIcon
+            size="xl" radius="xl" variant="subtle" color="red"
+            style={{ position: 'absolute', top: 30, right: 30, transition: 'transform 0.2s var(--lm-ease)', '&:hover': { transform: 'scale(1.1)', backgroundColor: 'var(--lm-orange-light)' } }}
+            onClick={() => setIsFavorite(!isFavorite)}
+          >
+            {isFavorite ? <IconHeartFilled size={32} /> : <IconHeart size={32} />}
           </ActionIcon>
 
-          <Center mb="lg">
-            <Avatar src={specialist.avatarUrl ? `http://localhost:3000${specialist.avatarUrl}` : null} size={150} radius={150} style={{ border: '4px solid #E1F5FE' }} />
+          <Center mb="xl">
+            <Avatar
+              src={specialist.avatarUrl ? `http://localhost:3000${specialist.avatarUrl}` : null}
+              size={160}
+              radius={160}
+              style={{ border: '6px solid var(--lm-bg)', boxShadow: 'var(--lm-shadow-lg)' }}
+            />
           </Center>
 
-          <Stack align="center" gap="xs">
-            <Title order={2} style={{ color: '#0F7EAA' }}>{displayName}</Title>
-            <Group gap="xs">
-              <Badge color="violet" size="lg" variant="light" leftSection={<IconCertificate size={14} />}>
-                Сертифікований психолог
-              </Badge>
-            </Group>
+          <Stack align="center" gap="sm" mb="xl">
+            <Title order={1} style={{ color: 'var(--lm-dark)', fontWeight: 800, fontSize: '30px' }}>{displayName}</Title>
+            <Badge color="violet" size="lg" radius="md" variant="light" leftSection={<IconCertificate size={16} />} style={{ padding: '0 16px', height: '32px', textTransform: 'none', fontSize: '14px', fontWeight: 600 }}>
+              Сертифікований психолог
+            </Badge>
           </Stack>
 
-          <Divider my="xl" />
-          <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="lg" mb="xl">
-            <Paper p="md" radius="md" style={{ backgroundColor: '#F4FAFC', border: '1px solid #E1F5FE' }}>
-              <Group gap="sm" mb="xs">
-                <ThemeIcon color="cyan" variant="light" radius="xl"><IconUser size={18} /></ThemeIcon>
-                <Text fw={600} style={{ color: '#0F7EAA' }}>Особисті дані</Text>
+          <Divider my={40} color="var(--lm-border)" />
+
+          <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="xl" mb={40}>
+            <Paper p="xl" radius="xl" style={{ backgroundColor: 'var(--lm-bg-alt)', border: '1px solid var(--lm-border)' }}>
+              <Group gap="md" mb="lg">
+                <ThemeIcon size={48} color="orange" variant="light" radius="100%" style={{ backgroundColor: '#fff', boxShadow: 'var(--lm-shadow-sm)' }}><IconUser size={24} stroke={2} /></ThemeIcon>
+                <Text fw={800} size="lg" style={{ color: 'var(--lm-dark)' }}>Особисті дані</Text>
               </Group>
-              <Text size="sm"><b>Стать:</b> {specialist.gender === 'male' ? 'Чоловіча' : specialist.gender === 'female' ? 'Жіноча' : 'Не вказано'}</Text>
-              <Text size="sm"><b>Вік:</b> {specialist.age ? `${specialist.age} років` : 'Не вказано'}</Text>
+              <Text size="16px" style={{ color: 'var(--lm-dark-soft)' }} mb={8}><b style={{ color: 'var(--lm-dark)' }}>Стать:</b> {specialist.gender === 'male' ? 'Чоловіча' : specialist.gender === 'female' ? 'Жіноча' : 'Не вказано'}</Text>
+              <Text size="16px" style={{ color: 'var(--lm-dark-soft)' }}><b style={{ color: 'var(--lm-dark)' }}>Вік:</b> {specialist.age ? `${specialist.age} років` : 'Не вказано'}</Text>
             </Paper>
 
-            <Paper p="md" radius="md" style={{ backgroundColor: '#F4FAFC', border: '1px solid #E1F5FE' }}>
-              <Group gap="sm" mb="xs">
-                <ThemeIcon color="violet" variant="light" radius="xl"><IconBrain size={18} /></ThemeIcon>
-                <Text fw={600} style={{ color: '#0F7EAA' }}>Напрямки роботи</Text>
+            <Paper p="xl" radius="xl" style={{ backgroundColor: 'var(--lm-bg-alt)', border: '1px solid var(--lm-border)' }}>
+              <Group gap="md" mb="lg">
+                <ThemeIcon size={48} color="violet" variant="light" radius="100%" style={{ backgroundColor: '#fff', boxShadow: 'var(--lm-shadow-sm)' }}><IconBrain size={24} stroke={2} /></ThemeIcon>
+                <Text fw={800} size="lg" style={{ color: 'var(--lm-dark)' }}>Напрямки роботи</Text>
               </Group>
-              <Group gap={5}>
+              <Group gap="xs">
                 {specialist.specializations && specialist.specializations.length > 0 && specialist.specializations[0] !== "" ? (
                   specialist.specializations.map((spec: string, idx: number) => (
-                    <Badge key={idx} color="cyan" variant="outline">{spec}</Badge>
+                    <Badge key={idx} color="orange" variant="outline" size="lg" radius="sm" style={{ textTransform: 'none', fontWeight: 600, border: '1px solid var(--lm-orange)', color: 'var(--lm-orange)' }}>
+                      {spec}
+                    </Badge>
                   ))
                 ) : (
-                  <Text size="sm" c="dimmed">Спеціалізації не вказані</Text>
+                  <Text size="16px" c="dimmed">Спеціалізації не вказані</Text>
                 )}
               </Group>
             </Paper>
           </SimpleGrid>
 
-          <Box mb="xl">
-            <Title order={4} mb="sm" style={{ color: '#0F7EAA' }}>Про спеціаліста та послуги</Title>
-            <Text style={{ color: '#555', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>
-              {specialist.servicesDescription || "Цей спеціаліст ще не додав детальний опис своїх послуг."}
+          <Box mb={50}>
+            <Title order={3} mb="lg" style={{ color: 'var(--lm-dark)', fontWeight: 800 }}>Про спеціаліста та послуги</Title>
+            <Text style={{ color: 'var(--lm-dark-soft)', lineHeight: 1.7, fontSize: '17px', whiteSpace: 'pre-wrap' }}>
+              {specialist.servicesDescription || "Цей спеціаліст ще не додав детальний опис своїх послуг. Ви можете написати йому особисто, щоб дізнатися більше."}
             </Text>
           </Box>
 
-          <Group grow mt="xl">
-            <Button size="lg" color="cyan" radius="md" leftSection={<IconMessageCircle size={22} />} onClick={handleSendMessage} style={{ boxShadow: '0 4px 15px rgba(79, 205, 255, 0.4)' }}>
-            Почати спілкування
-          </Button>
+          <Group grow>
+            <Button
+              size="xl"
+              radius="xl"
+              leftSection={<IconMessageCircle size={24} stroke={2} />}
+              onClick={handleSendMessage}
+              style={{
+                backgroundColor: 'var(--lm-orange)',
+                color: '#fff',
+                fontWeight: 800,
+                fontSize: '18px',
+                height: '65px',
+                boxShadow: 'var(--lm-shadow-orange)',
+                transition: 'all 0.25s var(--lm-ease)'
+              }}
+              styles={{ root: { '&:hover': { transform: 'translateY(-2px)', backgroundColor: 'var(--lm-orange-hover)' } } }}
+            >
+              Почати спілкування
+            </Button>
           </Group>
 
         </Paper>

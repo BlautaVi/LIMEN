@@ -1,0 +1,203 @@
+/* ===== LIMEN — Global Design System ===== */
+
+/* --- CSS Custom Properties --- */
+:root {
+  /* Brand */
+  --lm-orange: #E86A53;
+  --lm-orange-hover: #D65A44;
+  --lm-orange-light: #FFF2F0;
+  --lm-orange-shadow: rgba(232, 106, 83, 0.25);
+  
+  /* Neutrals */
+  --lm-dark: #2B454E;
+  --lm-dark-soft: #4A5B61;
+  --lm-muted: #85969C;
+  --lm-border: #F0EBE1;
+  --lm-bg: #FCFBF8;
+  --lm-bg-alt: #FAF9F6;
+  --lm-bg-input: #F8F9FA;
+  --lm-warm: #F9F4EC;
+  --lm-input-bg: #F4F2EE;
+  
+  /* Psych */
+  --lm-violet: #7950F2;
+  --lm-violet-light: #F5F0FF;
+  --lm-violet-border: #E5D8FF;
+  
+  /* Shadows */
+  --lm-shadow-sm: 0 2px 12px rgba(43, 69, 78, 0.04);
+  --lm-shadow-md: 0 8px 32px rgba(43, 69, 78, 0.06);
+  --lm-shadow-lg: 0 16px 48px rgba(43, 69, 78, 0.08);
+  --lm-shadow-xl: 0 24px 64px rgba(43, 69, 78, 0.1);
+  --lm-shadow-orange: 0 8px 28px rgba(232, 106, 83, 0.3);
+  
+  /* Transitions */
+  --lm-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --lm-spring: cubic-bezier(0.2, 0.8, 0.2, 1);
+  
+  /* Radius */
+  --lm-radius: 20px;
+  --lm-radius-lg: 28px;
+  --lm-radius-full: 9999px;
+  
+  /* Glass */
+  --lm-glass-bg: rgba(255, 255, 255, 0.82);
+  --lm-glass-blur: blur(24px);
+  --lm-glass-border: rgba(240, 235, 225, 0.6);
+}
+
+/* --- Global base --- */
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  background-color: var(--lm-bg);
+  color: var(--lm-dark);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+::selection {
+  background-color: rgba(232, 106, 83, 0.18);
+  color: var(--lm-dark);
+}
+
+/* --- Scrollbar --- */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--lm-border);
+  border-radius: var(--lm-radius-full);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--lm-muted);
+}
+
+/* --- Animations --- */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+/* --- Utility animation classes --- */
+.animate-fadeIn {
+  animation: fadeIn 0.5s var(--lm-ease) forwards;
+}
+
+.animate-slideUp {
+  animation: slideUp 0.6s var(--lm-spring) forwards;
+}
+
+.animate-slideUp-delay-1 {
+  animation: slideUp 0.6s var(--lm-spring) 0.1s forwards;
+  opacity: 0;
+}
+
+.animate-slideUp-delay-2 {
+  animation: slideUp 0.6s var(--lm-spring) 0.2s forwards;
+  opacity: 0;
+}
+
+.animate-slideUp-delay-3 {
+  animation: slideUp 0.6s var(--lm-spring) 0.3s forwards;
+  opacity: 0;
+}
+
+.animate-scaleIn {
+  animation: scaleIn 0.4s var(--lm-ease) forwards;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* --- Glass helper --- */
+.glass {
+  background: var(--lm-glass-bg);
+  backdrop-filter: var(--lm-glass-blur);
+  -webkit-backdrop-filter: var(--lm-glass-blur);
+  border: 1px solid var(--lm-glass-border);
+}
+
+/* --- Card hover effect --- */
+.card-hover {
+  transition: transform 0.3s var(--lm-spring), box-shadow 0.3s var(--lm-ease);
+}
+
+.card-hover:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--lm-shadow-lg);
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+  :root {
+    --lm-radius: 16px;
+    --lm-radius-lg: 22px;
+  }
+}
+
+/* --- Focus ring --- */
+*:focus-visible {
+  outline: 2px solid var(--lm-orange);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* --- Link reset for better transitions --- */
+a {
+  transition: color 0.2s var(--lm-ease), opacity 0.2s var(--lm-ease);
+}

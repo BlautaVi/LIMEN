@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Container, Paper, Text, Avatar, Center, Loader, Button, Group, Badge, Box, Stack, Divider, Title, SimpleGrid, Card } from '@mantine/core';
-import { IconMessageCircle, IconArrowLeft, IconNotes } from '@tabler/icons-react';
+import { Container, Paper, Text, Avatar, Center, Loader, Button, Group, Badge, Box, Stack, Divider, Title, SimpleGrid, Card, ActionIcon, ThemeIcon } from '@mantine/core';
+import { IconMessageCircle, IconArrowLeft, IconNotes, IconUser } from '@tabler/icons-react';
 import { Header } from '../components/Header';
 import api from '../services/api';
 
 export function UserProfilePage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  
+
   const [userProfile, setUserProfile] = useState<any>(null);
   const [userPosts, setUserPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -37,7 +37,7 @@ export function UserProfilePage() {
     fetchUserAndPosts();
   }, [id]);
 
-  if (loading) return <Center h="100vh"><Loader color="cyan" /></Center>;
+  if (loading) return <Center h="100vh" bg="var(--lm-bg)"><Loader color="orange" size="xl" /></Center>;
   if (!userProfile) return null;
 
   const displayName = userProfile.fullName || `${userProfile.firstName || ''} ${userProfile.lastName || ''}`.trim() || 'Анонімний користувач';
@@ -46,7 +46,6 @@ export function UserProfilePage() {
   const handleSendMessage = async () => {
     try {
       const response = await api.post('/conversations/find-or-create', { participantId: id });
-      
       const conversationId = response.data._id;
       navigate(`/chats/${conversationId}`);
     } catch (error) {
@@ -56,64 +55,125 @@ export function UserProfilePage() {
   };
 
   return (
-    <Box style={{ minHeight: '100vh', backgroundColor: '#F5FDFF' }}>
+    <Box style={{ minHeight: '100vh', backgroundColor: 'var(--lm-bg)' }}>
       <Header />
-      <Container size="md" pt={40} pb={60}>
-        
-        <Group mb="lg">
-          <Button variant="subtle" color="cyan" leftSection={<IconArrowLeft size={18} />} onClick={() => navigate(-1)} style={{ paddingLeft: 0 }}>
+      <Container size="md" pt={{ base: 20, md: 40 }} pb={80}>
+
+        <Group mb="xl">
+          <Button
+            variant="subtle" color="gray" leftSection={<IconArrowLeft size={18} />}
+            onClick={() => navigate(-1)}
+            style={{ paddingLeft: 0, color: 'var(--lm-muted)', transition: 'all 0.2s var(--lm-ease)', '&:hover': { transform: 'translateX(-4px)', color: 'var(--lm-dark)' } }}
+          >
             Назад
           </Button>
         </Group>
 
-        <Paper shadow="sm" radius="lg" p={40} mb="xl" style={{ border: '1px solid #E1F5FE', backgroundColor: '#fff' }}>
-          <Center mb="lg">
-            <Avatar src={userProfile.avatarUrl ? `http://localhost:3000${userProfile.avatarUrl}` : null} size={120} radius={120} style={{ border: '4px solid #E1F5FE' }} />
+        <Paper
+          shadow="none"
+          radius="30px"
+          p={{ base: 24, md: 50 }}
+          mb={60}
+          className="animate-slideUp"
+          style={{
+            border: '1px solid var(--lm-border)',
+            backgroundColor: '#fff',
+            boxShadow: 'var(--lm-shadow-lg)'
+          }}
+        >
+          <Center mb="xl">
+            {userProfile.avatarUrl ? (
+              <Avatar
+                src={`http://localhost:3000${userProfile.avatarUrl}`}
+                size={140}
+                radius={140}
+                style={{ border: '6px solid var(--lm-bg)', boxShadow: 'var(--lm-shadow-lg)' }}
+              />
+            ) : (
+              <ThemeIcon size={140} radius="100%" variant="light" style={{ backgroundColor: 'var(--lm-warm)', color: 'var(--lm-orange)' }}>
+                <IconUser size={60} stroke={1.5} />
+              </ThemeIcon>
+            )}
           </Center>
 
-          <Stack align="center" gap="xs">
-            <Title order={2} style={{ color: '#0F7EAA' }}>{displayName}</Title>
-            
-            <Group gap="xs">
+          <Stack align="center" gap="sm">
+            <Title order={1} style={{ color: 'var(--lm-dark)', fontWeight: 800, fontSize: '30px' }}>{displayName}</Title>
+
+            <Group gap="xs" mt="xs">
               {userProfile.role === 'psychologist' && (
-                <Badge color="violet" size="md" variant="light">Психолог</Badge>
+                <Badge color="violet" size="lg" radius="md" variant="light" style={{ padding: '0 16px', height: '32px', textTransform: 'none', fontSize: '14px', fontWeight: 600 }}>Психолог</Badge>
               )}
               {userProfile.role !== 'psychologist' && userProfile.personalityType && (
-                <Badge color="yellow" size="md" variant="outline">{userProfile.personalityType}</Badge>
+                <Badge color="orange" size="lg" radius="md" variant="outline" style={{ padding: '0 16px', height: '32px', textTransform: 'none', fontSize: '14px', fontWeight: 600, border: '1px solid var(--lm-orange)', color: 'var(--lm-orange)' }}>
+                  {userProfile.personalityType}
+                </Badge>
               )}
             </Group>
           </Stack>
 
           {!isMe && (
-            <Group justify="center" mt="xl">
-              <Button size="md" color="cyan" radius="xl" leftSection={<IconMessageCircle size={20} />} onClick={handleSendMessage}>
+            <Group justify="center" mt={40}>
+              <Button
+                size="xl"
+                radius="xl"
+                leftSection={<IconMessageCircle size={22} stroke={2} />}
+                onClick={handleSendMessage}
+                style={{
+                  backgroundColor: 'var(--lm-orange)',
+                  color: '#fff',
+                  fontWeight: 700,
+                  fontSize: '16px',
+                  boxShadow: 'var(--lm-shadow-orange)',
+                  transition: 'all 0.25s var(--lm-ease)'
+                }}
+                styles={{ root: { '&:hover': { transform: 'translateY(-2px)', backgroundColor: 'var(--lm-orange-hover)' } } }}
+              >
                 Написати повідомлення
               </Button>
             </Group>
           )}
         </Paper>
 
-        {/* ПУБЛІКАЦІЇ КОРИСТУВАЧА */}
-        <Group gap="sm" mb="md">
-          <IconNotes size={24} color="#0F7EAA" />
-          <Title order={3} style={{ color: '#0F7EAA' }}>Публікації користувача</Title>
+        <Group gap="sm" mb="xl" className="animate-slideUp-delay-1">
+          <ThemeIcon size={40} radius="xl" variant="light" style={{ backgroundColor: 'var(--lm-warm)', color: 'var(--lm-orange)' }}>
+            <IconNotes size={20} stroke={2} />
+          </ThemeIcon>
+          <Title order={3} style={{ color: 'var(--lm-dark)', fontWeight: 800, fontSize: '24px' }}>Публікації користувача</Title>
         </Group>
-        
-        <Divider mb="xl" color="#E1F5FE" />
+
+        <Divider mb={40} color="var(--lm-border)" />
 
         {userPosts.length === 0 ? (
-          <Text c="dimmed" ta="center" fs="italic">Цей користувач ще не робив публікацій.</Text>
+          <Paper p={50} radius="xl" ta="center" style={{ border: '2px dashed var(--lm-border)', backgroundColor: 'transparent' }}>
+            <Text size="lg" fw={500} style={{ color: 'var(--lm-muted)' }}>
+              Цей користувач ще не робив публікацій.
+            </Text>
+          </Paper>
         ) : (
-          <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="lg">
+          <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="xl">
             {userPosts.map((post) => (
-              <Card key={post._id} shadow="sm" p="lg" radius="md" withBorder style={{ borderColor: '#E1F5FE', cursor: 'pointer' }} onClick={() => navigate(`/posts/${post._id}`)}>
-                <Text size="sm" c="dimmed" mb="xs">
+              <Card
+                key={post._id}
+                shadow="none"
+                p={30}
+                radius="xl"
+                withBorder
+                className="card-hover"
+                style={{
+                  borderColor: 'var(--lm-border)',
+                  cursor: 'pointer',
+                  backgroundColor: '#fff',
+                  boxShadow: 'var(--lm-shadow-sm)'
+                }}
+                onClick={() => navigate(`/posts/${post._id}`)}
+              >
+                <Text size="sm" fw={600} mb="md" style={{ color: 'var(--lm-muted)' }}>
                   {new Date(post.createdAt).toLocaleDateString('uk-UA')}
                 </Text>
-                <Title order={5} style={{ color: '#0F7EAA', marginBottom: '10px' }} lineClamp={1}>
-                  {post.title}
+                <Title order={4} style={{ color: 'var(--lm-dark)', marginBottom: '12px', fontWeight: 800, lineHeight: 1.4 }} lineClamp={2}>
+                  {post.title || 'Без заголовка'}
                 </Title>
-                <Text size="sm" lineClamp={3} style={{ color: '#555' }}>
+                <Text size="15px" lineClamp={3} style={{ color: 'var(--lm-dark-soft)', lineHeight: 1.6 }}>
                   {post.content}
                 </Text>
               </Card>

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Container, Paper, Text, Avatar, Group, Box, Stack, TextInput, ActionIcon, Loader, Center, ScrollArea, Title } from '@mantine/core';
+import { Container, Paper, Text, Avatar, Group, Box, Stack, TextInput, ActionIcon, Loader, Center, ScrollArea, Title, ThemeIcon } from '@mantine/core';
 import { IconSend, IconRobot, IconArrowLeft } from '@tabler/icons-react';
 import { Header } from '../components/Header';
 import { useNavigate } from 'react-router-dom';
@@ -8,7 +8,7 @@ import api from '../services/api';
 export function AiChatPage() {
   const navigate = useNavigate();
   const defaultMessage = { id: 'default', text: 'Привіт! Я AI-асистент платформи LIMEN. Розкажіть, що вас турбує, або просто поділіться думками.', sender: 'ai' as const };
-  
+
   const [messages, setMessages] = useState<any[]>([defaultMessage]);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -73,81 +73,106 @@ export function AiChatPage() {
   };
 
   return (
-    <Box style={{ height: '100vh', backgroundColor: '#F5FDFF', display: 'flex', flexDirection: 'column' }}>
+    <Box style={{ height: '100vh', backgroundColor: 'var(--lm-bg)', display: 'flex', flexDirection: 'column' }}>
       <Header />
-      
-      <Container size="md" py="md" style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', height: 'calc(100vh - 70px)' }}>
-        <Paper shadow="md" radius="lg" style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', border: '1px solid #E1F5FE' }}>
-          
-          <Box p="md" style={{ backgroundColor: '#FAFCFE', borderBottom: '1px solid #E1F5FE', display: 'flex', alignItems: 'center', gap: '15px' }}>
-            <ActionIcon variant="subtle" color="cyan" onClick={() => navigate(-1)}>
-              <IconArrowLeft size={20} />
+
+      <Container size="md" py={30} style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', height: 'calc(100vh - 80px)' }}>
+        <Paper
+          shadow="none"
+          radius="xl"
+          style={{
+            flexGrow: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden',
+            border: '1px solid var(--lm-border)', backgroundColor: '#fff',
+            boxShadow: 'var(--lm-shadow-lg)'
+          }}
+        >
+
+          {/* Header */}
+          <Box p="24px" className="glass" style={{ borderBottom: '1px solid var(--lm-border)', display: 'flex', alignItems: 'center', gap: '20px' }}>
+            <ActionIcon variant="subtle" color="gray" onClick={() => navigate(-1)} style={{ transition: 'transform 0.2s var(--lm-ease)', '&:hover': { transform: 'translateX(-4px)' } }}>
+              <IconArrowLeft size={24} color="var(--lm-dark)" stroke={2.5} />
             </ActionIcon>
-            <Avatar color="violet" radius="xl" size="md">
-              <IconRobot size={24} />
-            </Avatar>
+            <ThemeIcon size={50} radius="100%" variant="light" style={{ backgroundColor: 'var(--lm-warm)', color: 'var(--lm-orange)' }}>
+              <IconRobot size={28} stroke={2} />
+            </ThemeIcon>
             <Box>
-              <Title order={5} style={{ color: '#0F7EAA' }}>LIMEN AI</Title>
-              <Text size="xs" c="dimmed">Віртуальний психолог-асистент</Text>
+              <Title order={4} style={{ color: 'var(--lm-dark)', fontWeight: 800, fontSize: '20px', letterSpacing: '-0.5px' }}>LIMEN AI</Title>
+              <Text size="sm" fw={500} style={{ color: 'var(--lm-muted)' }}>Віртуальний психолог-асистент</Text>
             </Box>
           </Box>
 
-          <ScrollArea style={{ flexGrow: 1, padding: '24px', backgroundColor: '#F4F9FD' }} viewportRef={viewportRef}>
-            <Stack gap="lg">
+          {/* Messages */}
+          <ScrollArea style={{ flexGrow: 1, padding: '30px', backgroundColor: 'var(--lm-bg)' }} viewportRef={viewportRef}>
+            <Stack gap="xl">
               {messages.map((msg) => {
                 const isAi = msg.sender === 'ai';
                 return (
-                  <Group key={msg.id} justify={isAi ? 'flex-start' : 'flex-end'} align="flex-end" gap="xs">
+                  <Group key={msg.id} justify={isAi ? 'flex-start' : 'flex-end'} align="flex-end" gap="md">
                     {isAi && (
-                      <Avatar color="violet" radius="xl" size="sm">
-                        <IconRobot size={18} />
-                      </Avatar>
+                      <ThemeIcon size={36} radius="100%" variant="light" style={{ backgroundColor: 'var(--lm-warm)', color: 'var(--lm-orange)', flexShrink: 0 }}>
+                        <IconRobot size={20} stroke={2} />
+                      </ThemeIcon>
                     )}
-                    <Box 
-                      style={{ 
-                        maxWidth: '75%', 
-                        backgroundColor: isAi ? '#fff' : '#4FCDFF', 
-                        color: isAi ? '#2C3E50' : '#fff',
-                        padding: '12px 18px', 
-                        borderRadius: isAi ? '18px 18px 18px 4px' : '18px 18px 4px 18px',
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
-                        border: isAi ? '1px solid #E1F5FE' : 'none'
+                    <Box
+                      style={{
+                        maxWidth: '75%',
+                        backgroundColor: isAi ? '#fff' : 'var(--lm-orange)',
+                        color: isAi ? 'var(--lm-dark)' : '#fff',
+                        padding: '16px 24px',
+                        borderRadius: isAi ? '24px 24px 24px 6px' : '24px 24px 6px 24px',
+                        boxShadow: isAi ? 'var(--lm-shadow-md)' : '0 8px 24px rgba(232, 106, 83, 0.18)',
+                        border: isAi ? '1px solid var(--lm-border)' : 'none'
                       }}
                     >
-                      <Text size="md" style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', lineHeight: 1.5 }}>
+                      <Text size="16px" style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', lineHeight: 1.6, fontWeight: 500 }}>
                         {msg.text}
                       </Text>
                     </Box>
                   </Group>
                 );
               })}
-              
+
               {isTyping && (
-                <Group justify="flex-start" align="flex-end" gap="xs">
-                  <Avatar color="violet" radius="xl" size="sm"><IconRobot size={18} /></Avatar>
-                  <Box style={{ backgroundColor: '#fff', padding: '12px 18px', borderRadius: '18px 18px 18px 4px', border: '1px solid #E1F5FE' }}>
-                    <Loader color="violet" size="xs" type="dots" />
+                <Group justify="flex-start" align="flex-end" gap="md">
+                  <ThemeIcon size={36} radius="100%" variant="light" style={{ backgroundColor: 'var(--lm-warm)', color: 'var(--lm-orange)', flexShrink: 0 }}>
+                    <IconRobot size={20} stroke={2} />
+                  </ThemeIcon>
+                  <Box style={{ backgroundColor: '#fff', padding: '16px 24px', borderRadius: '24px 24px 24px 6px', border: '1px solid var(--lm-border)', boxShadow: 'var(--lm-shadow-md)' }}>
+                    <Loader color="orange" size="sm" type="dots" />
                   </Box>
                 </Group>
               )}
             </Stack>
           </ScrollArea>
 
-          <Box p="lg" style={{ backgroundColor: '#fff', borderTop: '1px solid #E1F5FE' }}>
+          {/* Input */}
+          <Box p="24px" className="glass" style={{ borderTop: '1px solid var(--lm-border)' }}>
             <form onSubmit={(e) => { e.preventDefault(); handleSend(); }}>
-              <Group wrap="nowrap">
-                <TextInput 
-                  placeholder="Розкажіть ШІ про свої почуття..." 
-                  radius="xl" 
-                  size="md" 
+              <Group wrap="nowrap" gap="md">
+                <TextInput
+                  placeholder="Розкажіть ШІ про свої почуття..."
+                  radius="xl"
+                  size="xl"
                   style={{ flexGrow: 1 }}
                   value={inputValue}
                   onChange={(e) => setInputValue(e.currentTarget.value)}
                   disabled={isTyping}
-                  styles={{ input: { backgroundColor: '#F4F9FD', border: '1px solid transparent', '&:focus': { borderColor: '#845EF7' } } }}
+                  styles={{
+                    input: {
+                      backgroundColor: 'var(--lm-bg-input)', border: '1px solid transparent', fontSize: '16px', padding: '0 24px',
+                      transition: 'all 0.2s var(--lm-ease)', '&:focus': { borderColor: 'var(--lm-orange)', backgroundColor: '#fff', boxShadow: '0 0 0 3px rgba(232, 106, 83, 0.1)' }
+                    }
+                  }}
                 />
-                <ActionIcon type="submit" color="violet" size="xl" radius="xl" variant="filled" disabled={!inputValue.trim() || isTyping} style={{ transition: 'transform 0.2s', '&:hover': { transform: 'scale(1.05)' } }}>
-                  <IconSend size={22} />
+                <ActionIcon
+                  type="submit" size="xl" radius="xl" variant="filled" disabled={!inputValue.trim() || isTyping}
+                  style={{
+                    width: '54px', height: '54px', backgroundColor: inputValue.trim() ? 'var(--lm-orange)' : '#EAEAEA', color: '#fff',
+                    transition: 'all 0.25s var(--lm-ease)', boxShadow: inputValue.trim() ? 'var(--lm-shadow-orange)' : 'none'
+                  }}
+                  styles={{ root: { '&:hover': { transform: inputValue.trim() ? 'scale(1.05)' : 'none', backgroundColor: inputValue.trim() ? 'var(--lm-orange-hover)' : '#EAEAEA' } } }}
+                >
+                  <IconSend size={24} stroke={2} />
                 </ActionIcon>
               </Group>
             </form>

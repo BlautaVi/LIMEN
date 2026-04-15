@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Container, Title, SimpleGrid, Paper, Text, Avatar, Center, Loader, Button, Badge, Box, Group } from '@mantine/core';
-import { IconUserCircle, IconArrowRight, IconStar } from '@tabler/icons-react';
+import { Container, Title, SimpleGrid, Paper, Text, Avatar, Center, Loader, Button, Badge, Box, Group, ThemeIcon } from '@mantine/core';
+import { IconUser, IconArrowRight, IconStar } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
 import { Header } from '../components/Header';
 import api from '../services/api';
@@ -25,71 +25,92 @@ export function SpecialistsPage() {
   }, []);
 
   return (
-    <Box style={{ minHeight: '100vh', backgroundColor: '#F5FDFF' }}>
+    <Box style={{ minHeight: '100vh', backgroundColor: 'var(--lm-bg)' }}>
       <Header />
-      <Container size="lg" py="xl">
-        <Title ta="center" order={1} mb={10} style={{ color: '#0F7EAA' }}>
+      <Container size="lg" pt={{ base: 30, md: 60 }} pb={80}>
+        <Title ta="center" order={1} mb={10} className="animate-slideUp" style={{ color: 'var(--lm-dark)', fontWeight: 800, fontSize: '34px' }}>
           Наші спеціалісти
         </Title>
-        <Text ta="center" c="dimmed" mb={40}>
-          Оберіть психолога, який вам найбільше відгукується, та почніть роботу над собою.
+        <Text ta="center" mb={50} fw={500} size="lg" className="animate-slideUp-delay-1" style={{ color: 'var(--lm-muted)' }}>
+          Оберіть фахівця, який відгукується вам найбільше, та почніть шлях до себе.
         </Text>
 
         {loading ? (
-          <Center h={200}><Loader color="cyan" /></Center>
+          <Center h={200}><Loader color="orange" size="lg" /></Center>
         ) : specialists.length === 0 ? (
-          <Paper p={40} ta="center" radius="md" style={{ border: '1px dashed #B3E5FC', backgroundColor: 'transparent' }}>
-            <Text c="dimmed">Поки що жоден користувач не отримав статус психолога.</Text>
+          <Paper p={60} ta="center" radius="xl" style={{ border: '2px dashed var(--lm-border)', backgroundColor: 'transparent' }}>
+            <Text size="lg" fw={500} style={{ color: 'var(--lm-muted)' }}>Поки що жоден користувач не отримав статус психолога.</Text>
           </Paper>
         ) : (
           <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="xl">
             {specialists.map((specialist) => {
               const displayName = specialist.fullName || `${specialist.firstName || ''} ${specialist.lastName || ''}`.trim() || 'Анонімний спеціаліст';
-              
+
               return (
-                <Paper 
-                  key={specialist._id} 
-                  shadow="sm" 
-                  p="xl" 
-                  radius="md" 
-                  style={{ border: '1px solid #E1F5FE', backgroundColor: '#fff', textAlign: 'center', transition: 'transform 0.2s', cursor: 'pointer' }}
-                  onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-5px)'}
-                  onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                <Paper
+                  key={specialist._id}
+                  shadow="none"
+                  p={{ base: 28, md: 40 }}
+                  radius="xl"
+                  className="card-hover"
+                  style={{
+                    border: '1px solid var(--lm-border)',
+                    backgroundColor: '#fff',
+                    textAlign: 'center',
+                    cursor: 'pointer',
+                    boxShadow: 'var(--lm-shadow-sm)'
+                  }}
                   onClick={() => navigate(`/specialists/${specialist._id}`)}
                 >
-                  <Center mb="md">
+                  <Center mb="xl" style={{ position: 'relative' }}>
                     {specialist.avatarUrl ? (
-                      <Avatar src={`http://localhost:3000${specialist.avatarUrl}`} size={100} radius={100} style={{ border: '3px solid #E1F5FE' }} />
+                      <Avatar
+                        src={`http://localhost:3000${specialist.avatarUrl}`}
+                        size={120}
+                        radius={120}
+                        style={{ border: '4px solid var(--lm-bg)', boxShadow: 'var(--lm-shadow-md)' }}
+                      />
                     ) : (
-                      <IconUserCircle size={100} color="#C9EAF7" stroke={1} />
+                      <ThemeIcon size={120} radius="100%" variant="light" style={{ backgroundColor: 'var(--lm-warm)', color: 'var(--lm-orange)' }}>
+                        <IconUser size={50} stroke={1.5} />
+                      </ThemeIcon>
                     )}
+                    <Badge
+                      color="violet" variant="filled" size="md"
+                      style={{ position: 'absolute', bottom: -10, border: '2px solid #fff', boxShadow: 'var(--lm-shadow-sm)' }}
+                    >
+                      Психолог
+                    </Badge>
                   </Center>
-                  
-                  <Text fw={700} size="lg" style={{ color: '#0F7EAA' }}>
+
+                  <Text fw={800} size="20px" style={{ color: 'var(--lm-dark)' }} mt="md" mb="xs">
                     {displayName}
                   </Text>
-                  
-                  <Badge color="violet" variant="light" mt="xs" mb="md">
-                    Психолог
-                  </Badge>
 
                   {specialist.personalityType && (
-                    <Group justify="center" gap={5} mb="md">
-                      <IconStar size={16} color="#FFD700" />
-                      <Text size="sm" c="dimmed">{specialist.personalityType}</Text>
+                    <Group justify="center" gap={6} mb="xl">
+                      <IconStar size={16} color="#FFD700" style={{ fill: '#FFD700' }} />
+                      <Text size="sm" fw={600} style={{ color: 'var(--lm-muted)' }}>{specialist.personalityType}</Text>
                     </Group>
                   )}
 
-                  <Button 
-                    fullWidth 
-                    variant="light" 
-                    color="cyan" 
-                    mt="md"
-                    rightSection={<IconArrowRight size={18} />}
+                  <Button
+                    fullWidth
+                    radius="xl"
+                    size="md"
+                    mt="auto"
+                    rightSection={<IconArrowRight size={18} stroke={2.5} />}
                     onClick={(e) => {
-                      e.stopPropagation(); 
+                      e.stopPropagation();
                       navigate(`/specialists/${specialist._id}`);
                     }}
+                    style={{
+                      backgroundColor: 'var(--lm-orange-light)',
+                      color: 'var(--lm-orange)',
+                      transition: 'all 0.25s var(--lm-ease)',
+                      fontWeight: 700
+                    }}
+                    styles={{ root: { '&:hover': { backgroundColor: 'var(--lm-orange)', color: '#fff' } } }}
                   >
                     Переглянути профіль
                   </Button>

@@ -1,19 +1,5 @@
 import { useState } from 'react';
-import {
-  Title,
-  Container,
-  Text,
-  Grid,
-  Button,
-  Paper,
-  Stack,
-  Group,
-  Image,
-  Center,
-  Box,
-  ThemeIcon,
-  LoadingOverlay
-} from '@mantine/core';
+import { Title, Container, Text, Grid, Button, Paper, Stack, Group, Image, Center, Box, ThemeIcon, LoadingOverlay, Anchor } from '@mantine/core';
 import { IconCheck } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
@@ -37,7 +23,7 @@ const QUESTIONS = [
   {
     id: 4,
     question: 'Що зараз турбує Вас найбільше?',
-    options: ['Робота / Навчання', 'Відносини / Сім’я', 'Самотність', 'Невпевненість у майбутньому'],
+    options: ['Робота / Навчання', 'Відносини / Сім\u2019я', 'Самотність', 'Невпевненість у майбутньому'],
   },
   {
     id: 5,
@@ -83,125 +69,118 @@ export function OnboardingPage() {
 
   const handleNext = async () => {
     if (selectedOptionIndex === null) return;
-    const newAnswer = {
-      id: currentQuestion.id,
-      answer: currentQuestion.options[selectedOptionIndex],
-      index: selectedOptionIndex
-    };
-    
-    const updatedAnswers = [...answers, newAnswer];
+    const updatedAnswers = [...answers, { id: currentQuestion.id, answer: currentQuestion.options[selectedOptionIndex], index: selectedOptionIndex }];
     setAnswers(updatedAnswers);
 
     if (isLastQuestion) {
       setLoading(true);
       try {
         const res = await api.post('/users/onboarding', { answers: updatedAnswers });
-      
         const user = JSON.parse(localStorage.getItem('user') || '{}');
         user.isOnboarded = true;
         user.personalityType = res.data.personalityType;
         localStorage.setItem('user', JSON.stringify(user));
-
         navigate('/dashboard');
-      } catch (error) {
-        console.error(error);
-        alert('Помилка збереження результатів');
-      } finally {
-        setLoading(false);
-      }
+      } catch (error) { console.error(error); alert('Помилка збереження результатів'); } finally { setLoading(false); }
     } else {
       setCurrentStep((prev) => prev + 1);
       setSelectedOptionIndex(null);
     }
   };
+
   const handleSkip = async () => {
     try {
       const response = await api.post('/users/onboarding', { answers: [] });
-      
       localStorage.setItem('user', JSON.stringify(response.data));
       navigate('/dashboard');
-    } catch (error) {
-      console.error('Помилка при пропуску тесту', error);
-      navigate('/dashboard'); 
-    }
+    } catch (error) { navigate('/dashboard'); }
   };
+
+  const progressPercent = ((currentStep + 1) / QUESTIONS.length) * 100;
+
   return (
-    <Box style={{ backgroundColor: '#fff', minHeight: '100vh', padding: '40px 0', position: 'relative' }}>
+    <Box style={{ backgroundColor: 'var(--lm-bg)', minHeight: '100vh', padding: '40px 0 60px', position: 'relative' }}>
       <LoadingOverlay visible={loading} overlayProps={{ radius: "sm", blur: 2 }} />
       <Container size="lg">
-        <Title ta="center" order={1} style={{ color: '#0F7EAA', marginBottom: '10px' }}>
+
+        {/* Progress bar */}
+        <Box mb={40} style={{ maxWidth: '500px', margin: '0 auto 40px' }}>
+          <Box style={{ height: '6px', backgroundColor: 'var(--lm-border)', borderRadius: 'var(--lm-radius-full)', overflow: 'hidden' }}>
+            <Box style={{ height: '100%', width: `${progressPercent}%`, backgroundColor: 'var(--lm-orange)', borderRadius: 'var(--lm-radius-full)', transition: 'width 0.5s var(--lm-spring)' }} />
+          </Box>
+        </Box>
+
+        <Title ta="center" order={2} style={{ color: 'var(--lm-muted)', marginBottom: '8px', fontWeight: 600, fontSize: '18px', textTransform: 'uppercase', letterSpacing: '1px' }}>
           Крок {currentStep + 1} з {QUESTIONS.length}
         </Title>
-        <Text ta="center" size="lg" c="dimmed" mb={50} style={{ color: '#0F7EAA' }}>
+        <Text ta="center" size="xl" mb={50} fw={800} style={{ color: 'var(--lm-dark)', fontSize: '30px' }}>
           Аналізуємо ваш стан...
         </Text>
 
-        <Grid align="center" gutter={50}>
+        <Grid align="center" gutter={{ base: 30, md: 60 }}>
           <Grid.Col span={{ base: 12, md: 6 }}>
             <Center>
               <Image
                 src="https://st4.depositphotos.com/17134304/26411/v/600/depositphotos_264114218-stock-illustration-friends-giving-high-five-flat.jpg"
                 alt="Illustration"
-                style={{ maxWidth: '400px', width: '100%' }} 
+                className="animate-float"
+                style={{ maxWidth: '420px', width: '100%', borderRadius: 'var(--lm-radius-lg)', mixBlendMode: 'multiply', filter: 'drop-shadow(0 16px 40px rgba(0,0,0,0.06))' }}
               />
             </Center>
           </Grid.Col>
 
           <Grid.Col span={{ base: 12, md: 6 }}>
-            <Box style={{ maxWidth: '500px', margin: '0 auto' }}>
-              <Paper shadow="md" radius="md" style={{ 
-                overflow: 'hidden', 
-                border: '1px solid #eee', 
-                minHeight: '400px',
-                display: 'flex', 
-                flexDirection: 'column' }}>
-                <Box p="xl" bg="white" style={{ minHeight: '100px' }}>
-                  <Text fw={700} size="lg" style={{ color: '#0F7EAA' }}>
+            <Box className="animate-scaleIn" style={{ maxWidth: '500px', margin: '0 auto' }}>
+              <Paper shadow="md" radius="xl" style={{ overflow: 'hidden', border: '1px solid var(--lm-border)', minHeight: '400px', display: 'flex', flexDirection: 'column', boxShadow: 'var(--lm-shadow-md)' }}>
+                <Box p={30} bg="white" style={{ minHeight: '120px', display: 'flex', alignItems: 'center' }}>
+                  <Text fw={800} size="xl" style={{ color: 'var(--lm-dark)', lineHeight: 1.4 }}>
                     {currentQuestion.question}
                   </Text>
                 </Box>
-                <Box p="xl" style={{ backgroundColor: '#E0F7FA', flex: 1 }}>
-                  <Stack gap="sm">
+
+                <Box p={30} style={{ backgroundColor: 'var(--lm-bg-alt)', flex: 1 }}>
+                  <Stack gap="md">
                     {currentQuestion.options.map((option, index) => {
                       const isSelected = selectedOptionIndex === index;
                       return (
                         <Box
-                          key={option}
-                          onClick={() => setSelectedOptionIndex(index)}
+                          key={option} onClick={() => setSelectedOptionIndex(index)}
                           style={{
-                            backgroundColor: 'white',
-                            borderRadius: '8px',
-                            padding: '15px',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            border: isSelected ? '2px solid #0F7EAA' : '2px solid transparent',
-                            transition: 'all 0.2s'
+                            backgroundColor: '#fff',
+                            borderRadius: '16px', padding: '18px 20px', cursor: 'pointer', display: 'flex', alignItems: 'center',
+                            border: isSelected ? '2px solid var(--lm-orange)' : '2px solid transparent',
+                            boxShadow: isSelected ? '0 8px 24px rgba(232, 106, 83, 0.12)' : 'var(--lm-shadow-sm)',
+                            transform: isSelected ? 'scale(1.02)' : 'scale(1)',
+                            transition: 'all 0.25s var(--lm-spring)'
                           }}
                         >
-                          <ThemeIcon size={24} radius="md" variant="filled" color={isSelected ? 'cyan' : 'gray.3'} style={{ marginRight: '15px' }}>
-                             {isSelected && <IconCheck size={16} />}
+                          <ThemeIcon size={28} radius="xl" variant="filled" color={isSelected ? 'orange' : 'gray.2'} style={{ marginRight: '15px', backgroundColor: isSelected ? 'var(--lm-orange)' : undefined, transition: 'all 0.2s' }}>
+                            {isSelected && <IconCheck size={18} stroke={3} />}
                           </ThemeIcon>
-                          <Text style={{ color: '#0F7EAA', fontWeight: 500 }}>{option}</Text>
+                          <Text style={{ color: isSelected ? 'var(--lm-dark)' : 'var(--lm-dark-soft)', fontWeight: isSelected ? 700 : 500, fontSize: '16px' }}>{option}</Text>
                         </Box>
                       );
                     })}
                   </Stack>
                 </Box>
-                
               </Paper>
-              <Button 
-                fullWidth size="lg" radius="xl" mt="xl"
-                onClick={handleNext}
-                disabled={selectedOptionIndex === null}
-                style={{ backgroundColor: '#4FCDFF', boxShadow: '0 4px 10px #0F7EAA', color: '#fff' }}
+
+              <Button
+                fullWidth size="xl" radius="xl" mt={40} onClick={handleNext} disabled={selectedOptionIndex === null}
+                style={{
+                  backgroundColor: selectedOptionIndex !== null ? 'var(--lm-orange)' : '#EAEAEA',
+                  color: selectedOptionIndex !== null ? '#fff' : '#A0A0A0',
+                  boxShadow: selectedOptionIndex !== null ? 'var(--lm-shadow-orange)' : 'none',
+                  fontWeight: 700, fontSize: '18px', transition: 'all 0.3s var(--lm-ease)'
+                }}
               >
-                {isLastQuestion ? 'Отримати результат' : 'Далі'}
+                {isLastQuestion ? 'Отримати результат' : 'Продовжити'}
               </Button>
-             <Center mt="md">
-                <Button variant="subtle" color="gray" onClick={handleSkip}>
+
+              <Center mt="xl">
+                <Anchor component="button" onClick={handleSkip} style={{ color: 'var(--lm-muted)', fontWeight: 600, fontSize: '15px', borderBottom: '1px solid var(--lm-muted)', transition: 'color 0.2s' }}>
                   Пропустити тест
-                </Button>
+                </Anchor>
               </Center>
             </Box>
           </Grid.Col>
