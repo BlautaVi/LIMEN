@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Container, Title, SimpleGrid, Paper, Text, Avatar, Center, Loader, Button, Badge, Box, Group, ThemeIcon } from '@mantine/core';
-import { IconUser, IconArrowRight, IconStar } from '@tabler/icons-react';
+import { Container, Title, SimpleGrid, Paper, Text, Avatar, Center, Loader, Button, Badge, Box, ThemeIcon } from '@mantine/core';
+import { IconUser, IconArrowRight } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
 import { Header } from '../components/Header';
 import api from '../services/api';
@@ -58,7 +58,9 @@ export function SpecialistsPage() {
                     backgroundColor: '#fff',
                     textAlign: 'center',
                     cursor: 'pointer',
-                    boxShadow: 'var(--lm-shadow-sm)'
+                    boxShadow: 'var(--lm-shadow-sm)',
+                    display: 'flex',
+                    flexDirection: 'column'
                   }}
                   onClick={() => navigate(`/specialists/${specialist._id}`)}
                 >
@@ -83,16 +85,9 @@ export function SpecialistsPage() {
                     </Badge>
                   </Center>
 
-                  <Text fw={800} size="20px" style={{ color: 'var(--lm-dark)' }} mt="md" mb="xs">
+                  <Text fw={800} size="20px" style={{ color: 'var(--lm-dark)' }} mt="md" mb="xl">
                     {displayName}
                   </Text>
-
-                  {specialist.personalityType && (
-                    <Group justify="center" gap={6} mb="xl">
-                      <IconStar size={16} color="#FFD700" style={{ fill: '#FFD700' }} />
-                      <Text size="sm" fw={600} style={{ color: 'var(--lm-muted)' }}>{specialist.personalityType}</Text>
-                    </Group>
-                  )}
 
                   <Button
                     fullWidth

@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
-import { Container, Paper, Text, Avatar, Group, Box, Stack, TextInput, ActionIcon, Loader, Center, ScrollArea, Title, ThemeIcon } from '@mantine/core';
+import { Container, Paper, Text, Group, Box, Stack, TextInput, ActionIcon, Loader, Center, ScrollArea, Title, ThemeIcon } from '@mantine/core';
 import { IconSend, IconRobot, IconArrowLeft } from '@tabler/icons-react';
 import { Header } from '../components/Header';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
+import ReactMarkdown from 'react-markdown';
 
 export function AiChatPage() {
   const navigate = useNavigate();
@@ -87,7 +88,6 @@ export function AiChatPage() {
           }}
         >
 
-          {/* Header */}
           <Box p="24px" className="glass" style={{ borderBottom: '1px solid var(--lm-border)', display: 'flex', alignItems: 'center', gap: '20px' }}>
             <ActionIcon variant="subtle" color="gray" onClick={() => navigate(-1)} style={{ transition: 'transform 0.2s var(--lm-ease)', '&:hover': { transform: 'translateX(-4px)' } }}>
               <IconArrowLeft size={24} color="var(--lm-dark)" stroke={2.5} />
@@ -101,7 +101,6 @@ export function AiChatPage() {
             </Box>
           </Box>
 
-          {/* Messages */}
           <ScrollArea style={{ flexGrow: 1, padding: '30px', backgroundColor: 'var(--lm-bg)' }} viewportRef={viewportRef}>
             <Stack gap="xl">
               {messages.map((msg) => {
@@ -115,18 +114,34 @@ export function AiChatPage() {
                     )}
                     <Box
                       style={{
-                        maxWidth: '75%',
+                        maxWidth: '85%', 
                         backgroundColor: isAi ? '#fff' : 'var(--lm-orange)',
                         color: isAi ? 'var(--lm-dark)' : '#fff',
                         padding: '16px 24px',
                         borderRadius: isAi ? '24px 24px 24px 6px' : '24px 24px 6px 24px',
                         boxShadow: isAi ? 'var(--lm-shadow-md)' : '0 8px 24px rgba(232, 106, 83, 0.18)',
-                        border: isAi ? '1px solid var(--lm-border)' : 'none'
+                        border: isAi ? '1px solid var(--lm-border)' : 'none',
+                        fontSize: '16px',
+                        lineHeight: 1.6,
+                        fontWeight: 500,
                       }}
                     >
-                      <Text size="16px" style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', lineHeight: 1.6, fontWeight: 500 }}>
-                        {msg.text}
-                      </Text>
+                      {isAi ? (
+                        <Box 
+                          style={{ 
+                            '& p': { margin: '0 0 10px 0', '&:last-child': { margin: 0 } },
+                            '& ul, & ol': { margin: '10px 0', paddingLeft: '20px' },
+                            '& li': { marginBottom: '5px' },
+                            '& strong': { fontWeight: 800, color: 'var(--lm-dark)' }
+                          }}
+                        >
+                          <ReactMarkdown>{msg.text}</ReactMarkdown>
+                        </Box>
+                      ) : (
+                        <Text style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+                          {msg.text}
+                        </Text>
+                      )}
                     </Box>
                   </Group>
                 );
@@ -145,7 +160,6 @@ export function AiChatPage() {
             </Stack>
           </ScrollArea>
 
-          {/* Input */}
           <Box p="24px" className="glass" style={{ borderTop: '1px solid var(--lm-border)' }}>
             <form onSubmit={(e) => { e.preventDefault(); handleSend(); }}>
               <Group wrap="nowrap" gap="md">

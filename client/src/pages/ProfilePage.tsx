@@ -20,12 +20,12 @@ const getTipForPersonality = (type?: string) => {
 export function ProfilePage() {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+  
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [gender, setGender] = useState<'female' | 'male' | 'hidden'>('hidden');
   const [user, setUser] = useState<any>(null);
-
+  
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -35,29 +35,48 @@ export function ProfilePage() {
   const [servicesDescription, setServicesDescription] = useState('');
 
   useEffect(() => {
-    const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
-    setUser(storedUser);
-    setAge(currentUser?.age || '');
-    setSpecializations(currentUser?.specializations || []);
-    setServicesDescription(currentUser?.servicesDescription || '');
+    const fetchUserData = async () => {
+      try {
+        const localUser = JSON.parse(localStorage.getItem('user') || '{}');
+        if (!localUser._id) {
+          navigate('/login');
+          return;
+        }
 
-    if (storedUser.fullName) {
-      const parts = storedUser.fullName.split(' ');
-      setFirstName(parts[0] || '');
-      setLastName(parts.slice(1).join(' ') || '');
-    }
-    if (storedUser.gender) setGender(storedUser.gender);
-    if (storedUser.avatarUrl) setAvatarPreview(`http://localhost:3000${storedUser.avatarUrl}`);
-  }, []);
+        const response = await api.get(`/users/${localUser._id}`);
+        const freshUser = response.data;
+        
+        setUser(freshUser);
+        localStorage.setItem('user', JSON.stringify(freshUser));
+
+        setAge(freshUser.age || '');
+        setSpecializations(freshUser.specializations || []);
+        setServicesDescription(freshUser.servicesDescription || '');
+
+        if (freshUser.fullName) {
+          const parts = freshUser.fullName.split(' ');
+          setFirstName(parts[0] || '');
+          setLastName(parts.slice(1).join(' ') || '');
+        }
+        if (freshUser.gender) setGender(freshUser.gender);
+        if (freshUser.avatarUrl) setAvatarPreview(`http://localhost:3000${freshUser.avatarUrl}`);
+        
+      } catch (error) {
+        console.error('Помилка синхронізації профілю', error);
+      }
+    };
+
+    fetchUserData();
+  }, [navigate]); 
 
   const handleBecomePsychologist = async () => {
     if (!window.confirm('Ви дійсно хочете отримати статус психолога? Ваш профіль буде видно іншим користувачам у списку спеціалістів.')) return;
-
+    
     try {
       const response = await api.put('/users/become-psychologist');
       localStorage.setItem('user', JSON.stringify(response.data));
       alert('Вітаємо! Тепер ви психолог 👨‍⚕️');
-      window.location.reload();
+      window.location.reload(); 
     } catch (error) {
       alert('Помилка. Не вдалося змінити статус.');
     }
@@ -106,45 +125,44 @@ export function ProfilePage() {
     }
   };
 
-  const inputStyles = {
-    input: {
-      backgroundColor: 'var(--lm-bg-input)', borderColor: 'transparent', color: 'var(--lm-dark)',
+  const inputStyles = { 
+    input: { 
+      backgroundColor: '#F8F9FA', borderColor: 'transparent', color: '#2B454E', 
       fontWeight: 500, fontSize: '16px', padding: '0 24px', height: '56px',
-      transition: 'all 0.3s var(--lm-ease)',
-      '&:focus': { borderColor: 'var(--lm-orange)', backgroundColor: '#fff', boxShadow: '0 0 0 3px rgba(232, 106, 83, 0.1)' }
+      transition: 'all 0.3s ease',
+      '&:focus': { borderColor: '#E86A53', backgroundColor: '#fff', boxShadow: '0 0 0 4px rgba(232, 106, 83, 0.1)' }
     },
-    label: { color: 'var(--lm-dark)', fontWeight: 700, marginBottom: '8px', fontSize: '15px' }
+    label: { color: '#2B454E', fontWeight: 700, marginBottom: '8px', fontSize: '15px' }
   };
 
   return (
-    <Box style={{ minHeight: '100vh', backgroundColor: 'var(--lm-bg)', paddingTop: '60px', paddingBottom: '80px' }}>
+    <Box style={{ minHeight: '100vh', backgroundColor: '#FCFBF8', paddingTop: '60px', paddingBottom: '80px' }}>
       <Container size="md">
-        <Paper
-          shadow="none"
-          radius="30px"
-          className="animate-slideUp"
-          style={{ overflow: 'hidden', backgroundColor: '#fff', border: '1px solid var(--lm-border)', boxShadow: 'var(--lm-shadow-lg)' }}
+        <Paper 
+          shadow="none" 
+          radius="30px" 
+          style={{ overflow: 'hidden', backgroundColor: '#fff', border: '1px solid #F0EBE1', boxShadow: '0 15px 50px rgba(43, 69, 78, 0.05)' }}
         >
-
-          <Box p="24px 40px" style={{ borderBottom: `1px solid var(--lm-border)`, backgroundColor: '#fff' }}>
+          
+          <Box p="24px 40px" style={{ borderBottom: `1px solid #F0EBE1`, backgroundColor: '#fff' }}>
             <Group justify="space-between">
-              <ActionIcon variant="transparent" onClick={() => navigate(-1)} style={{ transition: 'transform 0.2s var(--lm-ease)', '&:hover': { transform: 'translateX(-4px)' } }}>
-                <IconArrowLeft size={28} color="var(--lm-dark)" stroke={2.5} />
+              <ActionIcon variant="transparent" onClick={() => navigate(-1)} style={{ transition: 'transform 0.2s', '&:hover': { transform: 'translateX(-4px)' } }}>
+                <IconArrowLeft size={28} color="#2B454E" stroke={2.5} />
               </ActionIcon>
-
+              
               <Group gap="md">
                 <Tooltip label="Мій щоденник емоцій" position="bottom" color="orange" withArrow>
-                  <ActionIcon variant="subtle" radius="xl" size="lg" onClick={() => navigate('/diary')} style={{ color: 'var(--lm-orange)', transition: 'all 0.2s var(--lm-ease)', '&:hover': { backgroundColor: 'var(--lm-orange-light)' } }}>
+                  <ActionIcon variant="subtle" radius="xl" size="lg" onClick={() => navigate('/diary')} style={{ color: '#E86A53', transition: 'all 0.2s', '&:hover': { backgroundColor: '#FFF0F0' } }}>
                     <IconBook size={26} stroke={2} />
                   </ActionIcon>
                 </Tooltip>
                 <Tooltip label="Мої пости" position="bottom" color="orange" withArrow>
-                  <ActionIcon variant="subtle" radius="xl" size="lg" onClick={() => navigate('/my-posts')} style={{ color: 'var(--lm-muted)', transition: 'all 0.2s var(--lm-ease)', '&:hover': { color: 'var(--lm-orange)', backgroundColor: 'var(--lm-orange-light)' } }}>
+                  <ActionIcon variant="subtle" radius="xl" size="lg" onClick={() => navigate('/my-posts')} style={{ color: '#85969C', transition: 'all 0.2s', '&:hover': { color: '#E86A53', backgroundColor: '#FFF0F0' } }}>
                     <IconListDetails size={26} stroke={2} />
                   </ActionIcon>
                 </Tooltip>
                 <Tooltip label="Вийти" position="bottom" color="red" withArrow>
-                  <ActionIcon variant="subtle" radius="xl" size="lg" onClick={handleLogout} style={{ color: 'var(--lm-muted)', transition: 'all 0.2s var(--lm-ease)', '&:hover': { color: '#ff6b6b', backgroundColor: 'var(--lm-orange-light)' } }}>
+                  <ActionIcon variant="subtle" radius="xl" size="lg" onClick={handleLogout} style={{ color: '#85969C', transition: 'all 0.2s', '&:hover': { color: '#ff6b6b', backgroundColor: '#FFF0F0' } }}>
                     <IconLogout size={26} stroke={2} />
                   </ActionIcon>
                 </Tooltip>
@@ -152,25 +170,25 @@ export function ProfilePage() {
             </Group>
           </Box>
 
-          <Box p={{ base: 24, md: 50 }}>
-            <Group align="flex-start" gap={{ base: 30, md: 60 }} wrap="wrap">
-
-              <Stack align="center" style={{ flex: 1, minWidth: '200px' }}>
+          <Box p={{ base: 30, md: 50 }}>
+            <Group align="flex-start" gap={60} wrap="nowrap">
+              
+              <Stack align="center" style={{ flex: 1 }}>
                 <input type="file" ref={fileInputRef} style={{ display: 'none' }} accept="image/*" onChange={handleAvatarSelect} />
-
-                <Indicator
+                
+                <Indicator 
                   inline size={40} offset={15} position="bottom-end" color="orange" withBorder
-                  label={<IconPencil size={20} stroke={2} />}
+                  label={<IconPencil size={20} stroke={2} />} 
                   onClick={() => fileInputRef.current?.click()}
-                  style={{ cursor: 'pointer', transition: 'transform 0.2s var(--lm-ease)', '&:hover': { transform: 'scale(1.05)' } }}
+                  style={{ cursor: 'pointer', transition: 'transform 0.2s', '&:hover': { transform: 'scale(1.05)' } }}
                 >
                   {avatarPreview ? (
-                    <Image src={avatarPreview} w={160} h={160} radius="100%" fit="cover" style={{ border: `4px solid var(--lm-bg)`, boxShadow: 'var(--lm-shadow-md)' }} />
+                    <Image src={avatarPreview} w={160} h={160} radius="100%" fit="cover" style={{ border: `4px solid #FCFBF8`, boxShadow: '0 8px 20px rgba(0,0,0,0.06)' }} />
                   ) : (
-                    <IconUserCircle size={160} color="#EAEAEA" stroke={1} style={{ backgroundColor: 'var(--lm-bg-alt)', borderRadius: '50%' }} />
+                    <IconUserCircle size={160} color="#EAEAEA" stroke={1} style={{ backgroundColor: '#FAF9F6', borderRadius: '50%' }} />
                   )}
                 </Indicator>
-
+                
                 {user?.role !== 'psychologist' ? (
                   <Button variant="light" color="orange" radius="xl" mt="lg" onClick={handleBecomePsychologist} style={{ fontWeight: 600 }}>
                     Отримати статус психолога
@@ -181,19 +199,19 @@ export function ProfilePage() {
                   </Badge>
                 )}
 
-                <Text fw={800} size="xl" mt="xs" style={{ color: 'var(--lm-dark)' }}>{user?.email}</Text>
-
+                <Text fw={800} size="xl" mt="xs" style={{ color: '#2B454E' }}>{user?.email}</Text>
+                
                 {user?.role !== 'psychologist' && (
                   <Stack gap={12} mt="xl" align="center">
                     {user?.personalityType ? (
                       <>
-                        <Badge size="xl" color="orange" variant="outline" style={{ textTransform: 'none', padding: '0 20px', height: '36px', border: '1px solid var(--lm-orange)', color: 'var(--lm-orange)' }}>
+                        <Badge size="xl" color="orange" variant="outline" style={{ textTransform: 'none', padding: '0 20px', height: '36px', border: '1px solid #E86A53', color: '#E86A53' }}>
                           Тип: {user.personalityType}
                         </Badge>
-                        <Text size="sm" ta="center" px="md" style={{ maxWidth: '350px', lineHeight: 1.6, color: 'var(--lm-dark-soft)' }}>
+                        <Text size="sm" ta="center" px="md" style={{ maxWidth: '350px', lineHeight: 1.6, color: '#4A5B61' }}>
                           💡 {getTipForPersonality(user.personalityType)}
                         </Text>
-                        <Button variant="subtle" size="xs" color="gray" radius="xl" onClick={() => navigate('/onboarding')} mt="xs" style={{ color: 'var(--lm-muted)' }}>
+                        <Button variant="subtle" size="xs" color="gray" radius="xl" onClick={() => navigate('/onboarding')} mt="xs" style={{ color: '#85969C' }}>
                           Пройти тест повторно
                         </Button>
                       </>
@@ -206,52 +224,52 @@ export function ProfilePage() {
                 )}
               </Stack>
 
-              <Stack gap="xl" style={{ flex: 1.5, minWidth: '280px' }}>
-
+              <Stack gap="xl" style={{ flex: 1.5 }}>
+                
                 <TextInput placeholder="Ваше ім'я" value={firstName} onChange={(e) => setFirstName(e.currentTarget.value)} radius="xl" size="lg" styles={inputStyles} />
                 <TextInput placeholder="Ваше прізвище" value={lastName} onChange={(e) => setLastName(e.currentTarget.value)} radius="xl" size="lg" styles={inputStyles} />
-
-                {currentUser?.role === 'psychologist' && (
-                  <Paper p="xl" radius="xl" mt="md" style={{ border: '1px solid var(--lm-border)', backgroundColor: 'var(--lm-bg-alt)' }}>
-                    <Title order={4} mb="xl" style={{ color: 'var(--lm-dark)', fontWeight: 800 }}>Професійне резюме (бачать клієнти)</Title>
-
+                
+                {user?.role === 'psychologist' && (
+                  <Paper p="xl" radius="xl" mt="md" style={{ border: '1px solid #F0EBE1', backgroundColor: '#FAF9F6' }}>
+                    <Title order={4} mb="xl" style={{ color: '#2B454E', fontWeight: 800 }}>Професійне резюме (бачать клієнти)</Title>
+                    
                     <TextInput label="Ваш вік" placeholder="Наприклад: 32" value={age} onChange={(e) => setAge(e.currentTarget.value)} radius="xl" size="lg" styles={inputStyles} mb="lg" />
-                    <TextInput
-                      label="Спеціалізації (через кому)"
-                      placeholder="КПТ, Гештальт-терапія, Сімейна психологія..."
-                      value={specializations.join(', ')}
-                      onChange={(e) => setSpecializations(e.currentTarget.value.split(',').map(s => s.trim()))}
+                    <TextInput 
+                      label="Спеціалізації (через кому)" 
+                      placeholder="КПТ, Гештальт-терапія, Сімейна психологія..." 
+                      value={specializations.join(', ')} 
+                      onChange={(e) => setSpecializations(e.currentTarget.value.split(',').map(s => s.trim()))} 
                       mb="lg" radius="xl" size="lg" styles={inputStyles}
                     />
-                    <Textarea
-                      label="Про вас та ваші послуги"
-                      placeholder="Розкажіть про свій досвід, методи роботи та з чим допомагаєте..."
-                      minRows={5}
-                      value={servicesDescription}
-                      onChange={(e) => setServicesDescription(e.currentTarget.value)}
+                    <Textarea 
+                      label="Про вас та ваші послуги" 
+                      placeholder="Розкажіть про свій досвід, методи роботи та з чим допомагаєте..." 
+                      minRows={5} 
+                      value={servicesDescription} 
+                      onChange={(e) => setServicesDescription(e.currentTarget.value)} 
                       radius="xl" size="lg"
                       styles={{ ...inputStyles, input: { ...inputStyles.input, borderRadius: '24px', paddingTop: '20px', paddingBottom: '20px', height: 'auto' } }}
                     />
                   </Paper>
                 )}
-
-                <Group justify="space-between" mt="xl" align="center" wrap="wrap">
+                
+                <Group justify="space-between" mt="xl" align="center">
                   <Box>
-                    <Text size="sm" fw={700} mb={8} style={{ color: 'var(--lm-dark)' }}>Стать</Text>
-                    <Group gap={8} p={6} style={{ backgroundColor: 'var(--lm-bg-input)', borderRadius: 'var(--lm-radius-full)', border: `1px solid var(--lm-border)` }}>
-                      <ActionIcon size="xl" radius="xl" variant={gender === 'female' ? 'filled' : 'transparent'} color={gender === 'female' ? 'orange' : 'gray'} onClick={() => setGender('female')} style={{ backgroundColor: gender === 'female' ? 'var(--lm-orange)' : 'transparent', color: gender === 'female' ? '#fff' : 'var(--lm-muted)' }}><IconGenderFemale size={22} stroke={2} /></ActionIcon>
-                      <ActionIcon size="xl" radius="xl" variant={gender === 'male' ? 'filled' : 'transparent'} color={gender === 'male' ? 'orange' : 'gray'} onClick={() => setGender('male')} style={{ backgroundColor: gender === 'male' ? 'var(--lm-orange)' : 'transparent', color: gender === 'male' ? '#fff' : 'var(--lm-muted)' }}><IconGenderMale size={22} stroke={2} /></ActionIcon>
-                      <ActionIcon size="xl" radius="xl" variant={gender === 'hidden' ? 'filled' : 'transparent'} color={gender === 'hidden' ? 'gray' : 'gray'} onClick={() => setGender('hidden')} style={{ backgroundColor: gender === 'hidden' ? 'var(--lm-dark-soft)' : 'transparent', color: gender === 'hidden' ? '#fff' : 'var(--lm-muted)' }}><IconEyeOff size={22} stroke={2} /></ActionIcon>
+                    <Text size="sm" fw={700} mb={8} style={{ color: '#2B454E' }}>Стать</Text>
+                    <Group gap={8} p={6} style={{ backgroundColor: '#F8F9FA', borderRadius: '50px', border: `1px solid #F0EBE1` }}>
+                      <ActionIcon size="xl" radius="xl" variant={gender === 'female' ? 'filled' : 'transparent'} color={gender === 'female' ? 'orange' : 'gray'} onClick={() => setGender('female')} style={{ backgroundColor: gender === 'female' ? '#E86A53' : 'transparent', color: gender === 'female' ? '#fff' : '#85969C' }}><IconGenderFemale size={22} stroke={2} /></ActionIcon>
+                      <ActionIcon size="xl" radius="xl" variant={gender === 'male' ? 'filled' : 'transparent'} color={gender === 'male' ? 'orange' : 'gray'} onClick={() => setGender('male')} style={{ backgroundColor: gender === 'male' ? '#E86A53' : 'transparent', color: gender === 'male' ? '#fff' : '#85969C' }}><IconGenderMale size={22} stroke={2} /></ActionIcon>
+                      <ActionIcon size="xl" radius="xl" variant={gender === 'hidden' ? 'filled' : 'transparent'} color={gender === 'hidden' ? 'gray' : 'gray'} onClick={() => setGender('hidden')} style={{ backgroundColor: gender === 'hidden' ? '#4A5B61' : 'transparent', color: gender === 'hidden' ? '#fff' : '#85969C' }}><IconEyeOff size={22} stroke={2} /></ActionIcon>
                     </Group>
                   </Box>
 
-                  <Button
-                    size="lg" radius="xl" w={180} onClick={handleSave} loading={loading}
-                    style={{
-                      backgroundColor: 'var(--lm-orange)', color: '#fff', fontWeight: 800, fontSize: '16px', height: '56px',
-                      boxShadow: 'var(--lm-shadow-orange)', transition: 'all 0.25s var(--lm-ease)'
+                  <Button 
+                    size="lg" radius="xl" w={180} onClick={handleSave} loading={loading} 
+                    style={{ 
+                      backgroundColor: '#E86A53', color: '#fff', fontWeight: 800, fontSize: '16px', height: '56px',
+                      boxShadow: '0 8px 25px rgba(232, 106, 83, 0.25)', transition: 'all 0.2s ease' 
                     }}
-                    styles={{ root: { '&:hover': { transform: 'translateY(-2px)', backgroundColor: 'var(--lm-orange-hover)' } } }}
+                    styles={{ root: { '&:hover': { transform: 'translateY(-2px)', backgroundColor: '#D65A44' } } }}
                   >
                     Зберегти
                   </Button>
