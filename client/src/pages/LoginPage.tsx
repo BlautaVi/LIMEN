@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { TextInput, PasswordInput, Button, Title, Group, Anchor, Text, Stack, Image, Box } from '@mantine/core';
+import { TextInput, PasswordInput, Button, Title, Group, Anchor, Text, Stack, Image, Box, PinInput, Center } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 
@@ -8,12 +8,41 @@ export function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
-  const [isRegister, setIsRegister] = useState(false);
+  const [otp, setOtp] = useState('');
+  
+  const [step, setStep] = useState<'login' | 'register-info' | 'register-otp'>('login');
+  const [loading, setLoading] = useState(false);
+
+  const handleSendOtp = async () => {
+    if (!email || !password || !fullName) {
+      alert('Будь ласка, заповніть всі поля');
+      return;
+    }
+    
+    setLoading(true);
+    try {
+      await api.post('/auth/send-otp', { email });
+      setStep('register-otp'); 
+    } catch (error: any) {
+      alert('Помилка: ' + (error.response?.data?.message || 'Не вдалося відправити код'));
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSubmit = async () => {
+    if (step === 'register-otp' && otp.length < 6) {
+      alert('Введіть 6-значний код');
+      return;
+    }
+
+    setLoading(true);
     try {
-      const endpoint = isRegister ? '/auth/register' : '/auth/login';
-      const payload = isRegister ? { email, password, fullName } : { email, password };
+      const endpoint = step === 'login' ? '/auth/login' : '/auth/register';
+      const payload = step === 'login' 
+        ? { email, password } 
+        : { email, password, fullName, otp }; 
+
       const response = await api.post(endpoint, payload);
 
       if (response.data.access_token) {
@@ -29,6 +58,8 @@ export function LoginPage() {
       }
     } catch (error: any) {
       alert('Помилка: ' + (error.response?.data?.message || 'Щось пішло не так'));
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -207,7 +238,7 @@ export function LoginPage() {
               lineHeight: 1.2,
             }}
           >
-            {isRegister ? 'Створіть акаунт' : 'З поверненням!'}
+            {step === 'login' ? 'З поверненням!' : step === 'register-info' ? 'Створіть акаунт' : 'Перевірка пошти'}
           </Title>
 
           <Text
@@ -220,111 +251,140 @@ export function LoginPage() {
               lineHeight: 1.5,
             }}
           >
-            {isRegister ? 'Ваш безпечний простір чекає на вас' : 'Увійдіть у свій безпечний простір'}
+            {step === 'login' ? 'Увійдіть у свій безпечний простір' : step === 'register-info' ? 'Ваш безпечний простір чекає на вас' : `Ми відправили код на ${email}`}
           </Text>
 
           <Stack gap="md">
-            {isRegister && (
-              <TextInput
-                placeholder="Як до вас звертатися?"
-                radius="xl"
-                size="lg"
-                styles={{
-                  input: {
-                    backgroundColor: 'rgba(255,255,255,0.75)',
-                    border: '1.5px solid rgba(240,235,225,0.7)',
-                    color: 'var(--lm-dark)',
-                    fontSize: '15px',
-                    padding: '12px 22px',
-                    height: '54px',
-                    boxShadow: '0 2px 8px rgba(43,69,78,0.03)',
-                    backdropFilter: 'blur(8px)',
-                    transition: 'all 0.3s cubic-bezier(0.4,0,0.2,1)',
-                    '&:focus': {
-                      borderColor: 'var(--lm-orange)',
-                      boxShadow: '0 0 0 3px rgba(232,106,83,0.1), 0 4px 16px rgba(232,106,83,0.06)',
-                      backgroundColor: 'rgba(255,255,255,0.9)',
-                    },
-                    '&::placeholder': {
-                      color: 'var(--lm-muted)',
-                      fontWeight: 400,
+            {step !== 'register-otp' && (
+              <>
+                {step === 'register-info' && (
+                  <TextInput
+                    placeholder="Як до вас звертатися?"
+                    radius="xl"
+                    size="lg"
+                    styles={{
+                      input: {
+                        backgroundColor: 'rgba(255,255,255,0.75)',
+                        border: '1.5px solid rgba(240,235,225,0.7)',
+                        color: 'var(--lm-dark)',
+                        fontSize: '15px',
+                        padding: '12px 22px',
+                        height: '54px',
+                        boxShadow: '0 2px 8px rgba(43,69,78,0.03)',
+                        backdropFilter: 'blur(8px)',
+                        transition: 'all 0.3s cubic-bezier(0.4,0,0.2,1)',
+                        '&:focus': {
+                          borderColor: 'var(--lm-orange)',
+                          boxShadow: '0 0 0 3px rgba(232,106,83,0.1), 0 4px 16px rgba(232,106,83,0.06)',
+                          backgroundColor: 'rgba(255,255,255,0.9)',
+                        },
+                        '&::placeholder': {
+                          color: 'var(--lm-muted)',
+                          fontWeight: 400,
+                        }
+                      }
+                    }}
+                    value={fullName}
+                    onChange={(e) => setFullName(e.currentTarget.value)}
+                  />
+                )}
+
+                <TextInput
+                  placeholder="Ваш Email"
+                  radius="xl"
+                  size="lg"
+                  styles={{
+                    input: {
+                      backgroundColor: 'rgba(255,255,255,0.75)',
+                      border: '1.5px solid rgba(240,235,225,0.7)',
+                      color: 'var(--lm-dark)',
+                      fontSize: '15px',
+                      padding: '12px 22px',
+                      height: '54px',
+                      boxShadow: '0 2px 8px rgba(43,69,78,0.03)',
+                      backdropFilter: 'blur(8px)',
+                      transition: 'all 0.3s cubic-bezier(0.4,0,0.2,1)',
+                      '&:focus': {
+                        borderColor: 'var(--lm-orange)',
+                        boxShadow: '0 0 0 3px rgba(232,106,83,0.1), 0 4px 16px rgba(232,106,83,0.06)',
+                        backgroundColor: 'rgba(255,255,255,0.9)',
+                      },
+                      '&::placeholder': {
+                        color: 'var(--lm-muted)',
+                        fontWeight: 400,
+                      }
                     }
-                  }
-                }}
-                value={fullName}
-                onChange={(e) => setFullName(e.currentTarget.value)}
-              />
+                  }}
+                  value={email}
+                  onChange={(e) => setEmail(e.currentTarget.value)}
+                />
+
+                <PasswordInput
+                  placeholder="Пароль"
+                  radius="xl"
+                  size="lg"
+                  styles={{
+                    input: {
+                      backgroundColor: 'rgba(255,255,255,0.75)',
+                      border: '1.5px solid rgba(240,235,225,0.7)',
+                      color: 'var(--lm-dark)',
+                      fontSize: '15px',
+                      padding: '12px 22px',
+                      height: '54px',
+                      boxShadow: '0 2px 8px rgba(43,69,78,0.03)',
+                      backdropFilter: 'blur(8px)',
+                      transition: 'all 0.3s cubic-bezier(0.4,0,0.2,1)',
+                      '&:focus-within': {
+                        borderColor: 'var(--lm-orange)',
+                        boxShadow: '0 0 0 3px rgba(232,106,83,0.1), 0 4px 16px rgba(232,106,83,0.06)',
+                        backgroundColor: 'rgba(255,255,255,0.9)',
+                      },
+                      '&::placeholder': {
+                        color: 'var(--lm-muted)',
+                        fontWeight: 400,
+                      }
+                    },
+                    innerInput: {
+                      backgroundColor: 'transparent',
+                    }
+                  }}
+                  value={password}
+                  onChange={(e) => setPassword(e.currentTarget.value)}
+                />
+              </>
             )}
 
-            <TextInput
-              placeholder="Ваш Email"
-              radius="xl"
-              size="lg"
-              styles={{
-                input: {
-                  backgroundColor: 'rgba(255,255,255,0.75)',
-                  border: '1.5px solid rgba(240,235,225,0.7)',
-                  color: 'var(--lm-dark)',
-                  fontSize: '15px',
-                  padding: '12px 22px',
-                  height: '54px',
-                  boxShadow: '0 2px 8px rgba(43,69,78,0.03)',
-                  backdropFilter: 'blur(8px)',
-                  transition: 'all 0.3s cubic-bezier(0.4,0,0.2,1)',
-                  '&:focus': {
-                    borderColor: 'var(--lm-orange)',
-                    boxShadow: '0 0 0 3px rgba(232,106,83,0.1), 0 4px 16px rgba(232,106,83,0.06)',
-                    backgroundColor: 'rgba(255,255,255,0.9)',
-                  },
-                  '&::placeholder': {
-                    color: 'var(--lm-muted)',
-                    fontWeight: 400,
-                  }
-                }
-              }}
-              value={email}
-              onChange={(e) => setEmail(e.currentTarget.value)}
-            />
-
-            <PasswordInput
-              placeholder="Пароль"
-              radius="xl"
-              size="lg"
-              styles={{
-                input: {
-                  backgroundColor: 'rgba(255,255,255,0.75)',
-                  border: '1.5px solid rgba(240,235,225,0.7)',
-                  color: 'var(--lm-dark)',
-                  fontSize: '15px',
-                  padding: '12px 22px',
-                  height: '54px',
-                  boxShadow: '0 2px 8px rgba(43,69,78,0.03)',
-                  backdropFilter: 'blur(8px)',
-                  transition: 'all 0.3s cubic-bezier(0.4,0,0.2,1)',
-                  '&:focus-within': {
-                    borderColor: 'var(--lm-orange)',
-                    boxShadow: '0 0 0 3px rgba(232,106,83,0.1), 0 4px 16px rgba(232,106,83,0.06)',
-                    backgroundColor: 'rgba(255,255,255,0.9)',
-                  },
-                  '&::placeholder': {
-                    color: 'var(--lm-muted)',
-                    fontWeight: 400,
-                  }
-                },
-                innerInput: {
-                  backgroundColor: 'transparent',
-                }
-              }}
-              value={password}
-              onChange={(e) => setPassword(e.currentTarget.value)}
-            />
+            {step === 'register-otp' && (
+              <Center mb="lg">
+                <PinInput 
+                  length={6} 
+                  size="xl" 
+                  value={otp} 
+                  onChange={setOtp} 
+                  type="number" 
+                  styles={{ 
+                    input: { 
+                      borderColor: 'rgba(240,235,225,0.7)', 
+                      backgroundColor: 'rgba(255,255,255,0.75)', 
+                      color: 'var(--lm-dark)', 
+                      fontWeight: 700,
+                      '&:focus': {
+                        borderColor: 'var(--lm-orange)',
+                        backgroundColor: 'rgba(255,255,255,0.9)'
+                      }
+                    } 
+                  }}
+                />
+              </Center>
+            )}
 
             <Button
               fullWidth
               mt="lg"
               size="lg"
               radius="xl"
-              onClick={handleSubmit}
+              loading={loading}
+              onClick={step === 'register-info' ? handleSendOtp : handleSubmit}
               style={{
                 background: 'linear-gradient(135deg, #E86A53 0%, #D65A44 100%)',
                 color: '#fff',
@@ -350,7 +410,7 @@ export function LoginPage() {
                 }
               }}
             >
-              {isRegister ? 'Приєднатися' : 'Увійти'}
+              {step === 'login' ? 'Увійти' : step === 'register-info' ? 'Далі' : 'Приєднатися'}
             </Button>
           </Stack>
 
@@ -365,11 +425,14 @@ export function LoginPage() {
 
           <Group justify="center" mt="sm">
             <Text size="sm" style={{ color: 'var(--lm-muted)', fontSize: '14px', fontWeight: 500 }}>
-              {isRegister ? 'Вже маєте акаунт? ' : 'Немає акаунту? '}
+              {step === 'login' ? 'Немає акаунту? ' : 'Вже маєте акаунт? '}
               <Anchor
                 component="button"
                 fw={700}
-                onClick={() => setIsRegister(!isRegister)}
+                onClick={() => { 
+                  setStep(step === 'login' ? 'register-info' : 'login'); 
+                  setOtp(''); 
+                }}
                 style={{
                   color: 'var(--lm-orange)',
                   textDecoration: 'none',
@@ -379,7 +442,7 @@ export function LoginPage() {
                   transition: 'all 0.25s ease',
                 }}
               >
-                {isRegister ? 'Авторизуйтесь' : 'Зареєструйтесь'}
+                {step === 'login' ? 'Зареєструйтесь' : 'Авторизуйтесь'}
               </Anchor>
             </Text>
           </Group>
