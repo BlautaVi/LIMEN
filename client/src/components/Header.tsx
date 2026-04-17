@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Group, ActionIcon, Menu, Indicator, Text, Box, ScrollArea, Avatar } from '@mantine/core';
-import { IconBell, IconMessageCircle, IconBook, IconUser, IconLogout, IconLayoutList } from '@tabler/icons-react';
+import { Group, ActionIcon, Menu, Indicator, Text, Box, ScrollArea, Avatar, Tooltip } from '@mantine/core';
+import { IconBell, IconMessageCircle, IconBook, IconUser, IconLogout, IconLayoutList, IconChecks } from '@tabler/icons-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import api from '../services/api';
 
@@ -40,6 +40,19 @@ export function Header() {
       }
     } catch (error) {
       console.error('Помилка при прочитанні', error);
+    }
+  };
+
+  const handleMarkAllAsRead = async () => {
+    if (notifications.length === 0) return;
+    
+    try {
+      await Promise.all(
+        notifications.map(notif => api.post(`/notifications/${notif._id}/read`))
+      );
+      setNotifications([]);
+    } catch (error) {
+      console.error('Помилка при очищенні сповіщень', error);
     }
   };
 
@@ -153,9 +166,26 @@ export function Header() {
             </Menu.Target>
 
             <Menu.Dropdown p="md">
-              <Menu.Label style={{ fontSize: '11px', fontWeight: 700, color: 'var(--lm-muted)', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '8px' }}>
-                Нові сповіщення
-              </Menu.Label>
+              <Group justify="space-between" align="center" mb={12} px={4}>
+                <Text style={{ fontSize: '11px', fontWeight: 700, color: 'var(--lm-muted)', textTransform: 'uppercase', letterSpacing: '0.8px' }}>
+                  Нові сповіщення
+                </Text>
+                {notifications.length > 0 && (
+                  <Tooltip label="Позначити всі як прочитані" position="left" withArrow color="orange" size="xs">
+                    <ActionIcon 
+                      variant="subtle" 
+                      color="orange" 
+                      size="sm" 
+                      radius="xl"
+                      onClick={handleMarkAllAsRead}
+                      style={{ transition: 'all 0.2s', '&:hover': { backgroundColor: 'var(--lm-orange-light)' } }}
+                    >
+                      <IconChecks size={18} stroke={2} />
+                    </ActionIcon>
+                  </Tooltip>
+                )}
+              </Group>
+
               {notifications.length === 0 ? (
                 <Text size="sm" fw={500} style={{ color: 'var(--lm-muted)' }} p="xl" ta="center">Немає нових сповіщень 🔕</Text>
               ) : (
