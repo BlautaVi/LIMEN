@@ -202,7 +202,7 @@ export function LoginPage() {
             borderRadius: '32px',
             border: '1px solid rgba(255, 255, 255, 0.8)',
             boxShadow: '0 24px 80px rgba(43,69,78,0.07), 0 8px 24px rgba(43,69,78,0.03), inset 0 1px 0 rgba(255,255,255,0.9)',
-            padding: '52px 40px 44px',
+            padding: 'clamp(30px, 5vw, 52px) clamp(24px, 4vw, 40px) clamp(28px, 4vw, 44px)',
           }}
         >
           <Box hiddenFrom="md" style={{ textAlign: 'center', marginBottom: '28px' }}>
@@ -231,7 +231,7 @@ export function LoginPage() {
             ta="center"
             style={{
               color: 'var(--lm-dark)',
-              fontSize: '30px',
+              fontSize: 'clamp(22px, 5vw, 30px)',
               fontWeight: 800,
               marginBottom: '8px',
               letterSpacing: '-0.5px',
@@ -246,7 +246,7 @@ export function LoginPage() {
             mb={36}
             style={{
               color: 'var(--lm-muted)',
-              fontSize: '15px',
+              fontSize: 'clamp(13px, 0.9rem, 15px)',
               fontWeight: 500,
               lineHeight: 1.5,
             }}
@@ -267,7 +267,7 @@ export function LoginPage() {
                         backgroundColor: 'rgba(255,255,255,0.75)',
                         border: '1.5px solid rgba(240,235,225,0.7)',
                         color: 'var(--lm-dark)',
-                        fontSize: '15px',
+                        fontSize: 'clamp(13px, 0.9rem, 15px)',
                         padding: '12px 22px',
                         height: '54px',
                         boxShadow: '0 2px 8px rgba(43,69,78,0.03)',
@@ -298,7 +298,7 @@ export function LoginPage() {
                       backgroundColor: 'rgba(255,255,255,0.75)',
                       border: '1.5px solid rgba(240,235,225,0.7)',
                       color: 'var(--lm-dark)',
-                      fontSize: '15px',
+                      fontSize: 'clamp(13px, 0.9rem, 15px)',
                       padding: '12px 22px',
                       height: '54px',
                       boxShadow: '0 2px 8px rgba(43,69,78,0.03)',
@@ -328,7 +328,7 @@ export function LoginPage() {
                       backgroundColor: 'rgba(255,255,255,0.75)',
                       border: '1.5px solid rgba(240,235,225,0.7)',
                       color: 'var(--lm-dark)',
-                      fontSize: '15px',
+                      fontSize: 'clamp(13px, 0.9rem, 15px)',
                       padding: '12px 22px',
                       height: '54px',
                       boxShadow: '0 2px 8px rgba(43,69,78,0.03)',
@@ -388,7 +388,7 @@ export function LoginPage() {
               style={{
                 background: 'linear-gradient(135deg, #E86A53 0%, #D65A44 100%)',
                 color: '#fff',
-                fontSize: '16px',
+                fontSize: 'clamp(14px, 1rem, 16px)',
                 fontWeight: 700,
                 height: '54px',
                 border: 'none',

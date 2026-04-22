@@ -6,7 +6,6 @@ import { Header } from '../components/Header';
 import api from '../services/api';
 import dayjs from 'dayjs';
 import ReactMarkdown from 'react-markdown';
-// @ts-ignore
 import html2pdf from 'html2pdf.js';
 
 const EMOTIONS = [
@@ -37,14 +36,14 @@ export function DiaryPage() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
 
   const [emotion, setEmotion] = useState<string | null>('');
-  const [aspect, setAspect] = useState<string | null>(''); 
+  const [aspect, setAspect] = useState<string | null>('');
   const [content, setContent] = useState('');
   const [saving, setSaving] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
 
   const [isReportOpen, setIsReportOpen] = useState(false);
   const [reportContent, setReportContent] = useState('');
-  const [reportEntries, setReportEntries] = useState<any[]>([]); 
+  const [reportEntries, setReportEntries] = useState<any[]>([]);
   const [generatingReport, setGeneratingReport] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
 
@@ -116,7 +115,7 @@ export function DiaryPage() {
 
   const generateMonthlyReport = async () => {
     const currentMonthEntries = entries.filter(e => dayjs(e.date || e.createdAt).isSame(dayjs(), 'month'));
-    
+
     if (currentMonthEntries.length === 0) {
       alert('У цьому місяці ще немає записів для аналізу.');
       return;
@@ -124,8 +123,8 @@ export function DiaryPage() {
 
     setGeneratingReport(true);
     setIsReportOpen(true);
-    
-    const sortedEntries = [...currentMonthEntries].sort((a, b) => 
+
+    const sortedEntries = [...currentMonthEntries].sort((a, b) =>
       dayjs(a.date || a.createdAt).valueOf() - dayjs(b.date || b.createdAt).valueOf()
     );
     setReportEntries(sortedEntries);
@@ -153,11 +152,11 @@ export function DiaryPage() {
     element.style.display = 'block';
 
     const opt = {
-      margin:       15,
-      filename:     `LIMEN_Звіт_${dayjs().format('MM_YYYY')}.pdf`,
-      image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2, useCORS: true },
-      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      margin: 15,
+      filename: `LIMEN_Звіт_${dayjs().format('MM_YYYY')}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
     html2pdf().set(opt).from(element).save().then(() => {
@@ -184,7 +183,7 @@ export function DiaryPage() {
       color: 'var(--lm-dark)',
       fontWeight: 500,
       fontSize: '16px',
-      padding: '20px 24px',
+      padding: '16px 24px',
       transition: 'all 0.3s var(--lm-ease)',
       '&:focus': {
         borderColor: 'var(--lm-orange)',
@@ -197,10 +196,10 @@ export function DiaryPage() {
   return (
     <Box style={{ minHeight: '100vh', backgroundColor: 'var(--lm-bg)' }}>
       <Header />
-      
-      <Modal 
-        opened={isReportOpen} 
-        onClose={() => setIsReportOpen(false)} 
+
+      <Modal
+        opened={isReportOpen}
+        onClose={() => setIsReportOpen(false)}
         title={
           <Group gap="sm">
             <ThemeIcon color="orange" variant="light" radius="xl" size="lg" style={{ backgroundColor: 'var(--lm-warm)' }}><IconChartBar size={20} /></ThemeIcon>
@@ -221,17 +220,18 @@ export function DiaryPage() {
               <ReactMarkdown>{reportContent}</ReactMarkdown>
             </Box>
 
-            <Group grow>
-              <Button variant="light" color="orange" radius="xl" size="md" leftSection={<IconPrinter size={18} />} onClick={() => window.print()}>
+            <Group grow={true} preventGrowOverflow={false} wrap="wrap">
+              <Button variant="light" color="orange" radius="xl" size="md" leftSection={<IconPrinter size={18} />} onClick={() => window.print()} style={{ flexBasis: '100%' }}>
                 Роздрукувати
               </Button>
-              <Button 
-                color="violet" 
-                radius="xl" 
-                size="md" 
-                leftSection={<IconDownload size={18} />} 
+              <Button
+                color="violet"
+                radius="xl"
+                size="md"
+                leftSection={<IconDownload size={18} />}
                 onClick={handleDownloadPdf}
                 loading={isDownloading}
+                style={{ flexBasis: '100%' }}
               >
                 Зберегти PDF
               </Button>
@@ -245,19 +245,19 @@ export function DiaryPage() {
           <h2>Емоційний підсумок LIMEN</h2>
           <p>Звіт за {dayjs().format('MM.YYYY')}</p>
         </div>
-        
+
         <div className="print-ai-report">
           <ReactMarkdown>{reportContent}</ReactMarkdown>
         </div>
-        
+
         <hr className="print-divider" />
-        
+
         <div className="print-entries-section">
           <h3>Ваші детальні записи за місяць:</h3>
           {reportEntries.map((entry, idx) => (
             <div key={idx} className="print-entry">
               <div className="print-entry-header">
-                <strong>{dayjs(entry.date || entry.createdAt).format('DD.MM.YYYY')}</strong> 
+                <strong>{dayjs(entry.date || entry.createdAt).format('DD.MM.YYYY')}</strong>
                 <span> • {entry.emotion} {entry.aspect ? `(${entry.aspect})` : ''}</span>
               </div>
               <p className="print-entry-content">{entry.content}</p>
@@ -311,30 +311,31 @@ export function DiaryPage() {
         }
       `}</style>
 
-      <Container size="lg" pt={{ base: 30, md: 60 }} pb={80}>
+      <Container size="lg" pt={{ base: 20, md: 60 }} pb={80} px={{ base: 'md', sm: 'xl' }}>
 
-        <Group justify="space-between" align="center" mb={50} className="animate-slideUp">
-          <Group>
-            <ThemeIcon size={60} radius="100%" variant="light" style={{ backgroundColor: 'var(--lm-warm)', color: 'var(--lm-orange)' }}>
-              <IconBook size={32} stroke={2.5} />
+        <Group justify="space-between" align="center" mb={{ base: 30, md: 50 }} className="animate-slideUp" wrap="wrap">
+          <Group gap="md">
+            <ThemeIcon size={{ base: 45, md: 60 }} radius="100%" variant="light" style={{ backgroundColor: 'var(--lm-warm)', color: 'var(--lm-orange)' }}>
+              <IconBook size={26} stroke={2.5} />
             </ThemeIcon>
-            <Title order={1} style={{ color: 'var(--lm-dark)', fontWeight: 800, fontSize: '34px' }}>
+            <Title order={1} style={{ color: 'var(--lm-dark)', fontWeight: 800, fontSize: 'clamp(24px, 4vw, 34px)' }}>
               Щоденник емоцій
             </Title>
           </Group>
-          <Button 
+          <Button
             variant="light" color="orange" radius="xl" size="md" leftSection={<IconChartBar size={18} />}
             onClick={generateMonthlyReport}
-            style={{ fontWeight: 700 }}
+            style={{ fontWeight: 700, width: '100%', maxWidth: '300px' }} 
           >
             Підсумок місяця
           </Button>
         </Group>
 
-        <Grid gutter={{ base: 30, md: 60 }}>
+        <Grid gutter={{ base: 20, md: 60 }}>
+          {/* ЛІВА КОЛОНКА (КАЛЕНДАР) */}
           <Grid.Col span={{ base: 12, md: 5 }}>
             <Paper
-              shadow="none" radius="xl" p={30} className="animate-slideUp-delay-1"
+              shadow="none" radius="xl" p={{ base: 16, sm: 30 }} className="animate-slideUp-delay-1"
               style={{ border: '1px solid var(--lm-border)', backgroundColor: '#fff', display: 'flex', justifyContent: 'center', boxShadow: 'var(--lm-shadow-sm)' }}
             >
               <Calendar
@@ -369,7 +370,7 @@ export function DiaryPage() {
           <Grid.Col span={{ base: 12, md: 7 }}>
 
             <Paper
-              shadow="none" radius="xl" p={{ base: 24, md: 40 }} mb={40} className="animate-slideUp-delay-2"
+              shadow="none" radius="xl" p={{ base: 20, md: 40 }} mb={40} className="animate-slideUp-delay-2"
               style={{
                 border: editingId ? '1px solid #F5D3CE' : '1px solid var(--lm-border)',
                 backgroundColor: editingId ? '#FFFBF8' : '#fff',
@@ -377,8 +378,8 @@ export function DiaryPage() {
                 boxShadow: 'var(--lm-shadow-sm)'
               }}
             >
-              <Group justify="space-between" mb="xl">
-                <Title order={3} style={{ color: 'var(--lm-dark)', fontWeight: 800 }}>
+              <Group justify="space-between" mb="xl" wrap="wrap">
+                <Title order={3} style={{ color: 'var(--lm-dark)', fontWeight: 800, fontSize: 'clamp(18px, 3vw, 22px)' }}>
                   {editingId ? 'Редагування запису' : `Як ви почуваєтесь ${selectedDate && dayjs(selectedDate).isSame(new Date(), 'day') ? 'сьогодні' : 'в цей день'}?`}
                 </Title>
                 {editingId && (
@@ -389,19 +390,20 @@ export function DiaryPage() {
               </Group>
 
               <Stack gap="lg">
-                <Group grow>
-                  <Select placeholder="Емоція..." data={EMOTIONS} value={emotion} onChange={setEmotion} radius="xl" size="lg" styles={inputStyles} />
-                  <Select placeholder="Сфера життя..." data={ASPECTS} value={aspect} onChange={setAspect} radius="xl" size="lg" styles={inputStyles} />
+                <Group grow wrap="wrap">
+                  <Select placeholder="Емоція..." data={EMOTIONS} value={emotion} onChange={setEmotion} radius="xl" size="md" styles={inputStyles} style={{ minWidth: '150px' }} />
+                  <Select placeholder="Сфера життя..." data={ASPECTS} value={aspect} onChange={setAspect} radius="xl" size="md" styles={inputStyles} style={{ minWidth: '150px' }} />
                 </Group>
-                
+
                 <Textarea
-                  placeholder="Запишіть свої думки, деталі чи переживання..." minRows={4} radius="xl" size="lg"
+                  placeholder="Запишіть свої думки, деталі чи переживання..." minRows={4} radius="xl" size="md"
                   value={content} onChange={(e) => setContent(e.currentTarget.value)}
-                  styles={{ ...inputStyles, input: { ...inputStyles.input, borderRadius: '24px', paddingTop: '20px', paddingBottom: '20px' } }}
+                  styles={{ ...inputStyles, input: { ...inputStyles.input, borderRadius: '24px', paddingTop: '16px', paddingBottom: '16px' } }}
                 />
                 <Group justify="flex-end" mt="sm">
                   <Button
-                    radius="xl" size="lg" rightSection={<IconSend size={18} />} loading={saving} onClick={handleSubmit}
+                    radius="xl" size="md" rightSection={<IconSend size={18} />} loading={saving} onClick={handleSubmit}
+                    fullWidth={false}
                     style={{
                       backgroundColor: 'var(--lm-orange)', color: '#fff', fontWeight: 700,
                       boxShadow: 'var(--lm-shadow-orange)', transition: 'transform 0.25s var(--lm-ease)'
@@ -419,8 +421,8 @@ export function DiaryPage() {
             {loading ? (
               <Center mt={50}><Loader color="orange" /></Center>
             ) : filteredEntries.length === 0 ? (
-              <Paper p={40} radius="xl" ta="center" style={{ border: '2px dashed var(--lm-border)', backgroundColor: 'transparent' }}>
-                <Text size="lg" fw={500} style={{ color: 'var(--lm-muted)' }}>
+              <Paper p={{ base: 30, md: 40 }} radius="xl" ta="center" style={{ border: '2px dashed var(--lm-border)', backgroundColor: 'transparent' }}>
+                <Text size="md" fw={500} style={{ color: 'var(--lm-muted)' }}>
                   У цей день немає записів.
                 </Text>
               </Paper>
@@ -428,26 +430,26 @@ export function DiaryPage() {
               <Stack gap="lg">
                 {filteredEntries.map((entry) => (
                   <Paper
-                    key={entry._id} shadow="none" p={30} radius="xl" className="card-hover"
+                    key={entry._id} shadow="none" p={{ base: 20, md: 30 }} radius="xl" className="card-hover"
                     style={{ border: '1px solid var(--lm-border)', backgroundColor: '#fff', position: 'relative', boxShadow: 'var(--lm-shadow-sm)' }}
                   >
-                    <Group style={{ position: 'absolute', top: 20, right: 20 }} gap={5}>
-                      <ActionIcon color="gray" variant="subtle" radius="xl" size="lg" onClick={() => handleEdit(entry)} style={{ transition: 'color 0.2s', '&:hover': { color: 'var(--lm-orange)', backgroundColor: 'var(--lm-orange-light)' } }}>
-                        <IconPencil size={20} stroke={1.5} />
+                    <Group style={{ position: 'absolute', top: 16, right: 16 }} gap={5}>
+                      <ActionIcon color="gray" variant="subtle" radius="xl" size="md" onClick={() => handleEdit(entry)} style={{ transition: 'color 0.2s', '&:hover': { color: 'var(--lm-orange)', backgroundColor: 'var(--lm-orange-light)' } }}>
+                        <IconPencil size={18} stroke={1.5} />
                       </ActionIcon>
-                      <ActionIcon color="red" variant="subtle" radius="xl" size="lg" onClick={() => handleDelete(entry._id)} style={{ '&:hover': { backgroundColor: 'var(--lm-orange-light)' } }}>
-                        <IconTrash size={20} stroke={1.5} />
+                      <ActionIcon color="red" variant="subtle" radius="xl" size="md" onClick={() => handleDelete(entry._id)} style={{ '&:hover': { backgroundColor: 'var(--lm-orange-light)' } }}>
+                        <IconTrash size={18} stroke={1.5} />
                       </ActionIcon>
                     </Group>
 
-                    <Group mb="md" gap="xs">
-                      <Badge size="lg" color="orange" variant="light" radius="sm">{entry.emotion}</Badge>
-                      {entry.aspect && <Badge size="lg" color="gray" variant="outline" radius="sm">{entry.aspect}</Badge>}
-                      <Text size="sm" fw={600} ml="xs" style={{ color: 'var(--lm-muted)' }}>
+                    <Group mb="md" gap="xs" style={{ paddingRight: '60px' }}> {/* Відступ щоб не наїхати на кнопки */}
+                      <Badge size="md" color="orange" variant="light" radius="sm">{entry.emotion}</Badge>
+                      {entry.aspect && <Badge size="md" color="gray" variant="outline" radius="sm">{entry.aspect}</Badge>}
+                      <Text size="xs" fw={600} ml="xs" style={{ color: 'var(--lm-muted)' }}>
                         {new Date(entry.createdAt).toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' })}
                       </Text>
                     </Group>
-                    <Text size="md" style={{ whiteSpace: 'pre-wrap', color: 'var(--lm-dark-soft)', lineHeight: 1.6 }}>{entry.content}</Text>
+                    <Text size="sm" style={{ whiteSpace: 'pre-wrap', color: 'var(--lm-dark-soft)', lineHeight: 1.6 }}>{entry.content}</Text>
                   </Paper>
                 ))}
               </Stack>

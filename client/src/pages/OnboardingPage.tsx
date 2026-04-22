@@ -23,7 +23,7 @@ const QUESTIONS = [
   {
     id: 4,
     question: 'Що зараз турбує Вас найбільше?',
-    options: ['Робота / Навчання', 'Відносини / Сім\u2019я', 'Самотність', 'Невпевненість у майбутньому'],
+    options: ['Робота / Навчання', 'Відносини / Сім’я', 'Самотність', 'Невпевненість у майбутньому'],
   },
   {
     id: 5,
@@ -99,26 +99,25 @@ export function OnboardingPage() {
   const progressPercent = ((currentStep + 1) / QUESTIONS.length) * 100;
 
   return (
-    <Box style={{ backgroundColor: 'var(--lm-bg)', minHeight: '100vh', padding: '40px 0 60px', position: 'relative' }}>
+    <Box pt={{ base: 30, md: 40 }} pb={{ base: 40, md: 60 }} style={{ backgroundColor: 'var(--lm-bg)', minHeight: '100vh', position: 'relative' }}>
       <LoadingOverlay visible={loading} overlayProps={{ radius: "sm", blur: 2 }} />
-      <Container size="lg">
+      <Container size="lg" px={{ base: 'md', sm: 'xl' }}>
 
-        {/* Progress bar */}
-        <Box mb={40} style={{ maxWidth: '500px', margin: '0 auto 40px' }}>
+        <Box mb={{ base: 24, md: 40 }} style={{ maxWidth: '500px', margin: '0 auto' }}>
           <Box style={{ height: '6px', backgroundColor: 'var(--lm-border)', borderRadius: 'var(--lm-radius-full)', overflow: 'hidden' }}>
             <Box style={{ height: '100%', width: `${progressPercent}%`, backgroundColor: 'var(--lm-orange)', borderRadius: 'var(--lm-radius-full)', transition: 'width 0.5s var(--lm-spring)' }} />
           </Box>
         </Box>
 
-        <Title ta="center" order={2} style={{ color: 'var(--lm-muted)', marginBottom: '8px', fontWeight: 600, fontSize: '18px', textTransform: 'uppercase', letterSpacing: '1px' }}>
+        <Title ta="center" order={2} style={{ color: 'var(--lm-muted)', marginBottom: '8px', fontWeight: 600, fontSize: '16px', textTransform: 'uppercase', letterSpacing: '1px' }}>
           Крок {currentStep + 1} з {QUESTIONS.length}
         </Title>
-        <Text ta="center" size="xl" mb={50} fw={800} style={{ color: 'var(--lm-dark)', fontSize: '30px' }}>
+        <Text ta="center" mb={{ base: 30, md: 50 }} fw={800} style={{ color: 'var(--lm-dark)', fontSize: 'clamp(24px, 5vw, 30px)' }}>
           Аналізуємо ваш стан...
         </Text>
 
         <Grid align="center" gutter={{ base: 30, md: 60 }}>
-          <Grid.Col span={{ base: 12, md: 6 }}>
+          <Grid.Col span={{ base: 12, md: 6 }} display={{ base: 'none', md: 'block' }}>
             <Center>
               <Image
                 src="https://st4.depositphotos.com/17134304/26411/v/600/depositphotos_264114218-stock-illustration-friends-giving-high-five-flat.jpg"
@@ -131,15 +130,15 @@ export function OnboardingPage() {
 
           <Grid.Col span={{ base: 12, md: 6 }}>
             <Box className="animate-scaleIn" style={{ maxWidth: '500px', margin: '0 auto' }}>
-              <Paper shadow="md" radius="xl" style={{ overflow: 'hidden', border: '1px solid var(--lm-border)', minHeight: '400px', display: 'flex', flexDirection: 'column', boxShadow: 'var(--lm-shadow-md)' }}>
-                <Box p={30} bg="white" style={{ minHeight: '120px', display: 'flex', alignItems: 'center' }}>
-                  <Text fw={800} size="xl" style={{ color: 'var(--lm-dark)', lineHeight: 1.4 }}>
+              <Paper shadow="md" radius="xl" style={{ overflow: 'hidden', border: '1px solid var(--lm-border)', display: 'flex', flexDirection: 'column', boxShadow: 'var(--lm-shadow-md)' }}>
+                <Box p={{ base: 20, sm: 30 }} bg="white" style={{ minHeight: 'auto', display: 'flex', alignItems: 'center' }}>
+                  <Text fw={800} style={{ color: 'var(--lm-dark)', lineHeight: 1.4, fontSize: 'clamp(18px, 4vw, 22px)' }}>
                     {currentQuestion.question}
                   </Text>
                 </Box>
 
-                <Box p={30} style={{ backgroundColor: 'var(--lm-bg-alt)', flex: 1 }}>
-                  <Stack gap="md">
+                <Box p={{ base: 20, sm: 30 }} style={{ backgroundColor: 'var(--lm-bg-alt)', flex: 1 }}>
+                  <Stack gap={{ base: 'sm', sm: 'md' }}>
                     {currentQuestion.options.map((option, index) => {
                       const isSelected = selectedOptionIndex === index;
                       return (
@@ -147,17 +146,19 @@ export function OnboardingPage() {
                           key={option} onClick={() => setSelectedOptionIndex(index)}
                           style={{
                             backgroundColor: '#fff',
-                            borderRadius: '16px', padding: '18px 20px', cursor: 'pointer', display: 'flex', alignItems: 'center',
+                            borderRadius: '16px', 
+                            padding: '14px 16px', 
+                            cursor: 'pointer', display: 'flex', alignItems: 'center',
                             border: isSelected ? '2px solid var(--lm-orange)' : '2px solid transparent',
                             boxShadow: isSelected ? '0 8px 24px rgba(232, 106, 83, 0.12)' : 'var(--lm-shadow-sm)',
                             transform: isSelected ? 'scale(1.02)' : 'scale(1)',
                             transition: 'all 0.25s var(--lm-spring)'
                           }}
                         >
-                          <ThemeIcon size={28} radius="xl" variant="filled" color={isSelected ? 'orange' : 'gray.2'} style={{ marginRight: '15px', backgroundColor: isSelected ? 'var(--lm-orange)' : undefined, transition: 'all 0.2s' }}>
-                            {isSelected && <IconCheck size={18} stroke={3} />}
+                          <ThemeIcon size={26} radius="xl" variant="filled" color={isSelected ? 'orange' : 'gray.2'} style={{ marginRight: '12px', backgroundColor: isSelected ? 'var(--lm-orange)' : undefined, transition: 'all 0.2s', flexShrink: 0 }}>
+                            {isSelected && <IconCheck size={16} stroke={3} />}
                           </ThemeIcon>
-                          <Text style={{ color: isSelected ? 'var(--lm-dark)' : 'var(--lm-dark-soft)', fontWeight: isSelected ? 700 : 500, fontSize: '16px' }}>{option}</Text>
+                          <Text style={{ color: isSelected ? 'var(--lm-dark)' : 'var(--lm-dark-soft)', fontWeight: isSelected ? 700 : 500, fontSize: '15px', lineHeight: 1.3 }}>{option}</Text>
                         </Box>
                       );
                     })}
@@ -166,19 +167,19 @@ export function OnboardingPage() {
               </Paper>
 
               <Button
-                fullWidth size="xl" radius="xl" mt={40} onClick={handleNext} disabled={selectedOptionIndex === null}
+                fullWidth size="lg" radius="xl" mt={{ base: 24, md: 40 }} onClick={handleNext} disabled={selectedOptionIndex === null}
                 style={{
                   backgroundColor: selectedOptionIndex !== null ? 'var(--lm-orange)' : '#EAEAEA',
                   color: selectedOptionIndex !== null ? '#fff' : '#A0A0A0',
                   boxShadow: selectedOptionIndex !== null ? 'var(--lm-shadow-orange)' : 'none',
-                  fontWeight: 700, fontSize: '18px', transition: 'all 0.3s var(--lm-ease)'
+                  fontWeight: 700, fontSize: '16px', height: '54px', transition: 'all 0.3s var(--lm-ease)'
                 }}
               >
                 {isLastQuestion ? 'Отримати результат' : 'Продовжити'}
               </Button>
 
-              <Center mt="xl">
-                <Anchor component="button" onClick={handleSkip} style={{ color: 'var(--lm-muted)', fontWeight: 600, fontSize: '15px', borderBottom: '1px solid var(--lm-muted)', transition: 'color 0.2s' }}>
+              <Center mt="lg">
+                <Anchor component="button" onClick={handleSkip} style={{ color: 'var(--lm-muted)', fontWeight: 600, fontSize: '14px', borderBottom: '1px solid var(--lm-muted)', transition: 'color 0.2s' }}>
                   Пропустити тест
                 </Anchor>
               </Center>

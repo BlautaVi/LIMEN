@@ -70,7 +70,8 @@ export function EditPostPage() {
       color: colors.textDark,
       fontWeight: 500,
       fontSize: '16px',
-      padding: '20px 24px',
+      padding: '16px 24px', 
+      height: '54px', 
       transition: 'all 0.3s var(--lm-ease)',
       '&:focus': {
         borderColor: colors.buttonBright,
@@ -78,7 +79,7 @@ export function EditPostPage() {
         boxShadow: `0 0 0 3px ${isPsychologist ? 'rgba(121,80,242,0.12)' : 'rgba(232,106,83,0.12)'}`
       }
     },
-    label: { color: colors.textDark, fontWeight: 700, marginBottom: '10px', fontSize: '15px' }
+    label: { color: colors.textDark, fontWeight: 700, marginBottom: '8px', fontSize: '14px' }
   };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -119,7 +120,7 @@ export function EditPostPage() {
   return (
     <Box style={{ minHeight: '100vh', backgroundColor: colors.bgApp }}>
       <Header />
-      <Container size="lg" pt={{ base: 20, md: 40 }} pb={80}>
+      <Container size="lg" pt={{ base: 20, md: 40 }} pb={{ base: 40, md: 80 }} px={{ base: 'sm', sm: 'md' }}>
         <Group mb="xl">
           <Button
             variant="subtle"
@@ -135,8 +136,8 @@ export function EditPostPage() {
         <Center>
           <Paper
             shadow="none"
-            radius={30}
-            p={{ base: 24, md: 50 }}
+            radius={{ base: 'xl', md: 30 }}
+            p={{ base: 20, sm: 30, md: 50 }} 
             className="animate-slideUp"
             style={{
               width: '100%',
@@ -146,31 +147,36 @@ export function EditPostPage() {
               boxShadow: colors.shadow
             }}
           >
-            <Group justify="space-between" align="center" mb={40}>
-              <Title order={2} style={{ color: colors.textDark, fontWeight: 800, fontSize: '28px' }}>
+            <Group justify="space-between" align="center" mb={{ base: 24, md: 40 }} wrap="nowrap">
+              <Title order={2} style={{ color: colors.textDark, fontWeight: 800, fontSize: 'clamp(20px, 4vw, 28px)', lineHeight: 1.2 }}>
                 Редагування {isPsychologist ? 'статті' : 'поста'}
               </Title>
-              {isPsychologist && <Badge color="violet" size="xl" radius="md" variant="light">Режим спеціаліста</Badge>}
+              {isPsychologist && <Badge color="violet" size="lg" radius="md" variant="light" display={{ base: 'none', sm: 'flex' }}>Режим спеціаліста</Badge>}
             </Group>
 
             <Grid gutter={{ base: 30, md: 60 }}>
               <Grid.Col span={{ base: 12, md: 7 }}>
-                <Stack gap="xl" h="100%">
+                <Stack gap="lg" h="100%">
                   <TextInput
                     placeholder={isPsychologist ? 'Заголовок вашої статті...' : 'Короткий заголовок (за бажанням)...'}
-                    radius="xl" size="xl" styles={inputStyles} value={title} onChange={(e) => setTitle(e.currentTarget.value)}
+                    radius="xl" size="md" styles={inputStyles} value={title} onChange={(e) => setTitle(e.currentTarget.value)}
                   />
                   <Box style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                     <Textarea
                       placeholder="Розкажіть про свою ситуацію..."
-                      radius="xl" size="xl"
-                      styles={{ ...inputStyles, root: { flex: 1, display: 'flex', flexDirection: 'column' }, wrapper: { flex: 1 }, input: { ...inputStyles.input, height: '100% !important', resize: 'none', paddingTop: '24px', paddingBottom: '24px', borderRadius: '24px' } }}
-                      minRows={14} value={content} onChange={(e) => setContent(e.currentTarget.value)}
+                      radius="xl" size="md"
+                      styles={{ 
+                        ...inputStyles, 
+                        root: { flex: 1, display: 'flex', flexDirection: 'column' }, 
+                        wrapper: { flex: 1 }, 
+                        input: { ...inputStyles.input, height: '100% !important', minHeight: '200px', resize: 'none', paddingTop: '20px', paddingBottom: '20px', borderRadius: '24px' } 
+                      }}
+                      value={content} onChange={(e) => setContent(e.currentTarget.value)}
                     />
                     {preview && (
-                      <Box mt="xl" style={{ position: 'relative', width: 'fit-content' }}>
-                        <Image src={preview} w={180} h={180} radius="xl" fit="cover" style={{ border: `3px solid ${colors.borderLight}`, boxShadow: 'var(--lm-shadow-md)' }} />
-                        <CloseButton onClick={() => { setFile(null); setPreview(null); }} variant="filled" color="red" size="md" radius="xl" style={{ position: 'absolute', top: -10, right: -10, boxShadow: '0 4px 10px rgba(255,0,0,0.2)' }} />
+                      <Box mt="lg" style={{ position: 'relative', width: 'fit-content' }}>
+                        <Image src={preview} w={{ base: 120, sm: 180 }} h={{ base: 120, sm: 180 }} radius="xl" fit="cover" style={{ border: `3px solid ${colors.borderLight}`, boxShadow: 'var(--lm-shadow-md)' }} />
+                        <CloseButton onClick={() => { setFile(null); setPreview(null); }} variant="filled" color="red" size="sm" radius="xl" style={{ position: 'absolute', top: -8, right: -8, boxShadow: '0 4px 10px rgba(255,0,0,0.2)' }} />
                       </Box>
                     )}
                   </Box>
@@ -178,16 +184,31 @@ export function EditPostPage() {
               </Grid.Col>
 
               <Grid.Col span={{ base: 12, md: 5 }}>
-                <Stack justify="flex-start" gap="xl" h="100%">
-                  <Select label={isPsychologist ? "Основна тематика (Емоція)" : "Що ви відчуваєте?"} data={['Тривога', 'Сум', 'Злість', 'Апатія', 'Страх', 'Самотність', 'Вигорання', 'Стрес']} value={emotion} onChange={setEmotion} allowDeselect={false} radius="xl" size="lg" styles={inputStyles} />
+                <Stack justify="flex-start" gap="lg" h="100%">
+                  <Select label={isPsychologist ? "Основна тематика (Емоція)" : "Що ви відчуваєте?"} data={['Тривога', 'Сум', 'Злість', 'Апатія', 'Страх', 'Самотність', 'Вигорання', 'Стрес']} value={emotion} onChange={setEmotion} allowDeselect={false} radius="xl" size="md" styles={inputStyles} />
 
                   {!isPsychologist && (
                     <>
-                      <Select label="Якої реакції ви очікуєте?" data={[{ value: 'vent', label: 'Просто виговоритись' }, { value: 'support', label: 'Потрібна підтримка' }, { value: 'advice', label: 'Потрібна порада фахівця' }]} value={requestType} onChange={setRequestType} allowDeselect={false} radius="xl" size="lg" styles={inputStyles} />
-                      <Select label="Хто побачить цей пост?" data={[{ value: 'public', label: 'Усі користувачі (Публічно)' }, { value: 'anonymous', label: 'Усі (Анонімно)' }, { value: 'psychologists_only', label: 'Тільки психологи' }]} value={visibility} onChange={setVisibility} allowDeselect={false} radius="xl" size="lg" styles={inputStyles} />
+                      <Select label="Якої реакції ви очікуєте?" data={[{ value: 'vent', label: 'Просто виговоритись' }, { value: 'support', label: 'Потрібна підтримка' }, { value: 'advice', label: 'Потрібна порада фахівця' }]} value={requestType} onChange={setRequestType} allowDeselect={false} radius="xl" size="md" styles={inputStyles} />
+                      <Select label="Хто побачить цей пост?" data={[{ value: 'public', label: 'Усі користувачі (Публічно)' }, { value: 'anonymous', label: 'Усі (Анонімно)' }, { value: 'psychologists_only', label: 'Тільки психологи' }]} value={visibility} onChange={setVisibility} allowDeselect={false} radius="xl" size="md" styles={inputStyles} />
 
-                      <Paper p="xl" radius="xl" mt="xs" style={{ backgroundColor: colors.bgLight, border: `1px solid transparent`, transition: 'all 0.2s var(--lm-ease)', cursor: 'pointer' }} onClick={() => setIsSupportOnly(!isSupportOnly)}>
-                        <Switch labelPosition="left" label={<Group gap="sm"><IconLock size={20} color={colors.textDark} /><Text size="md" c={colors.textDark} fw={600}>Заборонити поради (тільки реакції)</Text></Group>} color="orange" size="lg" checked={isSupportOnly} onChange={(event) => setIsSupportOnly(event.currentTarget.checked)} style={{ pointerEvents: 'none' }} />
+                      <Paper 
+                        p={{ base: 'md', sm: 'xl' }} 
+                        radius="xl" 
+                        mt="xs" 
+                        style={{ backgroundColor: colors.bgLight, border: `1px solid transparent`, transition: 'all 0.2s var(--lm-ease)', cursor: 'pointer' }} 
+                        onClick={() => setIsSupportOnly(!isSupportOnly)}
+                      >
+                        <Switch 
+                          labelPosition="left" 
+                          label={
+                            <Group gap="sm" wrap="nowrap">
+                              <IconLock size={20} color={colors.textDark} style={{ flexShrink: 0 }} />
+                              <Text size="sm" c={colors.textDark} fw={600} style={{ lineHeight: 1.2 }}>Заборонити поради (тільки реакції)</Text>
+                            </Group>
+                          } 
+                          color="orange" size="md" checked={isSupportOnly} onChange={(event) => setIsSupportOnly(event.currentTarget.checked)} style={{ pointerEvents: 'none' }} 
+                        />
                       </Paper>
                     </>
                   )}
@@ -195,17 +216,17 @@ export function EditPostPage() {
                   <input type="file" ref={fileInputRef} style={{ display: 'none' }} accept="image/*" onChange={handleFileSelect} />
 
                   <Button
-                    variant="light" color={isPsychologist ? "violet" : "gray"} radius="xl" size="lg" mt="sm"
-                    onClick={() => fileInputRef.current?.click()} leftSection={<IconPhotoPlus size={22} />}
-                    style={{ backgroundColor: 'transparent', border: `2px dashed ${colors.borderLight}`, color: colors.textDark, height: '60px', transition: 'all 0.25s var(--lm-ease)' }}
+                    variant="light" color={isPsychologist ? "violet" : "gray"} radius="xl" size="md" mt={{ base: 0, md: 'auto' }}
+                    onClick={() => fileInputRef.current?.click()} leftSection={<IconPhotoPlus size={20} />}
+                    style={{ backgroundColor: 'transparent', border: `2px dashed ${colors.borderLight}`, color: colors.textDark, height: '54px', transition: 'all 0.25s var(--lm-ease)' }}
                   >
                     {preview ? 'Змінити обкладинку' : 'Прикріпити обкладинку'}
                   </Button>
 
-                  <Box style={{ marginTop: 'auto', paddingTop: '30px' }}>
+                  <Box style={{ paddingTop: '16px' }}>
                     <Button
-                      fullWidth radius="xl" size="xl" loading={loading} onClick={handleSave}
-                      style={{ backgroundColor: colors.buttonBright, color: '#fff', fontWeight: 800, fontSize: '18px', height: '65px', boxShadow: isPsychologist ? '0 10px 25px rgba(121, 80, 242, 0.3)' : 'var(--lm-shadow-orange)', transition: 'transform 0.25s var(--lm-ease)' }}
+                      fullWidth radius="xl" size="lg" loading={loading} onClick={handleSave}
+                      style={{ backgroundColor: colors.buttonBright, color: '#fff', fontWeight: 800, fontSize: '16px', height: '58px', boxShadow: isPsychologist ? '0 10px 25px rgba(121, 80, 242, 0.3)' : 'var(--lm-shadow-orange)', transition: 'transform 0.25s var(--lm-ease)' }}
                       styles={{ root: { '&:hover': { transform: 'translateY(-2px)' } } }}
                     >
                       Зберегти зміни

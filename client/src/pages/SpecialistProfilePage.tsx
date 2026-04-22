@@ -47,9 +47,9 @@ export function SpecialistProfilePage() {
   return (
     <Box style={{ minHeight: '100vh', backgroundColor: 'var(--lm-bg)' }}>
       <Header />
-      <Container size="md" pt={{ base: 20, md: 40 }} pb={80}>
+      <Container size="md" pt={{ base: 20, md: 40 }} pb={{ base: 40, md: 80 }} px={{ base: 'sm', sm: 'md' }}>
 
-        <Group mb="xl">
+        <Group mb={{ base: 'md', md: 'xl' }}>
           <Button
             variant="subtle" color="gray" leftSection={<IconArrowLeft size={18} />}
             onClick={() => navigate(-1)}
@@ -61,8 +61,8 @@ export function SpecialistProfilePage() {
 
         <Paper
           shadow="none"
-          radius="30px"
-          p={{ base: 24, md: 50 }}
+          radius={{ base: 'xl', md: 30 }}
+          p={{ base: 20, sm: 30, md: 50 }} 
           className="animate-slideUp"
           style={{
             border: '1px solid var(--lm-border)',
@@ -74,32 +74,44 @@ export function SpecialistProfilePage() {
 
           <ActionIcon
             size="xl" radius="xl" variant="subtle" color="red"
-            style={{ position: 'absolute', top: 30, right: 30, transition: 'transform 0.2s var(--lm-ease)', '&:hover': { transform: 'scale(1.1)', backgroundColor: 'var(--lm-orange-light)' } }}
+            style={{ 
+              position: 'absolute', 
+              top: 'clamp(16px, 4vw, 30px)', 
+              right: 'clamp(16px, 4vw, 30px)', 
+              transition: 'transform 0.2s var(--lm-ease)', 
+              '&:hover': { transform: 'scale(1.1)', backgroundColor: 'var(--lm-orange-light)' } 
+            }}
             onClick={() => setIsFavorite(!isFavorite)}
           >
             {isFavorite ? <IconHeartFilled size={32} /> : <IconHeart size={32} />}
           </ActionIcon>
 
-          <Center mb="xl">
+          <Center mb={{ base: 'lg', md: 'xl' }} mt={{ base: 'lg', md: 0 }}>
             <Avatar
               src={specialist.avatarUrl ? `http://localhost:3000${specialist.avatarUrl}` : null}
-              size={160}
-              radius={160}
-              style={{ border: '6px solid var(--lm-bg)', boxShadow: 'var(--lm-shadow-lg)' }}
+              radius="100%"
+              style={{ 
+                width: 'clamp(120px, 25vw, 160px)', 
+                height: 'clamp(120px, 25vw, 160px)', 
+                border: '6px solid var(--lm-bg)', 
+                boxShadow: 'var(--lm-shadow-lg)' 
+              }}
             />
           </Center>
 
-          <Stack align="center" gap="sm" mb="xl">
-            <Title order={1} style={{ color: 'var(--lm-dark)', fontWeight: 800, fontSize: '30px' }}>{displayName}</Title>
+          <Stack align="center" gap="xs" mb={{ base: 'lg', md: 'xl' }}>
+            <Title order={1} ta="center" style={{ color: 'var(--lm-dark)', fontWeight: 800, fontSize: 'clamp(24px, 5vw, 30px)', lineHeight: 1.2 }}>
+              {displayName}
+            </Title>
             <Badge color="violet" size="lg" radius="md" variant="light" leftSection={<IconCertificate size={16} />} style={{ padding: '0 16px', height: '32px', textTransform: 'none', fontSize: '14px', fontWeight: 600 }}>
               Сертифікований психолог
             </Badge>
           </Stack>
 
-          <Divider my={40} color="var(--lm-border)" />
+          <Divider my={{ base: 24, md: 40 }} color="var(--lm-border)" />
 
-          <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="xl" mb={40}>
-            <Paper p="xl" radius="xl" style={{ backgroundColor: 'var(--lm-bg-alt)', border: '1px solid var(--lm-border)' }}>
+          <SimpleGrid cols={{ base: 1, sm: 2 }} spacing={{ base: 'md', md: 'xl' }} mb={{ base: 30, md: 40 }}>
+            <Paper p={{ base: 'lg', md: 'xl' }} radius="xl" style={{ backgroundColor: 'var(--lm-bg-alt)', border: '1px solid var(--lm-border)' }}>
               <Group gap="md" mb="lg">
                 <ThemeIcon size={48} color="orange" variant="light" radius="100%" style={{ backgroundColor: '#fff', boxShadow: 'var(--lm-shadow-sm)' }}><IconUser size={24} stroke={2} /></ThemeIcon>
                 <Text fw={800} size="lg" style={{ color: 'var(--lm-dark)' }}>Особисті дані</Text>
@@ -108,7 +120,7 @@ export function SpecialistProfilePage() {
               <Text size="16px" style={{ color: 'var(--lm-dark-soft)' }}><b style={{ color: 'var(--lm-dark)' }}>Вік:</b> {specialist.age ? `${specialist.age} років` : 'Не вказано'}</Text>
             </Paper>
 
-            <Paper p="xl" radius="xl" style={{ backgroundColor: 'var(--lm-bg-alt)', border: '1px solid var(--lm-border)' }}>
+            <Paper p={{ base: 'lg', md: 'xl' }} radius="xl" style={{ backgroundColor: 'var(--lm-bg-alt)', border: '1px solid var(--lm-border)' }}>
               <Group gap="md" mb="lg">
                 <ThemeIcon size={48} color="violet" variant="light" radius="100%" style={{ backgroundColor: '#fff', boxShadow: 'var(--lm-shadow-sm)' }}><IconBrain size={24} stroke={2} /></ThemeIcon>
                 <Text fw={800} size="lg" style={{ color: 'var(--lm-dark)' }}>Напрямки роботи</Text>
@@ -127,16 +139,15 @@ export function SpecialistProfilePage() {
             </Paper>
           </SimpleGrid>
 
-          <Box mb={50}>
+          <Box mb={{ base: 30, md: 50 }}>
             <Title order={3} mb="lg" style={{ color: 'var(--lm-dark)', fontWeight: 800 }}>Про спеціаліста та послуги</Title>
-            <Text style={{ color: 'var(--lm-dark-soft)', lineHeight: 1.7, fontSize: '17px', whiteSpace: 'pre-wrap' }}>
+            <Text style={{ color: 'var(--lm-dark-soft)', lineHeight: 1.7, fontSize: 'clamp(15px, 3vw, 17px)', whiteSpace: 'pre-wrap' }}>
               {specialist.servicesDescription || "Цей спеціаліст ще не додав детальний опис своїх послуг. Ви можете написати йому особисто, щоб дізнатися більше."}
             </Text>
           </Box>
 
           <Group grow>
             <Button
-              size="xl"
               radius="xl"
               leftSection={<IconMessageCircle size={24} stroke={2} />}
               onClick={handleSendMessage}
@@ -144,8 +155,8 @@ export function SpecialistProfilePage() {
                 backgroundColor: 'var(--lm-orange)',
                 color: '#fff',
                 fontWeight: 800,
-                fontSize: '18px',
-                height: '65px',
+                fontSize: 'clamp(16px, 4vw, 18px)', 
+                height: 'clamp(54px, 10vw, 65px)',
                 boxShadow: 'var(--lm-shadow-orange)',
                 transition: 'all 0.25s var(--lm-ease)'
               }}

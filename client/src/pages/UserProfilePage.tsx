@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Container, Paper, Text, Avatar, Center, Loader, Button, Group, Badge, Box, Stack, Divider, Title, SimpleGrid, Card, ActionIcon, ThemeIcon } from '@mantine/core';
+import { Container, Paper, Text, Avatar, Center, Loader, Button, Group, Badge, Box, Stack, Divider, Title, SimpleGrid, Card, ThemeIcon } from '@mantine/core';
 import { IconMessageCircle, IconArrowLeft, IconNotes, IconUser } from '@tabler/icons-react';
 import { Header } from '../components/Header';
 import api from '../services/api';
@@ -57,9 +57,9 @@ export function UserProfilePage() {
   return (
     <Box style={{ minHeight: '100vh', backgroundColor: 'var(--lm-bg)' }}>
       <Header />
-      <Container size="md" pt={{ base: 20, md: 40 }} pb={80}>
+      <Container size="md" pt={{ base: 20, md: 40 }} pb={{ base: 40, md: 80 }} px={{ base: 'sm', sm: 'md' }}>
 
-        <Group mb="xl">
+        <Group mb={{ base: 'md', md: 'xl' }}>
           <Button
             variant="subtle" color="gray" leftSection={<IconArrowLeft size={18} />}
             onClick={() => navigate(-1)}
@@ -71,9 +71,9 @@ export function UserProfilePage() {
 
         <Paper
           shadow="none"
-          radius="30px"
-          p={{ base: 24, md: 50 }}
-          mb={60}
+          radius={{ base: 'xl', md: 30 }}
+          p={{ base: 24, sm: 30, md: 50 }} 
+          mb={{ base: 40, md: 60 }}
           className="animate-slideUp"
           style={{
             border: '1px solid var(--lm-border)',
@@ -81,23 +81,37 @@ export function UserProfilePage() {
             boxShadow: 'var(--lm-shadow-lg)'
           }}
         >
-          <Center mb="xl">
+          <Center mb={{ base: 'lg', md: 'xl' }}>
             {userProfile.avatarUrl ? (
               <Avatar
                 src={`http://localhost:3000${userProfile.avatarUrl}`}
-                size={140}
-                radius={140}
-                style={{ border: '6px solid var(--lm-bg)', boxShadow: 'var(--lm-shadow-lg)' }}
+                radius="100%"
+                style={{ 
+                  width: 'clamp(100px, 25vw, 140px)', 
+                  height: 'clamp(100px, 25vw, 140px)', 
+                  border: '6px solid var(--lm-bg)', 
+                  boxShadow: 'var(--lm-shadow-lg)' 
+                }}
               />
             ) : (
-              <ThemeIcon size={140} radius="100%" variant="light" style={{ backgroundColor: 'var(--lm-warm)', color: 'var(--lm-orange)' }}>
+              <ThemeIcon 
+                radius="100%" variant="light" 
+                style={{ 
+                  width: 'clamp(100px, 25vw, 140px)', 
+                  height: 'clamp(100px, 25vw, 140px)', 
+                  backgroundColor: 'var(--lm-warm)', 
+                  color: 'var(--lm-orange)' 
+                }}
+              >
                 <IconUser size={60} stroke={1.5} />
               </ThemeIcon>
             )}
           </Center>
 
           <Stack align="center" gap="sm">
-            <Title order={1} style={{ color: 'var(--lm-dark)', fontWeight: 800, fontSize: '30px' }}>{displayName}</Title>
+            <Title ta="center" order={1} style={{ color: 'var(--lm-dark)', fontWeight: 800, fontSize: 'clamp(22px, 5vw, 30px)', lineHeight: 1.2 }}>
+              {displayName}
+            </Title>
 
             <Group gap="xs" mt="xs">
               {userProfile.role === 'psychologist' && (
@@ -112,9 +126,8 @@ export function UserProfilePage() {
           </Stack>
 
           {!isMe && (
-            <Group justify="center" mt={40}>
+            <Group justify="center" mt={{ base: 30, md: 40 }}>
               <Button
-                size="xl"
                 radius="xl"
                 leftSection={<IconMessageCircle size={22} stroke={2} />}
                 onClick={handleSendMessage}
@@ -123,6 +136,8 @@ export function UserProfilePage() {
                   color: '#fff',
                   fontWeight: 700,
                   fontSize: '16px',
+                  height: 'clamp(50px, 8vw, 60px)', 
+                  padding: '0 clamp(20px, 5vw, 40px)',
                   boxShadow: 'var(--lm-shadow-orange)',
                   transition: 'all 0.25s var(--lm-ease)'
                 }}
@@ -138,24 +153,24 @@ export function UserProfilePage() {
           <ThemeIcon size={40} radius="xl" variant="light" style={{ backgroundColor: 'var(--lm-warm)', color: 'var(--lm-orange)' }}>
             <IconNotes size={20} stroke={2} />
           </ThemeIcon>
-          <Title order={3} style={{ color: 'var(--lm-dark)', fontWeight: 800, fontSize: '24px' }}>Публікації користувача</Title>
+          <Title order={3} style={{ color: 'var(--lm-dark)', fontWeight: 800, fontSize: 'clamp(20px, 4vw, 24px)' }}>Публікації користувача</Title>
         </Group>
 
-        <Divider mb={40} color="var(--lm-border)" />
+        <Divider mb={{ base: 30, md: 40 }} color="var(--lm-border)" />
 
         {userPosts.length === 0 ? (
-          <Paper p={50} radius="xl" ta="center" style={{ border: '2px dashed var(--lm-border)', backgroundColor: 'transparent' }}>
+          <Paper p={{ base: 30, md: 50 }} radius="xl" ta="center" style={{ border: '2px dashed var(--lm-border)', backgroundColor: 'transparent' }}>
             <Text size="lg" fw={500} style={{ color: 'var(--lm-muted)' }}>
               Цей користувач ще не робив публікацій.
             </Text>
           </Paper>
         ) : (
-          <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="xl">
+          <SimpleGrid cols={{ base: 1, sm: 2 }} spacing={{ base: 'md', md: 'xl' }}>
             {userPosts.map((post) => (
               <Card
                 key={post._id}
                 shadow="none"
-                p={30}
+                p={{ base: 24, md: 30 }} 
                 radius="xl"
                 withBorder
                 className="card-hover"
@@ -163,7 +178,9 @@ export function UserProfilePage() {
                   borderColor: 'var(--lm-border)',
                   cursor: 'pointer',
                   backgroundColor: '#fff',
-                  boxShadow: 'var(--lm-shadow-sm)'
+                  boxShadow: 'var(--lm-shadow-sm)',
+                  display: 'flex',
+                  flexDirection: 'column'
                 }}
                 onClick={() => navigate(`/posts/${post._id}`)}
               >
@@ -173,7 +190,7 @@ export function UserProfilePage() {
                 <Title order={4} style={{ color: 'var(--lm-dark)', marginBottom: '12px', fontWeight: 800, lineHeight: 1.4 }} lineClamp={2}>
                   {post.title || 'Без заголовка'}
                 </Title>
-                <Text size="15px" lineClamp={3} style={{ color: 'var(--lm-dark-soft)', lineHeight: 1.6 }}>
+                <Text size="15px" lineClamp={3} style={{ color: 'var(--lm-dark-soft)', lineHeight: 1.6, flexGrow: 1 }}>
                   {post.content}
                 </Text>
               </Card>

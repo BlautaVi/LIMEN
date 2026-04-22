@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Container, Paper, Text, Group, Box, Stack, TextInput, ActionIcon, Loader, Center, ScrollArea, Title, ThemeIcon } from '@mantine/core';
+import { Container, Paper, Text, Group, Box, Stack, TextInput, ActionIcon, Loader, ScrollArea, Title, ThemeIcon } from '@mantine/core';
 import { IconSend, IconRobot, IconArrowLeft } from '@tabler/icons-react';
 import { Header } from '../components/Header';
 import { useNavigate } from 'react-router-dom';
@@ -77,39 +77,39 @@ export function AiChatPage() {
     <Box style={{ height: '100vh', backgroundColor: 'var(--lm-bg)', display: 'flex', flexDirection: 'column' }}>
       <Header />
 
-      <Container size="md" py={30} style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', height: 'calc(100vh - 80px)' }}>
+      <Container size="md" py={{ base: 10, md: 30 }} px={{ base: 0, sm: 'md' }} style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', height: 'calc(100vh - 80px)' }}>
         <Paper
           shadow="none"
-          radius="xl"
+          radius={{ base: 0, sm: 'xl' }} 
           style={{
             flexGrow: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden',
-            border: '1px solid var(--lm-border)', backgroundColor: '#fff',
+            border: '1px solid var(--lm-border)', borderTop: 'none', borderBottom: 'none', backgroundColor: '#fff',
             boxShadow: 'var(--lm-shadow-lg)'
           }}
         >
 
-          <Box p="24px" className="glass" style={{ borderBottom: '1px solid var(--lm-border)', display: 'flex', alignItems: 'center', gap: '20px' }}>
+          <Box p={{ base: '12px 16px', md: '24px' }} className="glass" style={{ borderBottom: '1px solid var(--lm-border)', display: 'flex', alignItems: 'center', gap: '16px' }}>
             <ActionIcon variant="subtle" color="gray" onClick={() => navigate(-1)} style={{ transition: 'transform 0.2s var(--lm-ease)', '&:hover': { transform: 'translateX(-4px)' } }}>
               <IconArrowLeft size={24} color="var(--lm-dark)" stroke={2.5} />
             </ActionIcon>
-            <ThemeIcon size={50} radius="100%" variant="light" style={{ backgroundColor: 'var(--lm-warm)', color: 'var(--lm-orange)' }}>
-              <IconRobot size={28} stroke={2} />
+            <ThemeIcon size={{ base: 40, md: 50 }} radius="100%" variant="light" style={{ backgroundColor: 'var(--lm-warm)', color: 'var(--lm-orange)' }}>
+              <IconRobot size={24} stroke={2} />
             </ThemeIcon>
             <Box>
-              <Title order={4} style={{ color: 'var(--lm-dark)', fontWeight: 800, fontSize: '20px', letterSpacing: '-0.5px' }}>LIMEN AI</Title>
-              <Text size="sm" fw={500} style={{ color: 'var(--lm-muted)' }}>Віртуальний психолог-асистент</Text>
+              <Title order={4} style={{ color: 'var(--lm-dark)', fontWeight: 800, fontSize: '18px', letterSpacing: '-0.5px' }}>LIMEN AI</Title>
+              <Text size="xs" fw={500} style={{ color: 'var(--lm-muted)' }}>Віртуальний асистент</Text>
             </Box>
           </Box>
 
-          <ScrollArea style={{ flexGrow: 1, padding: '30px', backgroundColor: 'var(--lm-bg)' }} viewportRef={viewportRef}>
-            <Stack gap="xl">
+          <ScrollArea style={{ flexGrow: 1, padding: '16px', backgroundColor: 'var(--lm-bg)' }} viewportRef={viewportRef}>
+            <Stack gap="md">
               {messages.map((msg) => {
                 const isAi = msg.sender === 'ai';
                 return (
-                  <Group key={msg.id} justify={isAi ? 'flex-start' : 'flex-end'} align="flex-end" gap="md">
+                  <Group key={msg.id} justify={isAi ? 'flex-start' : 'flex-end'} align="flex-end" gap="xs" wrap="nowrap">
                     {isAi && (
-                      <ThemeIcon size={36} radius="100%" variant="light" style={{ backgroundColor: 'var(--lm-warm)', color: 'var(--lm-orange)', flexShrink: 0 }}>
-                        <IconRobot size={20} stroke={2} />
+                      <ThemeIcon size={30} radius="100%" variant="light" style={{ backgroundColor: 'var(--lm-warm)', color: 'var(--lm-orange)', flexShrink: 0 }}>
+                        <IconRobot size={18} stroke={2} />
                       </ThemeIcon>
                     )}
                     <Box
@@ -117,21 +117,21 @@ export function AiChatPage() {
                         maxWidth: '85%', 
                         backgroundColor: isAi ? '#fff' : 'var(--lm-orange)',
                         color: isAi ? 'var(--lm-dark)' : '#fff',
-                        padding: '16px 24px',
-                        borderRadius: isAi ? '24px 24px 24px 6px' : '24px 24px 6px 24px',
-                        boxShadow: isAi ? 'var(--lm-shadow-md)' : '0 8px 24px rgba(232, 106, 83, 0.18)',
+                        padding: '12px 16px', 
+                        borderRadius: isAi ? '20px 20px 20px 4px' : '20px 20px 4px 20px',
+                        boxShadow: isAi ? 'var(--lm-shadow-md)' : '0 4px 12px rgba(232, 106, 83, 0.15)',
                         border: isAi ? '1px solid var(--lm-border)' : 'none',
-                        fontSize: '16px',
-                        lineHeight: 1.6,
+                        fontSize: '15px', 
+                        lineHeight: 1.5,
                         fontWeight: 500,
                       }}
                     >
                       {isAi ? (
                         <Box 
                           style={{ 
-                            '& p': { margin: '0 0 10px 0', '&:last-child': { margin: 0 } },
-                            '& ul, & ol': { margin: '10px 0', paddingLeft: '20px' },
-                            '& li': { marginBottom: '5px' },
+                            '& p': { margin: '0 0 8px 0', '&:last-child': { margin: 0 } },
+                            '& ul, & ol': { margin: '8px 0', paddingLeft: '16px' },
+                            '& li': { marginBottom: '4px' },
                             '& strong': { fontWeight: 800, color: 'var(--lm-dark)' }
                           }}
                         >
@@ -148,32 +148,32 @@ export function AiChatPage() {
               })}
 
               {isTyping && (
-                <Group justify="flex-start" align="flex-end" gap="md">
-                  <ThemeIcon size={36} radius="100%" variant="light" style={{ backgroundColor: 'var(--lm-warm)', color: 'var(--lm-orange)', flexShrink: 0 }}>
-                    <IconRobot size={20} stroke={2} />
+                <Group justify="flex-start" align="flex-end" gap="xs" wrap="nowrap">
+                  <ThemeIcon size={30} radius="100%" variant="light" style={{ backgroundColor: 'var(--lm-warm)', color: 'var(--lm-orange)', flexShrink: 0 }}>
+                    <IconRobot size={18} stroke={2} />
                   </ThemeIcon>
-                  <Box style={{ backgroundColor: '#fff', padding: '16px 24px', borderRadius: '24px 24px 24px 6px', border: '1px solid var(--lm-border)', boxShadow: 'var(--lm-shadow-md)' }}>
-                    <Loader color="orange" size="sm" type="dots" />
+                  <Box style={{ backgroundColor: '#fff', padding: '12px 16px', borderRadius: '20px 20px 20px 4px', border: '1px solid var(--lm-border)', boxShadow: 'var(--lm-shadow-md)' }}>
+                    <Loader color="orange" size="xs" type="dots" />
                   </Box>
                 </Group>
               )}
             </Stack>
           </ScrollArea>
 
-          <Box p="24px" className="glass" style={{ borderTop: '1px solid var(--lm-border)' }}>
+          <Box p={{ base: '12px 16px', md: '24px' }} className="glass" style={{ borderTop: '1px solid var(--lm-border)' }}>
             <form onSubmit={(e) => { e.preventDefault(); handleSend(); }}>
-              <Group wrap="nowrap" gap="md">
+              <Group wrap="nowrap" gap="sm">
                 <TextInput
-                  placeholder="Розкажіть ШІ про свої почуття..."
+                  placeholder="Розкажіть ШІ..."
                   radius="xl"
-                  size="xl"
+                  size="md" 
                   style={{ flexGrow: 1 }}
                   value={inputValue}
                   onChange={(e) => setInputValue(e.currentTarget.value)}
                   disabled={isTyping}
                   styles={{
                     input: {
-                      backgroundColor: 'var(--lm-bg-input)', border: '1px solid transparent', fontSize: '16px', padding: '0 24px',
+                      backgroundColor: 'var(--lm-bg-input)', border: '1px solid transparent', fontSize: '15px', padding: '0 16px', height: '44px',
                       transition: 'all 0.2s var(--lm-ease)', '&:focus': { borderColor: 'var(--lm-orange)', backgroundColor: '#fff', boxShadow: '0 0 0 3px rgba(232, 106, 83, 0.1)' }
                     }
                   }}
@@ -181,12 +181,12 @@ export function AiChatPage() {
                 <ActionIcon
                   type="submit" size="xl" radius="xl" variant="filled" disabled={!inputValue.trim() || isTyping}
                   style={{
-                    width: '54px', height: '54px', backgroundColor: inputValue.trim() ? 'var(--lm-orange)' : '#EAEAEA', color: '#fff',
+                    width: '44px', height: '44px', backgroundColor: inputValue.trim() ? 'var(--lm-orange)' : '#EAEAEA', color: '#fff', flexShrink: 0,
                     transition: 'all 0.25s var(--lm-ease)', boxShadow: inputValue.trim() ? 'var(--lm-shadow-orange)' : 'none'
                   }}
                   styles={{ root: { '&:hover': { transform: inputValue.trim() ? 'scale(1.05)' : 'none', backgroundColor: inputValue.trim() ? 'var(--lm-orange-hover)' : '#EAEAEA' } } }}
                 >
-                  <IconSend size={24} stroke={2} />
+                  <IconSend size={20} stroke={2} />
                 </ActionIcon>
               </Group>
             </form>

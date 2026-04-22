@@ -121,22 +121,21 @@ export function SpecialistsPage() {
   return (
     <Box style={{ minHeight: '100vh', backgroundColor: 'var(--lm-bg)' }}>
       <Header />
-      <Container size="lg" pt={{ base: 30, md: 50 }} pb={80}>
-        <Title ta="center" order={1} mb={10} className="animate-slideUp" style={{ color: 'var(--lm-dark)', fontWeight: 800, fontSize: '34px' }}>
+      <Container size="lg" pt={{ base: 20, md: 50 }} pb={{ base: 40, md: 80 }} px={{ base: 'md', sm: 'xl' }}>
+        <Title ta="center" order={1} mb={10} className="animate-slideUp" style={{ color: 'var(--lm-dark)', fontWeight: 800, fontSize: 'clamp(26px, 5vw, 34px)' }}>
           Наші спеціалісти
         </Title>
-        <Text ta="center" mb={40} fw={500} size="lg" className="animate-slideUp-delay-1" style={{ color: 'var(--lm-muted)' }}>
+        <Text ta="center" mb={{ base: 24, md: 40 }} fw={500} size="lg" className="animate-slideUp-delay-1" style={{ color: 'var(--lm-muted)', fontSize: 'clamp(15px, 3vw, 18px)' }}>
           Оберіть фахівця, який відгукується вам найбільше, та почніть шлях до себе.
         </Text>
 
-        {/* БЛОК ФІЛЬТРІВ */}
-        <Paper p="xl" radius="30px" mb={40} className="animate-slideUp-delay-1" style={{ backgroundColor: 'var(--lm-bg-alt)', border: '1px solid var(--lm-border)' }}>
+        <Paper p={{ base: 'md', sm: 'xl' }} radius="30px" mb={{ base: 30, md: 40 }} className="animate-slideUp-delay-1" style={{ backgroundColor: 'var(--lm-bg-alt)', border: '1px solid var(--lm-border)' }}>
           <Group mb="md" gap="xs">
             <ThemeIcon color="orange" variant="light" radius="xl"><IconFilter size={18} /></ThemeIcon>
             <Text fw={700} style={{ color: 'var(--lm-dark)' }}>Фільтрувати спеціалістів</Text>
           </Group>
           
-          <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="md" align="flex-end">
+          <SimpleGrid cols={{ base: 1, sm: 3 }} spacing={{ base: 'sm', md: 'md' }} align="flex-end">
             <Select 
               label="Спеціалізація" 
               placeholder="Оберіть напрямок" 
@@ -174,17 +173,17 @@ export function SpecialistsPage() {
         {loading ? (
           <Center h={200}><Loader color="orange" size="lg" /></Center>
         ) : specialists.length === 0 ? (
-          <Paper p={60} ta="center" radius="xl" style={{ border: '2px dashed var(--lm-border)', backgroundColor: 'transparent' }}>
+          <Paper p={{ base: 30, md: 60 }} ta="center" radius="xl" style={{ border: '2px dashed var(--lm-border)', backgroundColor: 'transparent' }}>
             <Text size="lg" fw={500} style={{ color: 'var(--lm-muted)' }}>Поки що жоден користувач не отримав статус психолога.</Text>
           </Paper>
         ) : filteredSpecialists.length === 0 ? (
-          <Paper p={60} ta="center" radius="xl" style={{ border: '2px dashed var(--lm-border)', backgroundColor: 'transparent' }}>
+          <Paper p={{ base: 30, md: 60 }} ta="center" radius="xl" style={{ border: '2px dashed var(--lm-border)', backgroundColor: 'transparent' }}>
             <Text size="lg" fw={500} mb="md" style={{ color: 'var(--lm-muted)' }}>За вашими фільтрами нікого не знайдено.</Text>
             <Button variant="light" color="orange" radius="xl" onClick={resetFilters}>Показати всіх</Button>
           </Paper>
         ) : (
-          <Stack gap={50}>
-            <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="xl">
+          <Stack gap={{ base: 30, md: 50 }}>
+            <SimpleGrid cols={{ base: 1, xs: 2, md: 3 }} spacing={{ base: 'md', md: 'xl' }}>
               {paginatedSpecialists.map((specialist) => {
                 const displayName = specialist.fullName || `${specialist.firstName || ''} ${specialist.lastName || ''}`.trim() || 'Анонімний спеціаліст';
 
@@ -192,7 +191,7 @@ export function SpecialistsPage() {
                   <Paper
                     key={specialist._id}
                     shadow="none"
-                    p={{ base: 28, md: 40 }}
+                    p={{ base: 20, sm: 24, md: 40 }} 
                     radius="30px"
                     className="card-hover"
                     style={{
@@ -210,13 +209,12 @@ export function SpecialistsPage() {
                       {specialist.avatarUrl ? (
                         <Avatar
                           src={`http://localhost:3000${specialist.avatarUrl}`}
-                          size={120}
-                          radius={120}
-                          style={{ border: '4px solid var(--lm-bg)', boxShadow: 'var(--lm-shadow-md)' }}
+                          radius="100%"
+                          style={{ width: 'clamp(90px, 20vw, 120px)', height: 'clamp(90px, 20vw, 120px)', border: '4px solid var(--lm-bg)', boxShadow: 'var(--lm-shadow-md)' }}
                         />
                       ) : (
-                        <ThemeIcon size={120} radius="100%" variant="light" style={{ backgroundColor: 'var(--lm-warm)', color: 'var(--lm-orange)' }}>
-                          <IconUser size={50} stroke={1.5} />
+                        <ThemeIcon radius="100%" variant="light" style={{ width: 'clamp(90px, 20vw, 120px)', height: 'clamp(90px, 20vw, 120px)', backgroundColor: 'var(--lm-warm)', color: 'var(--lm-orange)' }}>
+                          <IconUser size={40} stroke={1.5} />
                         </ThemeIcon>
                       )}
                       <Badge
@@ -227,11 +225,10 @@ export function SpecialistsPage() {
                       </Badge>
                     </Center>
 
-                    <Text fw={800} size="20px" style={{ color: 'var(--lm-dark)' }} mt="md" mb="xs">
+                    <Text fw={800} style={{ color: 'var(--lm-dark)', fontSize: 'clamp(18px, 4vw, 20px)' }} mt="md" mb="xs">
                       {displayName}
                     </Text>
                     
-                    {/* Виводимо вік та стать, якщо вони є, для зручності */}
                     {(specialist.age || specialist.gender && specialist.gender !== 'hidden') && (
                       <Text size="sm" fw={600} mb="xl" style={{ color: 'var(--lm-muted)' }}>
                         {specialist.age ? `${specialist.age} років` : ''} 
@@ -273,7 +270,7 @@ export function SpecialistsPage() {
                   onChange={setPage} 
                   color="orange" 
                   radius="xl" 
-                  size="lg"
+                  size="md" 
                   styles={{
                     control: {
                       border: 'none',

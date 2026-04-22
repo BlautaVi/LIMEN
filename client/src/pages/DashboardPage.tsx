@@ -16,7 +16,7 @@ const RELAX_VIDEOS = [
     id: '1',
     title: '15 хвилин йоги для зняття стресу',
     description: 'М\'яка практика для розслаблення тіла та заспокоєння нервової системи після важкого дня. Підходить для початківців.',
-    youtubeId: 'v7AYKMP6rOE' 
+    youtubeId: 'v7AYKMP6rOE'
   },
   {
     id: '2',
@@ -81,34 +81,36 @@ export function DashboardPage() {
   const filteredPosts = posts.filter(post => {
     if (activeTab === 'users') return post.author?.role !== 'psychologist';
     if (activeTab === 'psychologists') return post.author?.role === 'psychologist';
-    return true; 
+    return true;
   });
 
   return (
     <Box style={{ minHeight: '100vh', backgroundColor: 'var(--lm-bg)' }}>
       <Header />
-      <Container size="xl" py={{ base: 30, md: 60 }}>
+      <Container size="xl" py={{ base: 20, md: 60 }} px={{ base: 'md', sm: 'xl' }}>
 
-        <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="xl" mb={70} className="animate-slideUp">
+        <SimpleGrid cols={{ base: 1, xs: 2, md: 3 }} spacing={{ base: 'md', md: 'xl' }} mb={{ base: 40, md: 70 }} className="animate-slideUp">
           {ACTIONS.map((action, index) => (
             <Paper
-              key={index} radius="xl" p="xl" onClick={() => navigate(action.link)}
+              key={index} radius="xl" p={{ base: 'lg', md: 'xl' }} onClick={() => navigate(action.link)}
               className="card-hover"
               style={{
                 border: '1px solid var(--lm-border)', cursor: 'pointer',
                 backgroundColor: '#fff', display: 'flex', flexDirection: 'column',
-                justifyContent: 'space-between', minHeight: '320px', gap: '20px',
+                justifyContent: 'space-between', 
+                minHeight: 'auto', 
+                gap: '16px',
                 boxShadow: 'var(--lm-shadow-sm)',
               }}
             >
               <Text fw={800} size="xl" ta="center" style={{ color: 'var(--lm-dark)' }}>{action.title}</Text>
-              <Center>
+              <Center py={{ base: 'sm', md: 0 }}>
                 <ThemeIcon size={70} radius="100%" variant="light" style={{ backgroundColor: 'var(--lm-warm)', color: 'var(--lm-orange)' }}>
                   {action.icon}
                 </ThemeIcon>
               </Center>
               <Box style={{ flexGrow: 1, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
-                <Image src={action.image} alt={action.title} fit="contain" h={120} style={{ opacity: 0.85 }} />
+                <Image src={action.image} alt={action.title} fit="contain" h={{ base: 90, sm: 120 }} style={{ opacity: 0.85 }} />
               </Box>
             </Paper>
           ))}
@@ -116,25 +118,37 @@ export function DashboardPage() {
 
         <Title order={2} mb="xl" className="animate-slideUp-delay-1" style={{ color: 'var(--lm-dark)', textAlign: 'center', fontWeight: 800 }}>Стрічка спільноти</Title>
 
-        <Tabs value={activeTab} onChange={setActiveTab} mb={40} color="orange" variant="pills" radius="xl">
-          <Tabs.List justify="center" style={{ backgroundColor: 'var(--lm-border)', padding: '6px', borderRadius: 'var(--lm-radius-full)', display: 'inline-flex', margin: '0 auto', flexWrap: 'wrap', gap: '4px' }}>
-            <Tabs.Tab value="all" leftSection={<IconLayoutList size={18} />} style={{ fontWeight: 600 }}>Всі записи</Tabs.Tab>
-            <Tabs.Tab value="users" leftSection={<IconUsers size={18} />} style={{ fontWeight: 600 }}>Спільнота</Tabs.Tab>
-            <Tabs.Tab value="psychologists" leftSection={<IconStethoscope size={18} />} style={{ fontWeight: 600 }}>Поради психологів</Tabs.Tab>
-            <Tabs.Tab value="videos" leftSection={<IconVideo size={18} />} style={{ fontWeight: 600 }}>Релакс та Відео</Tabs.Tab>
+        <Tabs value={activeTab} onChange={setActiveTab} mb={{ base: 30, md: 40 }} color="orange" variant="pills" radius="xl">
+          <Tabs.List 
+            justify="center" 
+            style={{ 
+              backgroundColor: 'var(--lm-border)', 
+              padding: '6px', 
+              borderRadius: '30px', 
+              display: 'flex', 
+              margin: '0 auto', 
+              flexWrap: 'wrap', 
+              gap: '4px',
+              maxWidth: 'fit-content'
+            }}
+          >
+            <Tabs.Tab value="all" leftSection={<IconLayoutList size={16} />} style={{ fontWeight: 600 }}>Всі записи</Tabs.Tab>
+            <Tabs.Tab value="users" leftSection={<IconUsers size={16} />} style={{ fontWeight: 600 }}>Спільнота</Tabs.Tab>
+            <Tabs.Tab value="psychologists" leftSection={<IconStethoscope size={16} />} style={{ fontWeight: 600 }}>Поради</Tabs.Tab>
+            <Tabs.Tab value="videos" leftSection={<IconVideo size={16} />} style={{ fontWeight: 600 }}>Релакс</Tabs.Tab>
           </Tabs.List>
         </Tabs>
 
         {activeTab === 'videos' ? (
-          <SimpleGrid cols={{ base: 1, md: 2 }} spacing="xl" className="animate-slideUp">
+          <SimpleGrid cols={{ base: 1, md: 2 }} spacing={{ base: 'md', md: 'xl' }} className="animate-slideUp">
             {RELAX_VIDEOS.map((video) => (
-              <Paper 
-                key={video.id} 
-                p="xl" 
-                radius="xl" 
-                style={{ 
-                  backgroundColor: '#fff', 
-                  border: '1px solid var(--lm-border)', 
+              <Paper
+                key={video.id}
+                p={{ base: 'lg', md: 'xl' }}
+                radius="xl"
+                style={{
+                  backgroundColor: '#fff',
+                  border: '1px solid var(--lm-border)',
                   boxShadow: 'var(--lm-shadow-sm)',
                   display: 'flex',
                   flexDirection: 'column'
@@ -160,7 +174,7 @@ export function DashboardPage() {
           ) : filteredPosts.length === 0 ? (
             <Text ta="center" c="dimmed" mt={30} size="lg">У цій категорії поки немає постів </Text>
           ) : (
-            <SimpleGrid cols={{ base: 1, md: 2 }} spacing="xl">
+            <SimpleGrid cols={{ base: 1, lg: 2 }} spacing={{ base: 'md', md: 'xl' }}>
               {filteredPosts.map((post) => {
                 const latestComment = post.comments && post.comments.length > 0 ? post.comments[post.comments.length - 1] : null;
                 const isPsychologistPost = post.author?.role === 'psychologist';
@@ -168,13 +182,13 @@ export function DashboardPage() {
 
                 return (
                   <Paper
-                    key={post._id} shadow="none" p={{ base: 24, md: 30 }} radius="xl"
+                    key={post._id} shadow="none" p={{ base: 20, sm: 24, md: 30 }} radius="xl"
                     className="card-hover"
                     style={{
                       border: isPsychologistPost ? '1px solid var(--lm-violet-border)' : '1px solid var(--lm-border)',
                       backgroundColor: '#fff', cursor: 'pointer',
                       boxShadow: 'var(--lm-shadow-sm)',
-                      display: 'flex', flexDirection: 'column' 
+                      display: 'flex', flexDirection: 'column'
                     }}
                     onClick={() => navigate(`/posts/${post._id}`)}
                   >
@@ -186,21 +200,21 @@ export function DashboardPage() {
                       {post.visibility === 'anonymous' && <Badge color="gray" variant="outline" size="sm">Анонімно</Badge>}
                     </Group>
 
-                    <Group gap="sm" mb="lg" onClick={(e) => { e.stopPropagation(); const authorId = post.author?._id || post.author; if (authorId) navigate(`/user/${authorId}`); }} style={{ cursor: 'pointer', width: 'fit-content' }}>
+                    <Group gap="sm" mb="lg" wrap="nowrap" onClick={(e) => { e.stopPropagation(); const authorId = post.author?._id || post.author; if (authorId) navigate(`/user/${authorId}`); }} style={{ cursor: 'pointer' }}>
                       <Avatar src={post.author?.avatarUrl ? `http://localhost:3000${post.author.avatarUrl}` : null} radius="xl" size="md" style={{ boxShadow: 'var(--lm-shadow-sm)' }} />
-                      <Box>
-                        <Group gap="xs">
-                          <Text size="sm" fw={700} style={{ color: 'var(--lm-dark)' }}>
+                      <Box style={{ flex: 1, overflow: 'hidden' }}>
+                        <Group gap="xs" wrap="nowrap">
+                          <Text size="sm" fw={700} style={{ color: 'var(--lm-dark)' }} truncate>
                             {post.author?.fullName || `${post.author?.firstName || ''} ${post.author?.lastName || ''}`.trim() || 'Анонім'}
                           </Text>
-                          {isPsychologistPost && <Badge size="xs" color="violet" variant="filled">Психолог</Badge>}
+                          {isPsychologistPost && <Badge size="xs" color="violet" variant="filled" style={{ flexShrink: 0 }}>Психолог</Badge>}
                         </Group>
-                        <Text size="xs" style={{ color: 'var(--lm-muted)' }}>{new Date(post.createdAt).toLocaleDateString('uk-UA')} • {post.emotion}</Text>
+                        <Text size="xs" style={{ color: 'var(--lm-muted)' }} truncate>{new Date(post.createdAt).toLocaleDateString('uk-UA')} • {post.emotion}</Text>
                       </Box>
                     </Group>
 
                     <Text fw={800} size="lg" style={{ color: 'var(--lm-dark)' }} mb="xs">{post.title || 'Без заголовка'}</Text>
-                    
+
                     <Box style={{ flexGrow: 1 }}>
                       <Text style={{ color: 'var(--lm-dark-soft)', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden', fontSize: '15px', lineHeight: 1.6 }}>{post.content}</Text>
                       <Text size="sm" mt="xs" fw={700} style={{ color: 'var(--lm-orange)' }}>Читати далі →</Text>
@@ -229,7 +243,7 @@ export function DashboardPage() {
                         <Group justify="space-between" mb={4}>
                           <Text size="10px" fw={700} style={{ color: 'var(--lm-muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Останній коментар</Text>
                         </Group>
-                        <Text component="div" size="xs" fw={700} style={{ color: 'var(--lm-dark)', display: 'flex', alignItems: 'center', gap: '6px' }} mb={2}>
+                        <Text component="div" size="xs" fw={700} style={{ color: 'var(--lm-dark)', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }} mb={2}>
                           {latestComment.author?.fullName || 'Анонім'}
                           {latestComment.author?.role === 'psychologist' && <Badge size="10px" color="violet" variant="light">Психолог</Badge>}
                         </Text>
@@ -240,11 +254,11 @@ export function DashboardPage() {
                     {!post.isSupportOnly && currentUser.role === 'psychologist' && !isMyPost && (
                       <Group mt="auto" pt={latestComment ? "md" : 0} wrap="nowrap" onClick={(e) => e.stopPropagation()}>
                         <TextInput
-                          placeholder="Коротка порада фахівця..." size="sm" radius="xl" style={{ flex: 1 }} value={commentInputs[post._id] || ''}
+                          placeholder="Коротка порада..." size="sm" radius="xl" style={{ flex: 1 }} value={commentInputs[post._id] || ''}
                           onChange={(e) => setCommentInputs({ ...commentInputs, [post._id]: e.currentTarget.value })}
                           styles={{ input: { backgroundColor: 'var(--lm-bg-input)', border: '1px solid var(--lm-border)', '&:focus': { borderColor: 'var(--lm-violet)' } } }}
                         />
-                        <Button size="sm" radius="xl" color="violet" onClick={() => handleAddComment(post._id)}>Відправити</Button>
+                        <Button size="sm" radius="xl" color="violet" onClick={() => handleAddComment(post._id)} px={{ base: 'xs', sm: 'md' }}>Відправити</Button>
                       </Group>
                     )}
                   </Paper>

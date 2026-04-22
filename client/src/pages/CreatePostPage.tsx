@@ -46,7 +46,8 @@ export function CreatePostPage() {
       color: colors.textDark,
       fontWeight: 500,
       fontSize: '16px',
-      padding: '20px 24px',
+      padding: '16px 24px',
+      height: '54px', 
       transition: 'all 0.3s var(--lm-ease)',
       '&:focus': {
         borderColor: colors.buttonBright,
@@ -57,8 +58,8 @@ export function CreatePostPage() {
     label: {
       color: colors.textDark,
       fontWeight: 700,
-      marginBottom: '10px',
-      fontSize: '15px'
+      marginBottom: '8px', 
+      fontSize: '14px'
     }
   };
 
@@ -105,13 +106,13 @@ export function CreatePostPage() {
   return (
     <Box style={{ minHeight: '100vh', backgroundColor: colors.bgApp }}>
       <Header />
-      <Container size="lg" pt={{ base: 30, md: 60 }} pb={80}>
+      <Container size="lg" pt={{ base: 20, md: 60 }} pb={{ base: 40, md: 80 }} px={{ base: 'sm', sm: 'md' }}>
 
         <Center>
           <Paper
             shadow="none"
-            radius={30}
-            p={{ base: 24, md: 50 }}
+            radius={{ base: 'xl', md: 30 }} 
+            p={{ base: 20, sm: 30, md: 50 }} 
             className="animate-slideUp"
             style={{
               width: '100%',
@@ -121,21 +122,21 @@ export function CreatePostPage() {
               boxShadow: colors.shadow
             }}
           >
-            <Group justify="space-between" align="center" mb={40}>
-              <Title order={2} style={{ color: colors.textDark, fontWeight: 800, fontSize: '28px' }}>
+            <Group justify="space-between" align="center" mb={{ base: 24, md: 40 }} wrap="nowrap">
+              <Title order={2} style={{ color: colors.textDark, fontWeight: 800, fontSize: 'clamp(20px, 4vw, 28px)', lineHeight: 1.2 }}>
                 {isPsychologist ? 'Опублікувати статтю 🧠' : 'Поділіться тим, що на душі 💙'}
               </Title>
-              {isPsychologist && <Badge color="violet" size="xl" radius="md" variant="light">Режим спеціаліста</Badge>}
+              {isPsychologist && <Badge color="violet" size="lg" radius="md" variant="light" display={{ base: 'none', sm: 'flex' }}>Режим спеціаліста</Badge>}
             </Group>
 
             <Grid gutter={{ base: 30, md: 60 }}>
 
               <Grid.Col span={{ base: 12, md: 7 }}>
-                <Stack gap="xl" h="100%">
+                <Stack gap="lg" h="100%">
                   <TextInput
                     placeholder={isPsychologist ? 'Заголовок вашої статті...' : 'Короткий заголовок (за бажанням)...'}
                     radius="xl"
-                    size="xl"
+                    size="md" 
                     styles={inputStyles}
                     value={title}
                     onChange={(e) => setTitle(e.currentTarget.value)}
@@ -145,28 +146,35 @@ export function CreatePostPage() {
                     <Textarea
                       placeholder={isPsychologist ? 'Поділіться професійним досвідом, технікою самодопомоги або корисною інформацією...' : 'Розкажіть про свою ситуацію якомога детальніше...'}
                       radius="xl"
-                      size="xl"
+                      size="md"
                       styles={{
                         ...inputStyles,
                         root: { flex: 1, display: 'flex', flexDirection: 'column' },
                         wrapper: { flex: 1 },
-                        input: { ...inputStyles.input, height: '100% !important', resize: 'none', paddingTop: '24px', paddingBottom: '24px', borderRadius: '24px' }
+                        input: { 
+                          ...inputStyles.input, 
+                          height: '100% !important', 
+                          minHeight: '200px', 
+                          resize: 'none', 
+                          paddingTop: '20px', 
+                          paddingBottom: '20px', 
+                          borderRadius: '24px' 
+                        }
                       }}
-                      minRows={14}
                       value={content}
                       onChange={(e) => setContent(e.currentTarget.value)}
                     />
 
                     {preview && (
-                      <Box mt="xl" style={{ position: 'relative', width: 'fit-content' }}>
-                        <Image src={preview} w={180} h={180} radius="xl" fit="cover" style={{ border: `3px solid ${colors.borderLight}`, boxShadow: 'var(--lm-shadow-md)' }} />
+                      <Box mt="lg" style={{ position: 'relative', width: 'fit-content' }}>
+                        <Image src={preview} w={{ base: 120, sm: 180 }} h={{ base: 120, sm: 180 }} radius="xl" fit="cover" style={{ border: `3px solid ${colors.borderLight}`, boxShadow: 'var(--lm-shadow-md)' }} />
                         <CloseButton
                           onClick={clearFile}
                           variant="filled"
                           color="red"
-                          size="md"
+                          size="sm"
                           radius="xl"
-                          style={{ position: 'absolute', top: -10, right: -10, boxShadow: '0 4px 10px rgba(255,0,0,0.2)' }}
+                          style={{ position: 'absolute', top: -8, right: -8, boxShadow: '0 4px 10px rgba(255,0,0,0.2)' }}
                         />
                       </Box>
                     )}
@@ -175,7 +183,7 @@ export function CreatePostPage() {
               </Grid.Col>
 
               <Grid.Col span={{ base: 12, md: 5 }}>
-                <Stack justify="flex-start" gap="xl" h="100%">
+                <Stack justify="flex-start" gap="lg" h="100%">
 
                   <Select
                     label={isPsychologist ? "Основна тематика (Емоція)" : "Що ви відчуваєте?"}
@@ -184,7 +192,7 @@ export function CreatePostPage() {
                     onChange={setEmotion}
                     allowDeselect={false}
                     radius="xl"
-                    size="lg"
+                    size="md"
                     styles={inputStyles}
                   />
 
@@ -201,7 +209,7 @@ export function CreatePostPage() {
                         onChange={setRequestType}
                         allowDeselect={false}
                         radius="xl"
-                        size="lg"
+                        size="md"
                         styles={inputStyles}
                       />
 
@@ -216,12 +224,12 @@ export function CreatePostPage() {
                         onChange={setVisibility}
                         allowDeselect={false}
                         radius="xl"
-                        size="lg"
+                        size="md"
                         styles={inputStyles}
                       />
 
                       <Paper
-                        p="xl"
+                        p={{ base: 'md', sm: 'xl' }}
                         radius="xl"
                         mt="xs"
                         style={{
@@ -235,13 +243,13 @@ export function CreatePostPage() {
                         <Switch
                           labelPosition="left"
                           label={
-                            <Group gap="sm">
-                              <IconLock size={20} color={colors.textDark} />
-                              <Text size="md" c={colors.textDark} fw={600}>Заборонити поради (тільки реакції)</Text>
+                            <Group gap="sm" wrap="nowrap">
+                              <IconLock size={20} color={colors.textDark} style={{ flexShrink: 0 }} />
+                              <Text size="sm" c={colors.textDark} fw={600} style={{ lineHeight: 1.2 }}>Заборонити поради (тільки реакції)</Text>
                             </Group>
                           }
                           color="orange"
-                          size="lg"
+                          size="md"
                           checked={isSupportOnly}
                           onChange={(event) => setIsSupportOnly(event.currentTarget.checked)}
                           style={{ pointerEvents: 'none' }}
@@ -251,8 +259,8 @@ export function CreatePostPage() {
                   )}
 
                   {isPsychologist && (
-                    <Paper p="xl" radius="xl" mt="xs" style={{ backgroundColor: colors.bgLight, border: `1px solid transparent` }}>
-                      <Text size="md" c={colors.textDark} fw={500} style={{ lineHeight: 1.6 }}>
+                    <Paper p={{ base: 'md', sm: 'xl' }} radius="xl" mt="xs" style={{ backgroundColor: colors.bgLight, border: `1px solid transparent` }}>
+                      <Text size="sm" c={colors.textDark} fw={500} style={{ lineHeight: 1.6 }}>
                         💡 Ваша стаття буде опублікована публічно у загальній стрічці. Вона отримає спеціальну позначку <b>"Поради психологів"</b>, щоб користувачам було легше її знайти.
                       </Text>
                     </Paper>
@@ -264,34 +272,34 @@ export function CreatePostPage() {
                     variant="light"
                     color={isPsychologist ? "violet" : "gray"}
                     radius="xl"
-                    size="lg"
-                    mt="sm"
+                    size="md"
+                    mt={{ base: 0, md: 'auto' }} 
                     onClick={() => fileInputRef.current?.click()}
-                    leftSection={<IconPhotoPlus size={22} />}
+                    leftSection={<IconPhotoPlus size={20} />}
                     style={{
                       backgroundColor: 'transparent',
                       border: `2px dashed ${colors.borderLight}`,
                       color: colors.textDark,
-                      height: '60px',
+                      height: '54px',
                       transition: 'all 0.25s var(--lm-ease)',
                     }}
                   >
                     {file ? 'Змінити обкладинку' : 'Прикріпити обкладинку'}
                   </Button>
 
-                  <Box style={{ marginTop: 'auto', paddingTop: '30px' }}>
+                  <Box style={{ paddingTop: '16px' }}>
                     <Button
                       fullWidth
                       radius="xl"
-                      size="xl"
+                      size="lg" 
                       loading={loading}
                       onClick={handleSubmit}
                       style={{
                         backgroundColor: colors.buttonBright,
                         color: '#fff',
                         fontWeight: 800,
-                        fontSize: '18px',
-                        height: '65px',
+                        fontSize: '16px',
+                        height: '58px',
                         boxShadow: isPsychologist ? '0 10px 25px rgba(121, 80, 242, 0.3)' : 'var(--lm-shadow-orange)',
                         transition: 'transform 0.25s var(--lm-ease)'
                       }}
