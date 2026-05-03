@@ -66,7 +66,7 @@ export function SpecialistProfilePage() {
           className="animate-slideUp"
           style={{
             border: '1px solid var(--lm-border)',
-            backgroundColor: '#fff',
+            backgroundColor: 'var(--lm-card-bg)',
             position: 'relative',
             boxShadow: 'var(--lm-shadow-lg)'
           }}
@@ -113,7 +113,7 @@ export function SpecialistProfilePage() {
           <SimpleGrid cols={{ base: 1, sm: 2 }} spacing={{ base: 'md', md: 'xl' }} mb={{ base: 30, md: 40 }}>
             <Paper p={{ base: 'lg', md: 'xl' }} radius="xl" style={{ backgroundColor: 'var(--lm-bg-alt)', border: '1px solid var(--lm-border)' }}>
               <Group gap="md" mb="lg">
-                <ThemeIcon size={48} color="orange" variant="light" radius="100%" style={{ backgroundColor: '#fff', boxShadow: 'var(--lm-shadow-sm)' }}><IconUser size={24} stroke={2} /></ThemeIcon>
+                <ThemeIcon size={48} color="orange" variant="light" radius="100%" style={{ backgroundColor: 'var(--lm-card-bg)', boxShadow: 'var(--lm-shadow-sm)' }}><IconUser size={24} stroke={2} /></ThemeIcon>
                 <Text fw={800} size="lg" style={{ color: 'var(--lm-dark)' }}>Особисті дані</Text>
               </Group>
               <Text size="16px" style={{ color: 'var(--lm-dark-soft)' }} mb={8}><b style={{ color: 'var(--lm-dark)' }}>Стать:</b> {specialist.gender === 'male' ? 'Чоловіча' : specialist.gender === 'female' ? 'Жіноча' : 'Не вказано'}</Text>
@@ -122,7 +122,7 @@ export function SpecialistProfilePage() {
 
             <Paper p={{ base: 'lg', md: 'xl' }} radius="xl" style={{ backgroundColor: 'var(--lm-bg-alt)', border: '1px solid var(--lm-border)' }}>
               <Group gap="md" mb="lg">
-                <ThemeIcon size={48} color="violet" variant="light" radius="100%" style={{ backgroundColor: '#fff', boxShadow: 'var(--lm-shadow-sm)' }}><IconBrain size={24} stroke={2} /></ThemeIcon>
+                <ThemeIcon size={48} color="violet" variant="light" radius="100%" style={{ backgroundColor: 'var(--lm-card-bg)', boxShadow: 'var(--lm-shadow-sm)' }}><IconBrain size={24} stroke={2} /></ThemeIcon>
                 <Text fw={800} size="lg" style={{ color: 'var(--lm-dark)' }}>Напрямки роботи</Text>
               </Group>
               <Group gap="xs">

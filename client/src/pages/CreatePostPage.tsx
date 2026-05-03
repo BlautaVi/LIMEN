@@ -22,20 +22,12 @@ export function CreatePostPage() {
   const [requestType, setRequestType] = useState<string | null>('vent');
   const [visibility, setVisibility] = useState<string | null>('public');
   const [isSupportOnly, setIsSupportOnly] = useState(false);
-
-  const colors = isPsychologist ? {
-    bgApp: 'var(--lm-violet-light)',
-    bgLight: '#F5F0FF',
-    borderLight: 'var(--lm-violet-border)',
-    textDark: '#5F3DC4',
-    buttonBright: 'var(--lm-violet)',
-    shadow: '0 15px 40px rgba(95, 61, 196, 0.08)'
-  } : {
+  const colors = {
     bgApp: 'var(--lm-bg)',
-    bgLight: 'var(--lm-input-bg)',
+    bgLight: 'var(--lm-bg-input)',
     borderLight: 'var(--lm-border)',
     textDark: 'var(--lm-dark)',
-    buttonBright: 'var(--lm-orange)',
+    buttonBright: isPsychologist ? 'var(--lm-violet, #7950f2)' : 'var(--lm-orange)',
     shadow: 'var(--lm-shadow-md)'
   };
 
@@ -51,7 +43,7 @@ export function CreatePostPage() {
       transition: 'all 0.3s var(--lm-ease)',
       '&:focus': {
         borderColor: colors.buttonBright,
-        backgroundColor: '#fff',
+        backgroundColor: 'var(--lm-card-bg)',
         boxShadow: `0 0 0 3px ${isPsychologist ? 'rgba(121,80,242,0.12)' : 'rgba(232,106,83,0.12)'}`
       }
     },
@@ -117,7 +109,7 @@ export function CreatePostPage() {
             style={{
               width: '100%',
               maxWidth: '1000px',
-              backgroundColor: '#fff',
+              backgroundColor: 'var(--lm-card-bg)',
               border: `1px solid ${colors.borderLight}`,
               boxShadow: colors.shadow
             }}

@@ -1,17 +1,38 @@
 import { useEffect, useState } from 'react';
-import { Group, ActionIcon, Menu, Indicator, Text, Box, ScrollArea, Avatar, Tooltip, Burger, Drawer, Stack, Button, Divider } from '@mantine/core';
+import { Group, ActionIcon, Menu, Indicator, Text, Box, ScrollArea, Avatar, Tooltip, Burger, Drawer, Stack, Button, Divider, Modal, ThemeIcon, SimpleGrid, Paper } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { IconBell, IconMessageCircle, IconBook, IconUser, IconLogout, IconLayoutList, IconChecks } from '@tabler/icons-react';
+import { 
+  IconBell, IconMessageCircle, IconBook, IconUser, IconLogout, 
+  IconLayoutList, IconChecks, IconAlertTriangle, IconPhone, IconShieldCheck 
+} from '@tabler/icons-react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { IconShieldLock } from '@tabler/icons-react';
+import { useMantineColorScheme, useComputedColorScheme } from '@mantine/core';
+import { IconSun, IconMoon } from '@tabler/icons-react';
+
 import api from '../services/api';
+
+const EMERGENCY_CONTACTS = [
+  { name: 'Lifeline Ukraine', phone: '7333', desc: 'Національна лінія запобігання суїцидам' },
+  { name: 'Контакт-центр МОЗ', phone: '0 800 60 20 19', desc: 'Безкоштовно та цілодобово' },
+  { name: 'Ла Страда-Україна', phone: '116 123', desc: 'Запобігання домашньому насильству' },
+  { name: 'Служба порятунку', phone: '101 / 112', desc: 'Екстрені ситуації' }
+];
 
 export function Header() {
   const navigate = useNavigate();
   const location = useLocation();
   const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
-
+  const { setColorScheme } = useMantineColorScheme();
+  const computedColorScheme = useComputedColorScheme('light');
+  
   const [notifications, setNotifications] = useState<any[]>([]);
   const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] = useDisclosure(false);
+  const [sosOpened, { open: openSos, close: closeSos }] = useDisclosure(false);
+
+  const toggleColorScheme = () => {
+    setColorScheme(computedColorScheme === 'dark' ? 'light' : 'dark');
+  };
 
   useEffect(() => {
     const fetchNotifications = async () => {
@@ -91,7 +112,7 @@ export function Header() {
   });
 
   const navBtnHover = (path: string) => ({
-    root: { '&:hover': { backgroundColor: isActive(path) ? 'var(--lm-orange-light)' : 'var(--lm-input-bg)', transform: 'translateY(-1px)' } }
+    root: { '&:hover': { backgroundColor: isActive(path) ? 'var(--lm-orange-light)' : 'var(--lm-bg-input)', transform: 'translateY(-1px)' } }
   });
 
   const handleMobileNav = (path: string) => {
@@ -101,6 +122,52 @@ export function Header() {
 
   return (
     <>
+      <Modal 
+        opened={sosOpened} 
+        onClose={closeSos} 
+        title={
+          <Group gap="sm">
+            <ThemeIcon color="red" variant="filled" radius="xl" size="lg"><IconAlertTriangle size={20} /></ThemeIcon>
+            <Text fw={800} size="xl" c="red.8">Екстрена допомога</Text>
+          </Group>
+        }
+        centered 
+        radius="xl"
+        size="lg"
+        overlayProps={{ blur: 4, opacity: 0.4 }}
+        styles={{ content: { backgroundColor: 'var(--lm-card-bg)', border: '1px solid var(--lm-border)' }, header: { backgroundColor: 'var(--lm-card-bg)' } }}
+      >
+        <Stack gap="md">
+          <Text size="sm" fw={500} style={{ color: 'var(--lm-dark-soft)' }}>
+            Якщо ви відчуваєте, що не можете впоратися самостійно, або вашому життю загрожує небезпека - будь ласка, зверніться до спеціалістів негайно.
+          </Text>
+
+          <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
+            {EMERGENCY_CONTACTS.map((contact) => (
+              <Paper key={contact.name} p="md" radius="lg" withBorder style={{ backgroundColor: 'var(--lm-bg-alt)', borderColor: 'var(--lm-border)' }}>
+                <Text fw={800} size="sm" c="red.9" mb={4}>{contact.name}</Text>
+                <Group gap="xs" mb={4}>
+                  <IconPhone size={16} color="red" />
+                  <Text fw={900} size="lg" c="red.7" component="a" href={`tel:${contact.phone.replace(/\s/g, '')}`} style={{ textDecoration: 'none' }}>
+                    {contact.phone}
+                  </Text>
+                </Group>
+                <Text size="xs" c="red.6" fw={500}>{contact.desc}</Text>
+              </Paper>
+            ))}
+          </SimpleGrid>
+
+          <Divider label="Limen Safe Space" labelPosition="center" color="red.1" />
+          
+          <Group gap="sm" p="sm" style={{ backgroundColor: 'var(--lm-bg-alt)', borderRadius: '12px', flexWrap: 'nowrap' }}>
+            <IconShieldCheck size={24} color="#A0AEC0" style={{ flexShrink: 0 }} />
+            <Text size="xs" style={{ color: 'var(--lm-muted)', flex: 1 }}>
+              Ми поруч. Ви завжди можете анонімно написати у стрічку спільноти або звернутися до наших перевірених фахівців.
+            </Text>
+          </Group>
+        </Stack>
+      </Modal>
+
       <Box
         className="glass"
         style={{
@@ -135,6 +202,39 @@ export function Header() {
           </Text>
 
           <Group gap="sm">
+            <Tooltip label="Екстрена допомога" position="bottom" withArrow color="red">
+              <Button 
+                color="red" 
+                variant="filled" 
+                radius="xl" 
+                size="xs" 
+                leftSection={<IconAlertTriangle size={16} stroke={3} />}
+                onClick={openSos}
+                style={{ 
+                  boxShadow: '0 4px 12px rgba(255, 0, 0, 0.2)',
+                  animation: 'pulse 2s infinite'
+                }}
+              >
+                SOS
+              </Button>
+            </Tooltip>
+            <Tooltip label={computedColorScheme === 'dark' ? "Світла тема" : "Темна тема"} position="bottom" withArrow>
+              <ActionIcon
+                onClick={toggleColorScheme}
+                variant="subtle"
+                size="xl"
+                radius="xl"
+                style={{ color: 'var(--lm-muted)', transition: 'all 0.25s var(--lm-ease)' }}
+                styles={{ root: { '&:hover': { backgroundColor: 'var(--lm-bg-input)', transform: 'translateY(-1px)' } } }}
+              >
+                {computedColorScheme === 'dark' ? (
+                  <IconSun size={22} stroke={2} color="var(--lm-orange)" />
+                ) : (
+                  <IconMoon size={22} stroke={2} />
+                )}
+              </ActionIcon>
+            </Tooltip>
+
             <Group visibleFrom="sm" gap="sm">
               <ActionIcon
                 variant="subtle"
@@ -170,14 +270,14 @@ export function Header() {
                   <ActionIcon
                     variant="subtle" size="xl" radius="xl" title="Сповіщення"
                     style={{ color: 'var(--lm-muted)', transition: 'all 0.25s var(--lm-ease)' }}
-                    styles={{ root: { '&:hover': { backgroundColor: 'var(--lm-input-bg)', transform: 'translateY(-1px)' } } }}
+                    styles={{ root: { '&:hover': { backgroundColor: 'var(--lm-bg-input)', transform: 'translateY(-1px)' } } }}
                   >
                     <IconBell size={22} stroke={2} />
                   </ActionIcon>
                 </Indicator>
               </Menu.Target>
 
-              <Menu.Dropdown p="md">
+              <Menu.Dropdown p="md" style={{ backgroundColor: 'var(--lm-card-bg)', border: '1px solid var(--lm-border)' }}>
                 <Group justify="space-between" align="center" mb={12} px={4}>
                   <Text style={{ fontSize: '11px', fontWeight: 700, color: 'var(--lm-muted)', textTransform: 'uppercase', letterSpacing: '0.8px' }}>
                     Нові сповіщення
@@ -206,7 +306,7 @@ export function Header() {
                       <Menu.Item
                         key={notif._id}
                         onClick={() => handleNotificationClick(notif)}
-                        style={{ borderBottom: '1px solid var(--lm-border)', padding: '14px 12px', borderRadius: '12px', transition: 'background-color 0.2s' }}
+                        style={{ borderBottom: '1px solid var(--lm-border)', padding: '14px 12px', borderRadius: '12px', transition: 'background-color 0.2s', '&:hover': { backgroundColor: 'var(--lm-bg-input)' } }}
                       >
                         <Text size="14px" fw={600} style={{ color: 'var(--lm-dark)', whiteSpace: 'normal', lineHeight: 1.5 }}>
                           {getNotificationText(notif)}
@@ -236,10 +336,21 @@ export function Header() {
                     }}
                   />
                 </Menu.Target>
-                <Menu.Dropdown p="xs">
+                <Menu.Dropdown p="xs" style={{ backgroundColor: 'var(--lm-card-bg)', border: '1px solid var(--lm-border)' }}>
                   <Menu.Label style={{ fontSize: '13px', fontWeight: 600, color: 'var(--lm-muted)' }}>
                     Привіт, {currentUser.fullName || 'Користувач'}
                   </Menu.Label>
+                  
+                  {currentUser.role === 'admin' && (
+                    <Menu.Item 
+                      color="red" 
+                      leftSection={<IconShieldLock size={16} stroke={2} />} 
+                      onClick={() => navigate('/admin')} 
+                      style={{ fontWeight: 600 }}
+                    >
+                      Панель керування
+                    </Menu.Item>
+                  )}
                   <Menu.Item leftSection={<IconUser size={16} stroke={2} />} onClick={() => navigate('/profile')} style={{ fontWeight: 500, color: 'var(--lm-dark)' }}>
                     Мій профіль
                   </Menu.Item>
@@ -269,6 +380,21 @@ export function Header() {
         }}
       >
         <Stack gap="sm" mt="md">
+          <Button color="red" leftSection={<IconAlertTriangle size={20} />} onClick={() => { openSos(); closeDrawer(); }} radius="md" size="lg" justify="flex-start" mb="sm">Екстрена допомога (SOS)</Button>
+          {currentUser.role === 'admin' && (
+            <Button 
+              color="red"
+              variant="light"
+              size="lg"
+              radius="md"
+              justify="flex-start"
+              leftSection={<IconShieldLock size={20} />}
+              onClick={() => handleMobileNav('/admin')}
+              style={{ fontWeight: 600 }}
+            >
+              Панель керування
+            </Button>
+          )}
           <Button 
             variant={isActive('/dashboard') ? 'light' : 'subtle'} color="orange" 
             size="lg" radius="md" justify="flex-start" 
@@ -297,7 +423,7 @@ export function Header() {
           <Divider my="sm" color="var(--lm-border)" />
 
           <Group wrap="nowrap" gap="md" p="xs">
-            <Avatar src={currentUser.avatarUrl ? `http://localhost:3000${currentUser.avatarUrl}` : null} radius="xl" size="md" />
+            <Avatar src={currentUser.avatarUrl ? `http://localhost:3000${currentUser.avatarUrl}` : null} radius="xl" size="md" style={{ border: '2px solid var(--lm-border)' }} />
             <Box style={{ overflow: 'hidden' }}>
               <Text fw={700} size="sm" truncate style={{ color: 'var(--lm-dark)' }}>{currentUser.fullName || 'Користувач'}</Text>
               <Text size="xs" style={{ color: 'var(--lm-muted)' }}>{currentUser.role === 'psychologist' ? 'Психолог' : 'Користувач'}</Text>
@@ -321,6 +447,14 @@ export function Header() {
           </Button>
         </Stack>
       </Drawer>
+
+      <style>{`
+        @keyframes pulse {
+          0% { transform: scale(1); }
+          50% { transform: scale(1.05); box-shadow: 0 0 20px rgba(255, 0, 0, 0.4); }
+          100% { transform: scale(1); }
+        }
+      `}</style>
     </>
   );
 }

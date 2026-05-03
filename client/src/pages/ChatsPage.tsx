@@ -209,7 +209,7 @@ export function ChatsPage() {
             minDate={new Date()}
             radius="xl"
             size="md"
-            styles={{ input: { backgroundColor: 'var(--lm-bg-input)', border: '1px solid transparent', '&:focus': { borderColor: 'var(--lm-orange)' } } }}
+            styles={{ input: { backgroundColor: 'var(--lm-bg-input)', border: '1px solid transparent', color: 'var(--lm-dark)', '&:focus': { borderColor: 'var(--lm-orange)' } } }}
           />
           <TextInput
             label="Коментар (тема або побажання)"
@@ -218,7 +218,7 @@ export function ChatsPage() {
             onChange={(e) => setConsultNote(e.currentTarget.value)}
             radius="xl"
             size="md"
-            styles={{ input: { backgroundColor: 'var(--lm-bg-input)', border: '1px solid transparent', '&:focus': { borderColor: 'var(--lm-orange)' } } }}
+            styles={{ input: { backgroundColor: 'var(--lm-bg-input)', border: '1px solid transparent', color: 'var(--lm-dark)', '&:focus': { borderColor: 'var(--lm-orange)' } } }}
           />
           <Button fullWidth radius="xl" size="lg" mt="md" onClick={handleSendConsultation} disabled={!consultDate}
             style={{ backgroundColor: 'var(--lm-orange)', color: '#fff', fontWeight: 700, boxShadow: 'var(--lm-shadow-orange)' }}
@@ -234,16 +234,16 @@ export function ChatsPage() {
           radius={{ base: 0, sm: 'xl' }} 
           style={{ 
             flexGrow: 1, display: 'flex', overflow: 'hidden', 
-            border: '1px solid var(--lm-border)', borderTop: 'none', borderBottom: 'none', backgroundColor: '#fff',
+            border: '1px solid var(--lm-border)', borderTop: 'none', borderBottom: 'none', backgroundColor: 'var(--lm-card-bg)',
             boxShadow: 'var(--lm-shadow-sm)'
           }}
         >
           
           <Box 
             display={{ base: activeChatId ? 'none' : 'flex', md: 'flex' }}
-            style={{ width: '100%', maxWidth: '380px', minWidth: '300px', flex: '0 0 auto', backgroundColor: '#fff', borderRight: '1px solid var(--lm-border)', flexDirection: 'column', zIndex: 2 }}
+            style={{ width: '100%', maxWidth: '380px', minWidth: '300px', flex: '0 0 auto', backgroundColor: 'var(--lm-card-bg)', borderRight: '1px solid var(--lm-border)', flexDirection: 'column', zIndex: 2 }}
           >
-            <Box p="24px" style={{ borderBottom: '1px solid var(--lm-border)', backgroundColor: '#fff' }}>
+            <Box p="24px" style={{ borderBottom: '1px solid var(--lm-border)', backgroundColor: 'var(--lm-card-bg)' }}>
               <Text fw={800} size="24px" style={{ color: 'var(--lm-dark)', letterSpacing: '-0.5px' }}>Діалоги</Text>
             </Box>
             
@@ -269,11 +269,11 @@ export function ChatsPage() {
                         transition: 'all 0.2s ease',
                         borderBottom: '1px solid var(--lm-border)'
                       }}
-                      onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.backgroundColor = '#fff' }}
+                      onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.backgroundColor = 'var(--lm-card-bg)' }}
                       onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.backgroundColor = 'transparent' }}
                     >
                       <Group wrap="nowrap" gap="md">
-                        <Avatar src={oUser.avatarUrl ? `http://localhost:3000${oUser.avatarUrl}` : null} radius="xl" size="md" style={{ border: '2px solid #fff', boxShadow: 'var(--lm-shadow-sm)' }} />
+                        <Avatar src={oUser.avatarUrl ? `http://localhost:3000${oUser.avatarUrl}` : null} radius="xl" size="md" style={{ border: '2px solid var(--lm-card-bg)', boxShadow: 'var(--lm-shadow-sm)' }} />
                         <Box style={{ overflow: 'hidden', flex: 1 }}>
                           <Text fw={isActive ? 800 : 600} size="15px" style={{ color: 'var(--lm-dark)' }} truncate>{displayName}</Text>
                           {oUser.role === 'psychologist' && <Badge size="xs" color="violet" variant="light" mt={2}>Психолог</Badge>}
@@ -300,7 +300,7 @@ export function ChatsPage() {
               </Center>
             ) : (
               <>
-                <Box p="16px 20px" style={{ borderBottom: '1px solid var(--lm-border)', backgroundColor: '#fff', display: 'flex', alignItems: 'center', gap: '12px', zIndex: 10 }}>
+                <Box p="16px 20px" style={{ borderBottom: '1px solid var(--lm-border)', backgroundColor: 'var(--lm-card-bg)', display: 'flex', alignItems: 'center', gap: '12px', zIndex: 10 }}>
                   <ActionIcon variant="subtle" color="gray" onClick={() => navigate('/chats')} hiddenFrom="md">
                     <IconArrowLeft size={24} stroke={2} color="var(--lm-dark)" />
                   </ActionIcon>
@@ -314,7 +314,7 @@ export function ChatsPage() {
                 </Box>
 
                 {pinnedMessage && (
-                  <Box p="12px 20px" style={{ backgroundColor: '#fff', borderBottom: '1px solid var(--lm-border)', display: 'flex', alignItems: 'center', gap: '12px', zIndex: 5, boxShadow: 'var(--lm-shadow-sm)' }}>
+                  <Box p="12px 20px" style={{ backgroundColor: 'var(--lm-card-bg)', borderBottom: '1px solid var(--lm-border)', display: 'flex', alignItems: 'center', gap: '12px', zIndex: 5, boxShadow: 'var(--lm-shadow-sm)' }}>
                     <ThemeIcon variant="light" color="orange" radius="xl" size="md"><IconPin size={16} /></ThemeIcon>
                     <Box style={{ flex: 1, overflow: 'hidden' }}>
                       <Text size="10px" fw={700} style={{ color: 'var(--lm-orange)', textTransform: 'uppercase' }}>Закріплене повідомлення</Text>
@@ -371,7 +371,7 @@ export function ChatsPage() {
                             <Box style={{ maxWidth: '85%', display: 'flex', flexDirection: 'column', alignItems: isMyMessage ? 'flex-end' : 'flex-start' }}>
                               <Box 
                                 style={{ 
-                                  backgroundColor: isMyMessage ? (isConsultationMsg ? '#f6e5e2' : 'var(--lm-orange)') : '#fff',
+                                  backgroundColor: isMyMessage ? (isConsultationMsg ? 'var(--lm-orange-light)' : 'var(--lm-orange)') : 'var(--lm-card-bg)',
                                   color: isMyMessage && !isConsultationMsg ? '#fff' : 'var(--lm-dark)',
                                   padding: '12px 16px', 
                                   borderRadius: isMyMessage ? '20px 20px 4px 20px' : '20px 20px 20px 4px',
@@ -423,7 +423,7 @@ export function ChatsPage() {
                                   {Object.entries(reactionsCount).map(([emoji, count]) => (
                                     <Badge 
                                       key={emoji} color="gray" variant="white" size="md" radius="xl"
-                                      style={{ padding: '0 6px', height: '24px', boxShadow: 'var(--lm-shadow-sm)', cursor: 'pointer', textTransform: 'none', border: '1px solid var(--lm-border)' }}
+                                      style={{ padding: '0 6px', height: '24px', boxShadow: 'var(--lm-shadow-sm)', cursor: 'pointer', textTransform: 'none', border: '1px solid var(--lm-border)', backgroundColor: 'var(--lm-card-bg)' }}
                                       onClick={() => handleToggleReaction(msg._id, emoji)}
                                     >
                                       <span style={{ fontSize: '12px', marginRight: count > 1 ? '4px' : '0' }}>{emoji}</span> 
@@ -474,11 +474,10 @@ export function ChatsPage() {
                   )}
                 </ScrollArea>
 
-                <Box style={{ backgroundColor: '#fff', borderTop: '1px solid var(--lm-border)', display: 'flex', flexDirection: 'column' }}>
+                <Box style={{ backgroundColor: 'var(--lm-card-bg)', borderTop: '1px solid var(--lm-border)', display: 'flex', flexDirection: 'column' }}>
                   
                   {editingMessageId && (
-                    <Box p="8px 20px" style={{ backgroundColor: 'var(--lm-orange-light)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--lm-border)' }}>
-                      <Group gap="xs">
+<Box p="8px 20px" style={{ backgroundColor: 'var(--lm-orange-light)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--lm-border)' }}>                      <Group gap="xs">
                         <IconPencil size={14} color="var(--lm-orange)" />
                         <Text size="xs" fw={600} style={{ color: 'var(--lm-orange)' }}>Редагування повідомлення...</Text>
                       </Group>
@@ -506,18 +505,18 @@ export function ChatsPage() {
                         radius="xl" size="md" style={{ flexGrow: 1 }} value={newMessage} onChange={(e) => setNewMessage(e.currentTarget.value)}
                         styles={{ 
                           input: { 
-                            backgroundColor: 'var(--lm-bg-input)', border: '1px solid transparent', fontSize: '15px', padding: '0 16px',
-                            transition: 'all 0.2s var(--lm-ease)', '&:focus': { borderColor: 'var(--lm-orange)', backgroundColor: '#fff', boxShadow: '0 0 0 3px rgba(232, 106, 83, 0.1)' } 
+                            backgroundColor: 'var(--lm-bg-input)', border: '1px solid transparent', fontSize: '15px', padding: '0 16px', color: 'var(--lm-dark)',
+                            transition: 'all 0.2s var(--lm-ease)', '&:focus': { borderColor: 'var(--lm-orange)', backgroundColor: 'var(--lm-card-bg)', boxShadow: '0 0 0 3px rgba(232, 106, 83, 0.1)' } 
                           } 
                         }}
                       />
                       <ActionIcon 
                         type="submit" size="lg" radius="xl" variant="filled" disabled={!newMessage.trim()} 
                         style={{ 
-                          width: '42px', height: '42px', backgroundColor: newMessage.trim() ? 'var(--lm-orange)' : '#EAEAEA', color: '#fff', flexShrink: 0,
+                          width: '42px', height: '42px', backgroundColor: newMessage.trim() ? 'var(--lm-orange)' : 'var(--lm-border)', color: newMessage.trim() ? '#fff' : 'var(--lm-muted)', flexShrink: 0,
                           transition: 'all 0.2s var(--lm-ease)', boxShadow: newMessage.trim() ? 'var(--lm-shadow-orange)' : 'none'
                         }}
-                        styles={{ root: { '&:hover': { transform: newMessage.trim() ? 'scale(1.05)' : 'none', backgroundColor: newMessage.trim() ? 'var(--lm-orange-hover)' : '#EAEAEA' } } }}
+                        styles={{ root: { '&:hover': { transform: newMessage.trim() ? 'scale(1.05)' : 'none', backgroundColor: newMessage.trim() ? 'var(--lm-orange-hover)' : 'var(--lm-border)' } } }}
                       >
                         {editingMessageId ? <IconCheck size={20} stroke={2.5} /> : <IconSend size={20} stroke={2} />}
                       </ActionIcon>

@@ -83,7 +83,7 @@ export function AiChatPage() {
           radius={{ base: 0, sm: 'xl' }} 
           style={{
             flexGrow: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden',
-            border: '1px solid var(--lm-border)', borderTop: 'none', borderBottom: 'none', backgroundColor: '#fff',
+            border: '1px solid var(--lm-border)', borderTop: 'none', borderBottom: 'none', backgroundColor: 'var(--lm-card-bg)', // Замінено
             boxShadow: 'var(--lm-shadow-lg)'
           }}
         >
@@ -115,7 +115,7 @@ export function AiChatPage() {
                     <Box
                       style={{
                         maxWidth: '85%', 
-                        backgroundColor: isAi ? '#fff' : 'var(--lm-orange)',
+                        backgroundColor: isAi ? 'var(--lm-card-bg)' : 'var(--lm-orange)', 
                         color: isAi ? 'var(--lm-dark)' : '#fff',
                         padding: '12px 16px', 
                         borderRadius: isAi ? '20px 20px 20px 4px' : '20px 20px 4px 20px',
@@ -138,7 +138,7 @@ export function AiChatPage() {
                           <ReactMarkdown>{msg.text}</ReactMarkdown>
                         </Box>
                       ) : (
-                        <Text style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+                        <Text style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', color: '#fff' }}> {/* Жорстко задаємо білий колір для тексту юзера */}
                           {msg.text}
                         </Text>
                       )}
@@ -152,7 +152,7 @@ export function AiChatPage() {
                   <ThemeIcon size={30} radius="100%" variant="light" style={{ backgroundColor: 'var(--lm-warm)', color: 'var(--lm-orange)', flexShrink: 0 }}>
                     <IconRobot size={18} stroke={2} />
                   </ThemeIcon>
-                  <Box style={{ backgroundColor: '#fff', padding: '12px 16px', borderRadius: '20px 20px 20px 4px', border: '1px solid var(--lm-border)', boxShadow: 'var(--lm-shadow-md)' }}>
+                  <Box style={{ backgroundColor: 'var(--lm-card-bg)', padding: '12px 16px', borderRadius: '20px 20px 20px 4px', border: '1px solid var(--lm-border)', boxShadow: 'var(--lm-shadow-md)' }}> {/* Замінено */}
                     <Loader color="orange" size="xs" type="dots" />
                   </Box>
                 </Group>
@@ -173,18 +173,18 @@ export function AiChatPage() {
                   disabled={isTyping}
                   styles={{
                     input: {
-                      backgroundColor: 'var(--lm-bg-input)', border: '1px solid transparent', fontSize: '15px', padding: '0 16px', height: '44px',
-                      transition: 'all 0.2s var(--lm-ease)', '&:focus': { borderColor: 'var(--lm-orange)', backgroundColor: '#fff', boxShadow: '0 0 0 3px rgba(232, 106, 83, 0.1)' }
+                      backgroundColor: 'var(--lm-bg-input)', border: '1px solid transparent', fontSize: '15px', padding: '0 16px', height: '44px', color: 'var(--lm-dark)', // Додано color
+                      transition: 'all 0.2s var(--lm-ease)', '&:focus': { borderColor: 'var(--lm-orange)', backgroundColor: 'var(--lm-card-bg)', boxShadow: '0 0 0 3px rgba(232, 106, 83, 0.1)' } // Замінено hover bg
                     }
                   }}
                 />
                 <ActionIcon
                   type="submit" size="xl" radius="xl" variant="filled" disabled={!inputValue.trim() || isTyping}
                   style={{
-                    width: '44px', height: '44px', backgroundColor: inputValue.trim() ? 'var(--lm-orange)' : '#EAEAEA', color: '#fff', flexShrink: 0,
+                    width: '44px', height: '44px', backgroundColor: inputValue.trim() ? 'var(--lm-orange)' : 'var(--lm-border)', color: inputValue.trim() ? '#fff' : 'var(--lm-muted)', flexShrink: 0, // Змінено кольори вимкненого стану
                     transition: 'all 0.25s var(--lm-ease)', boxShadow: inputValue.trim() ? 'var(--lm-shadow-orange)' : 'none'
                   }}
-                  styles={{ root: { '&:hover': { transform: inputValue.trim() ? 'scale(1.05)' : 'none', backgroundColor: inputValue.trim() ? 'var(--lm-orange-hover)' : '#EAEAEA' } } }}
+                  styles={{ root: { '&:hover': { transform: inputValue.trim() ? 'scale(1.05)' : 'none', backgroundColor: inputValue.trim() ? 'var(--lm-orange-hover)' : 'var(--lm-border)' } } }} // Змінено hover колір
                 >
                   <IconSend size={20} stroke={2} />
                 </ActionIcon>

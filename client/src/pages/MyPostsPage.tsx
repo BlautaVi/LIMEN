@@ -84,7 +84,7 @@ export function MyPostsPage() {
                 className="card-hover"
                 style={{
                   border: '1px solid var(--lm-border)',
-                  backgroundColor: '#fff',
+                  backgroundColor: 'var(--lm-card-bg)',
                   position: 'relative',
                   cursor: 'pointer',
                   boxShadow: 'var(--lm-shadow-sm)'

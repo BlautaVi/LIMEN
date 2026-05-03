@@ -13,6 +13,7 @@ import { DiaryPage } from './pages/DiaryPage';
 import { UserProfilePage } from './pages/UserProfilePage';
 import { ChatsPage } from './pages/ChatsPage';
 import { AiChatPage } from './pages/AiChatPage';
+import { AdminDashboardPage } from './pages/AdminDashboardPage'; 
 
 const Placeholder = ({ title }: { title: string }) => (
     <h1 style={{ textAlign: 'center', marginTop: '50px', color: '#0F7EAA' }}>
@@ -33,6 +34,7 @@ function App() {
       <Route path="/specialists/:id" element={<SpecialistProfilePage />} />
       <Route path="/specialists" element={<SpecialistsPage />} />
       <Route path="/diary" element={<DiaryPage />} />
+      <Route path="/admin" element={<AdminDashboardPage />} />
       <Route path="/user/:id" element={<UserProfilePage />} />
       <Route path="/edit-post/:id" element={<EditPostPage />} />
       <Route path="*" element={<Navigate to="/login" replace />} />

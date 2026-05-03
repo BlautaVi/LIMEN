@@ -146,7 +146,7 @@ export function ProfilePage() {
       backgroundColor: 'var(--lm-bg-input)', borderColor: 'transparent', color: 'var(--lm-dark)',
       fontWeight: 500, fontSize: '16px', padding: '0 20px', height: '54px',
       transition: 'all 0.3s var(--lm-ease)',
-      '&:focus': { borderColor: 'var(--lm-orange)', backgroundColor: '#fff', boxShadow: '0 0 0 3px rgba(232, 106, 83, 0.1)' }
+      '&:focus': { borderColor: 'var(--lm-orange)', backgroundColor: 'var(--lm-card-bg)', boxShadow: '0 0 0 3px rgba(232, 106, 83, 0.1)' }
     },
     label: { color: 'var(--lm-dark)', fontWeight: 700, marginBottom: '8px', fontSize: '15px' }
   };
@@ -156,7 +156,7 @@ export function ProfilePage() {
       backgroundColor: 'var(--lm-bg-input)', borderColor: 'transparent', color: 'var(--lm-dark)',
       fontWeight: 500, fontSize: '15px', padding: '0 20px', height: '48px',
       transition: 'all 0.3s var(--lm-ease)',
-      '&:focus': { borderColor: 'var(--lm-orange)', backgroundColor: '#fff', boxShadow: '0 0 0 3px rgba(232, 106, 83, 0.1)' }
+      '&:focus': { borderColor: 'var(--lm-orange)', backgroundColor: 'var(--lm-card-bg)', boxShadow: '0 0 0 3px rgba(232, 106, 83, 0.1)' }
     },
     label: { color: 'var(--lm-dark)', fontWeight: 700, marginBottom: '6px', fontSize: '14px' }
   };
@@ -179,8 +179,8 @@ export function ProfilePage() {
         size="lg"
         overlayProps={{ blur: 4, opacity: 0.4 }}
         styles={{
-          content: { padding: '24px', border: '1px solid var(--lm-border)', boxShadow: 'var(--lm-shadow-lg)' },
-          header: { marginBottom: '16px' }
+          content: { padding: '24px', border: '1px solid var(--lm-border)', boxShadow: 'var(--lm-shadow-lg)', backgroundColor: 'var(--lm-card-bg)' },
+          header: { marginBottom: '16px', backgroundColor: 'var(--lm-card-bg)' }
         }}
       >
         <Stack gap="md" mt="sm">
@@ -227,10 +227,10 @@ export function ProfilePage() {
           shadow="none"
           radius={{ base: 'xl', md: 30 }}
           className="animate-slideUp"
-          style={{ overflow: 'hidden', backgroundColor: '#fff', border: '1px solid var(--lm-border)', boxShadow: 'var(--lm-shadow-lg)' }}
+          style={{ overflow: 'hidden', backgroundColor: 'var(--lm-card-bg)', border: '1px solid var(--lm-border)', boxShadow: 'var(--lm-shadow-lg)' }}
         >
 
-          <Box p={{ base: '16px 20px', md: '24px 40px' }} style={{ borderBottom: `1px solid var(--lm-border)`, backgroundColor: '#fff' }}>
+          <Box p={{ base: '16px 20px', md: '24px 40px' }} style={{ borderBottom: `1px solid var(--lm-border)`, backgroundColor: 'var(--lm-card-bg)' }}>
             <Group justify="space-between">
               <ActionIcon variant="transparent" onClick={() => navigate(-1)} style={{ transition: 'transform 0.2s var(--lm-ease)', '&:hover': { transform: 'translateX(-4px)' } }}>
                 <IconArrowLeft size={28} color="var(--lm-dark)" stroke={2.5} />
@@ -270,9 +270,9 @@ export function ProfilePage() {
                     style={{ cursor: 'pointer', transition: 'transform 0.2s var(--lm-ease)', '&:hover': { transform: 'scale(1.05)' } }}
                   >
                     {avatarPreview ? (
-                      <Image src={avatarPreview} w={{ base: 140, md: 160 }} h={{ base: 140, md: 160 }} radius="100%" fit="cover" style={{ border: `4px solid var(--lm-bg)`, boxShadow: 'var(--lm-shadow-md)' }} />
+                      <Image src={avatarPreview} w={{ base: 140, md: 160 }} h={{ base: 140, md: 160 }} radius="100%" fit="cover" style={{ border: `4px solid var(--lm-card-bg)`, boxShadow: 'var(--lm-shadow-md)' }} />
                     ) : (
-                      <IconUserCircle size={160} color="#EAEAEA" stroke={1} style={{ backgroundColor: 'var(--lm-bg-alt)', borderRadius: '50%', width: '100%', height: 'auto', maxWidth: '160px' }} />
+                      <IconUserCircle size={160} color="var(--lm-border)" stroke={1} style={{ backgroundColor: 'var(--lm-bg-alt)', borderRadius: '50%', width: '100%', height: 'auto', maxWidth: '160px' }} />
                     )}
                   </Indicator>
 

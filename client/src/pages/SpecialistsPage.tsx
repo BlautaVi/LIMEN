@@ -104,7 +104,7 @@ export function SpecialistsPage() {
 
   const inputStyles = {
     input: {
-      backgroundColor: '#fff',
+      backgroundColor: 'var(--lm-card-bg)',
       border: '1px solid var(--lm-border)',
       color: 'var(--lm-dark)',
       fontWeight: 500,
@@ -196,7 +196,7 @@ export function SpecialistsPage() {
                     className="card-hover"
                     style={{
                       border: '1px solid var(--lm-border)',
-                      backgroundColor: '#fff',
+                      backgroundColor: 'var(--lm-card-bg)',
                       textAlign: 'center',
                       cursor: 'pointer',
                       boxShadow: 'var(--lm-shadow-sm)',
@@ -219,7 +219,7 @@ export function SpecialistsPage() {
                       )}
                       <Badge
                         color="violet" variant="filled" size="md"
-                        style={{ position: 'absolute', bottom: -10, border: '2px solid #fff', boxShadow: 'var(--lm-shadow-sm)' }}
+                        style={{ position: 'absolute', bottom: -10, border: '2px solid var(--lm-card-bg)', boxShadow: 'var(--lm-shadow-sm)' }}
                       >
                         Психолог
                       </Badge>

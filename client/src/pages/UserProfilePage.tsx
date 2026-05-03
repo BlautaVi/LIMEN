@@ -77,7 +77,7 @@ export function UserProfilePage() {
           className="animate-slideUp"
           style={{
             border: '1px solid var(--lm-border)',
-            backgroundColor: '#fff',
+            backgroundColor: 'var(--lm-card-bg)',
             boxShadow: 'var(--lm-shadow-lg)'
           }}
         >
@@ -177,7 +177,7 @@ export function UserProfilePage() {
                 style={{
                   borderColor: 'var(--lm-border)',
                   cursor: 'pointer',
-                  backgroundColor: '#fff',
+                  backgroundColor: 'var(--lm-card-bg)',
                   boxShadow: 'var(--lm-shadow-sm)',
                   display: 'flex',
                   flexDirection: 'column'

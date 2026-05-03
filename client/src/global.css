@@ -45,7 +45,28 @@
   --lm-glass-blur: blur(24px);
   --lm-glass-border: rgba(240, 235, 225, 0.6);
 }
-
+:root[data-mantine-color-scheme="dark"] {
+  --lm-bg: #141517; 
+  --lm-bg-alt: #1a1b1e; 
+  --lm-bg-input: #25262b; 
+  --lm-card-bg: #1a1b1e; 
+  
+  --lm-dark: #e4e5e7; 
+  --lm-dark-soft: #a6a7ab;
+  --lm-muted: #909296;
+  --lm-border: #2c2e33; 
+  
+  --lm-orange: #e86a53; 
+  --lm-orange-hover: #d65a44;
+  --lm-orange-light: rgba(232, 106, 83, 0.15); 
+  --lm-warm: rgba(232, 106, 83, 0.05);
+  
+  --lm-glass-border: rgba(255, 255, 255, 0.05);
+  
+  --lm-shadow-sm: 0 4px 8px rgba(0,0,0,0.5);
+  --lm-shadow-md: 0 8px 16px rgba(0,0,0,0.6);
+  --lm-shadow-lg: 0 12px 24px rgba(0,0,0,0.8);
+}
 /* --- Global base --- */
 html {
   scroll-behavior: smooth;

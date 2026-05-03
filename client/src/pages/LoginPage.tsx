@@ -68,7 +68,8 @@ export function LoginPage() {
       style={{
         minHeight: '100vh',
         display: 'flex',
-        background: 'linear-gradient(145deg, #FDF8F4 0%, #F9F0E8 30%, #F5E8DC 60%, #F0DFD0 100%)',
+        backgroundColor: 'var(--lm-bg)',
+        backgroundImage: 'radial-gradient(circle at top left, var(--lm-bg-alt) 0%, transparent 60%)',
         position: 'relative',
         overflow: 'hidden',
       }}
@@ -145,12 +146,12 @@ export function LoginPage() {
             width: '320px',
             height: '320px',
             borderRadius: '50%',
-            background: '#fff',
+            background: 'var(--lm-card-bg)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            boxShadow: '0 30px 80px rgba(232,106,83,0.12), 0 10px 30px rgba(43,69,78,0.04)',
-            border: '1px solid #fff',
+            boxShadow: 'var(--lm-shadow-lg)',
+            border: '1px solid var(--lm-border)',
             overflow: 'hidden',
           }}>
             <Image
@@ -196,12 +197,12 @@ export function LoginPage() {
           style={{
             width: '100%',
             maxWidth: '440px',
-            background: 'rgba(255, 255, 255, 0.65)',
+            backgroundColor: 'var(--lm-card-bg)',
             backdropFilter: 'blur(32px) saturate(1.4)',
             WebkitBackdropFilter: 'blur(32px) saturate(1.4)',
             borderRadius: '32px',
-            border: '1px solid rgba(255, 255, 255, 0.8)',
-            boxShadow: '0 24px 80px rgba(43,69,78,0.07), 0 8px 24px rgba(43,69,78,0.03), inset 0 1px 0 rgba(255,255,255,0.9)',
+            border: '1px solid var(--lm-border)',
+            boxShadow: 'var(--lm-shadow-lg)',
             padding: 'clamp(30px, 5vw, 52px) clamp(24px, 4vw, 40px) clamp(28px, 4vw, 44px)',
           }}
         >
@@ -264,19 +265,17 @@ export function LoginPage() {
                     size="lg"
                     styles={{
                       input: {
-                        backgroundColor: 'rgba(255,255,255,0.75)',
-                        border: '1.5px solid rgba(240,235,225,0.7)',
+                        backgroundColor: 'var(--lm-bg-input)',
+                        border: '1px solid transparent',
                         color: 'var(--lm-dark)',
                         fontSize: 'clamp(13px, 0.9rem, 15px)',
                         padding: '12px 22px',
                         height: '54px',
-                        boxShadow: '0 2px 8px rgba(43,69,78,0.03)',
-                        backdropFilter: 'blur(8px)',
                         transition: 'all 0.3s cubic-bezier(0.4,0,0.2,1)',
                         '&:focus': {
                           borderColor: 'var(--lm-orange)',
-                          boxShadow: '0 0 0 3px rgba(232,106,83,0.1), 0 4px 16px rgba(232,106,83,0.06)',
-                          backgroundColor: 'rgba(255,255,255,0.9)',
+                          backgroundColor: 'var(--lm-card-bg)',
+                          boxShadow: '0 0 0 3px rgba(232,106,83,0.1)',
                         },
                         '&::placeholder': {
                           color: 'var(--lm-muted)',
@@ -295,19 +294,17 @@ export function LoginPage() {
                   size="lg"
                   styles={{
                     input: {
-                      backgroundColor: 'rgba(255,255,255,0.75)',
-                      border: '1.5px solid rgba(240,235,225,0.7)',
+                      backgroundColor: 'var(--lm-bg-input)',
+                      border: '1px solid transparent',
                       color: 'var(--lm-dark)',
                       fontSize: 'clamp(13px, 0.9rem, 15px)',
                       padding: '12px 22px',
                       height: '54px',
-                      boxShadow: '0 2px 8px rgba(43,69,78,0.03)',
-                      backdropFilter: 'blur(8px)',
                       transition: 'all 0.3s cubic-bezier(0.4,0,0.2,1)',
                       '&:focus': {
                         borderColor: 'var(--lm-orange)',
-                        boxShadow: '0 0 0 3px rgba(232,106,83,0.1), 0 4px 16px rgba(232,106,83,0.06)',
-                        backgroundColor: 'rgba(255,255,255,0.9)',
+                        backgroundColor: 'var(--lm-card-bg)',
+                        boxShadow: '0 0 0 3px rgba(232,106,83,0.1)',
                       },
                       '&::placeholder': {
                         color: 'var(--lm-muted)',
@@ -325,19 +322,17 @@ export function LoginPage() {
                   size="lg"
                   styles={{
                     input: {
-                      backgroundColor: 'rgba(255,255,255,0.75)',
-                      border: '1.5px solid rgba(240,235,225,0.7)',
+                      backgroundColor: 'var(--lm-bg-input)',
+                      border: '1px solid transparent',
                       color: 'var(--lm-dark)',
                       fontSize: 'clamp(13px, 0.9rem, 15px)',
                       padding: '12px 22px',
                       height: '54px',
-                      boxShadow: '0 2px 8px rgba(43,69,78,0.03)',
-                      backdropFilter: 'blur(8px)',
                       transition: 'all 0.3s cubic-bezier(0.4,0,0.2,1)',
                       '&:focus-within': {
                         borderColor: 'var(--lm-orange)',
-                        boxShadow: '0 0 0 3px rgba(232,106,83,0.1), 0 4px 16px rgba(232,106,83,0.06)',
-                        backgroundColor: 'rgba(255,255,255,0.9)',
+                        backgroundColor: 'var(--lm-card-bg)',
+                        boxShadow: '0 0 0 3px rgba(232,106,83,0.1)',
                       },
                       '&::placeholder': {
                         color: 'var(--lm-muted)',
@@ -364,13 +359,13 @@ export function LoginPage() {
                   type="number" 
                   styles={{ 
                     input: { 
-                      borderColor: 'rgba(240,235,225,0.7)', 
-                      backgroundColor: 'rgba(255,255,255,0.75)', 
+                      borderColor: 'transparent', 
+                      backgroundColor: 'var(--lm-bg-input)', 
                       color: 'var(--lm-dark)', 
                       fontWeight: 700,
                       '&:focus': {
                         borderColor: 'var(--lm-orange)',
-                        backgroundColor: 'rgba(255,255,255,0.9)'
+                        backgroundColor: 'var(--lm-card-bg)'
                       }
                     } 
                   }}
@@ -392,7 +387,7 @@ export function LoginPage() {
                 fontWeight: 700,
                 height: '54px',
                 border: 'none',
-                boxShadow: '0 8px 28px rgba(232,106,83,0.3), 0 2px 8px rgba(232,106,83,0.15)',
+                boxShadow: 'var(--lm-shadow-orange)',
                 transition: 'all 0.35s cubic-bezier(0.2,0.8,0.2,1)',
                 letterSpacing: '0.3px',
               }}
@@ -401,11 +396,9 @@ export function LoginPage() {
                   '&:hover': {
                     background: 'linear-gradient(135deg, #D65A44 0%, #c04a38 100%)',
                     transform: 'translateY(-3px)',
-                    boxShadow: '0 16px 40px rgba(232,106,83,0.35), 0 4px 12px rgba(232,106,83,0.2)',
                   },
                   '&:active': {
                     transform: 'translateY(-1px)',
-                    boxShadow: '0 6px 20px rgba(232,106,83,0.25)',
                   }
                 }
               }}
@@ -420,7 +413,7 @@ export function LoginPage() {
             gap: '16px',
             margin: '28px 0 4px',
           }}>
-            <Box style={{ flex: 1, height: '1px', background: 'linear-gradient(90deg, transparent, rgba(240,235,225,0.8), transparent)' }} />
+            <Box style={{ flex: 1, height: '1px', background: 'linear-gradient(90deg, transparent, var(--lm-border), transparent)' }} />
           </Box>
 
           <Group justify="center" mt="sm">

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Container, Title, SimpleGrid, Paper, Text, Image, Center, Avatar, ThemeIcon, Box, Group, Badge, Loader, Divider, TextInput, Button, Tabs, AspectRatio } from '@mantine/core';
-import { IconPlus, IconSearch, IconMessageChatbot, IconUsers, IconStethoscope, IconLayoutList, IconVideo } from '@tabler/icons-react';
+import { Container, Title, SimpleGrid, Paper, Stack, Text, Image, Center, Avatar, ThemeIcon, Box, Group, Badge, Loader, Divider, TextInput, Button, Tabs, AspectRatio, ActionIcon, Menu, Modal, Select, Textarea } from '@mantine/core';
+import { IconPlus, IconSearch, IconMessageChatbot, IconUsers, IconStethoscope, IconLayoutList, IconVideo, IconDotsVertical, IconPencil, IconCheck, IconArchive, IconTrash, IconAlertOctagon, IconFlag } from '@tabler/icons-react';
 import { Header } from '../components/Header';
 import api from '../services/api';
 import { useNavigate } from 'react-router-dom';
@@ -11,40 +11,20 @@ const ACTIONS = [
   { title: 'AI-асистент', icon: <IconMessageChatbot size={28} stroke={2.5} />, image: 'https://www.dropbox.com/scl/fi/suiuyqky2m3u21ixkntza/12290914_Wavy_Tech-12_Single-01.jpg?rlkey=ektzdop1zndqp8wjxil35cm5r&st=6bqrq81s&dl=1', link: '/ai-chat' },
 ];
 
-const RELAX_VIDEOS = [
-  {
-    id: '1',
-    title: '15 хвилин йоги для зняття стресу',
-    description: 'М\'яка практика для розслаблення тіла та заспокоєння нервової системи після важкого дня. Підходить для початківців.',
-    youtubeId: 'v7AYKMP6rOE'
-  },
-  {
-    id: '2',
-    title: 'Дихальна вправа "Квадрат" (Box Breathing)',
-    description: 'Потужна техніка дихання для швидкого зниження тривоги та паніки. Дихайте разом із візуалізацією на екрані.',
-    youtubeId: 'tEmt1Znux58'
-  },
-  {
-    id: '3',
-    title: 'Коротка медитація для спокою',
-    description: '10 хвилин глибокого занурення у себе. Допомагає зупинити потік тривожних думок та повернутись у стан "тут і зараз".',
-    youtubeId: 'inpok4MKVLM'
-  },
-  {
-    id: '4',
-    title: 'Розтяжка для шиї та спини',
-    description: 'Ідеально для тих, хто багато сидить або відчуває фізичний прояв стресу (затиски). Покращує кровообіг та знімає біль.',
-    youtubeId: 'X3-gKPNyrTA'
-  }
-];
-
 export function DashboardPage() {
   const navigate = useNavigate();
   const [posts, setPosts] = useState<any[]>([]);
+  const [videos, setVideos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<string | null>('all');
   const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
   const [commentInputs, setCommentInputs] = useState<Record<string, string>>({});
+
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [reportReason, setReportReason] = useState<string | null>('');
+  const [reportDetails, setReportDetails] = useState('');
+  const [isReporting, setIsReporting] = useState(false);
+  const [reportingPostId, setReportingPostId] = useState<string | null>(null);
 
   const reactionsList = [
     { emoji: '🤍', label: 'Тримайся' }, { emoji: '🤗', label: 'Обіймаю' },
@@ -52,13 +32,21 @@ export function DashboardPage() {
   ];
 
   useEffect(() => {
-    const fetchPosts = async () => {
+    const fetchData = async () => {
       try {
-        const response = await api.get('/posts');
-        setPosts(response.data);
-      } catch (error) { console.error(error); } finally { setLoading(false); }
+        const [postsRes, videosRes] = await Promise.all([
+          api.get('/posts'),
+          api.get('/videos').catch(() => ({ data: [] })) 
+        ]);
+        setPosts(postsRes.data);
+        setVideos(videosRes.data);
+      } catch (error) { 
+        console.error(error); 
+      } finally { 
+        setLoading(false); 
+      }
     };
-    fetchPosts();
+    fetchData();
   }, []);
 
   const handleReaction = async (postId: string, emoji: string) => {
@@ -78,6 +66,57 @@ export function DashboardPage() {
     } catch (error) { alert('Помилка при додаванні коментаря'); }
   };
 
+  const handleStatusChange = async (postId: string, newStatus: string) => {
+    try {
+      const response = await api.put(`/posts/${postId}/status`, { status: newStatus });
+      setPosts(posts.map(p => p._id === postId ? response.data : p));
+    } catch (error) {
+      alert('Помилка при зміні статусу');
+    }
+  };
+
+  const handleDelete = async (postId: string) => {
+    if (!window.confirm('Точно видалити цей пост?')) return;
+    try {
+      await api.delete(`/posts/${postId}`);
+      setPosts(posts.filter(p => p._id !== postId));
+    } catch (error) {
+      alert('Помилка видалення');
+    }
+  };
+
+  const openReportModal = (postId: string) => {
+    setReportingPostId(postId);
+    setIsReportModalOpen(true);
+  };
+
+  const submitReport = async () => {
+    if (!reportReason || !reportingPostId) {
+      alert('Будь ласка, оберіть причину скарги');
+      return;
+    }
+    
+    setIsReporting(true);
+    try {
+      await api.post('/reports', { 
+        targetId: reportingPostId, 
+        targetType: 'post', 
+        reason: reportReason,
+        details: reportDetails
+      });
+      alert('Скаргу надіслано модераторам. Дякуємо, що робите LIMEN безпечнішим! 🛡️');
+      setIsReportModalOpen(false);
+      setReportReason('');
+      setReportDetails('');
+      setReportingPostId(null);
+    } catch (error) {
+      console.error('Помилка при відправці скарги', error);
+      alert('Не вдалося надіслати скаргу.');
+    } finally {
+      setIsReporting(false);
+    }
+  };
+
   const filteredPosts = posts.filter(post => {
     if (activeTab === 'users') return post.author?.role !== 'psychologist';
     if (activeTab === 'psychologists') return post.author?.role === 'psychologist';
@@ -87,6 +126,46 @@ export function DashboardPage() {
   return (
     <Box style={{ minHeight: '100vh', backgroundColor: 'var(--lm-bg)' }}>
       <Header />
+
+      <Modal 
+        opened={isReportModalOpen} 
+        onClose={() => { setIsReportModalOpen(false); setReportingPostId(null); }} 
+        title={
+          <Group gap="sm">
+            <ThemeIcon color="red" variant="light" radius="xl"><IconFlag size={18} /></ThemeIcon>
+            <Text fw={800}>Поскаржитись на контент</Text>
+          </Group>
+        }
+        radius="xl"
+        centered
+        overlayProps={{ blur: 3, opacity: 0.3 }}
+      >
+        <Stack gap="md">
+          <Select
+            label="Причина скарги"
+            placeholder="Оберіть причину"
+            data={['Спам або реклама', 'Образа / Агресія', 'Небезпечний контент', 'Самоушкодження', 'Інше']}
+            value={reportReason}
+            onChange={setReportReason}
+            required
+            radius="md"
+            styles={{ input: { backgroundColor: 'var(--lm-bg-input)', borderColor: 'transparent', color: 'var(--lm-dark)', '&:focus': { borderColor: 'var(--lm-orange)', backgroundColor: 'var(--lm-card-bg)' } } }}
+          />
+          <Textarea
+            label="Деталі (опціонально)"
+            placeholder="Опишіть проблему детальніше..."
+            value={reportDetails}
+            onChange={(e) => setReportDetails(e.currentTarget.value)}
+            minRows={3}
+            radius="md"
+            styles={{ input: { backgroundColor: 'var(--lm-bg-input)', borderColor: 'transparent', color: 'var(--lm-dark)', '&:focus': { borderColor: 'var(--lm-orange)', backgroundColor: 'var(--lm-card-bg)' } } }}
+          />
+          <Button color="red" fullWidth radius="xl" size="md" mt="sm" loading={isReporting} onClick={submitReport}>
+            Надіслати скаргу
+          </Button>
+        </Stack>
+      </Modal>
+
       <Container size="xl" py={{ base: 20, md: 60 }} px={{ base: 'md', sm: 'xl' }}>
 
         <SimpleGrid cols={{ base: 1, xs: 2, md: 3 }} spacing={{ base: 'md', md: 'xl' }} mb={{ base: 40, md: 70 }} className="animate-slideUp">
@@ -96,18 +175,13 @@ export function DashboardPage() {
               className="card-hover"
               style={{
                 border: '1px solid var(--lm-border)', cursor: 'pointer',
-                backgroundColor: '#fff', display: 'flex', flexDirection: 'column',
-                justifyContent: 'space-between', 
-                minHeight: 'auto', 
-                gap: '16px',
-                boxShadow: 'var(--lm-shadow-sm)',
+                backgroundColor: 'var(--lm-card-bg)', display: 'flex', flexDirection: 'column',
+                justifyContent: 'space-between', minHeight: 'auto', gap: '16px', boxShadow: 'var(--lm-shadow-sm)',
               }}
             >
               <Text fw={800} size="xl" ta="center" style={{ color: 'var(--lm-dark)' }}>{action.title}</Text>
               <Center py={{ base: 'sm', md: 0 }}>
-                <ThemeIcon size={70} radius="100%" variant="light" style={{ backgroundColor: 'var(--lm-warm)', color: 'var(--lm-orange)' }}>
-                  {action.icon}
-                </ThemeIcon>
+                <ThemeIcon size={70} radius="100%" variant="light" style={{ backgroundColor: 'var(--lm-warm)', color: 'var(--lm-orange)' }}>{action.icon}</ThemeIcon>
               </Center>
               <Box style={{ flexGrow: 1, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
                 <Image src={action.image} alt={action.title} fit="contain" h={{ base: 90, sm: 120 }} style={{ opacity: 0.85 }} />
@@ -119,55 +193,32 @@ export function DashboardPage() {
         <Title order={2} mb="xl" className="animate-slideUp-delay-1" style={{ color: 'var(--lm-dark)', textAlign: 'center', fontWeight: 800 }}>Стрічка спільноти</Title>
 
         <Tabs value={activeTab} onChange={setActiveTab} mb={{ base: 30, md: 40 }} color="orange" variant="pills" radius="xl">
-          <Tabs.List 
-            justify="center" 
-            style={{ 
-              backgroundColor: 'var(--lm-border)', 
-              padding: '6px', 
-              borderRadius: '30px', 
-              display: 'flex', 
-              margin: '0 auto', 
-              flexWrap: 'wrap', 
-              gap: '4px',
-              maxWidth: 'fit-content'
-            }}
-          >
-            <Tabs.Tab value="all" leftSection={<IconLayoutList size={16} />} style={{ fontWeight: 600 }}>Всі записи</Tabs.Tab>
-            <Tabs.Tab value="users" leftSection={<IconUsers size={16} />} style={{ fontWeight: 600 }}>Спільнота</Tabs.Tab>
-            <Tabs.Tab value="psychologists" leftSection={<IconStethoscope size={16} />} style={{ fontWeight: 600 }}>Поради</Tabs.Tab>
-            <Tabs.Tab value="videos" leftSection={<IconVideo size={16} />} style={{ fontWeight: 600 }}>Релакс</Tabs.Tab>
+          <Tabs.List justify="center" style={{ backgroundColor: 'var(--lm-border)', padding: '6px', borderRadius: '30px', display: 'flex', margin: '0 auto', flexWrap: 'wrap', gap: '4px', maxWidth: 'fit-content' }}>
+            <Tabs.Tab value="all" leftSection={<IconLayoutList size={16} />} style={{ fontWeight: 600, color: 'var(--lm-dark)' }}>Всі записи</Tabs.Tab>
+            <Tabs.Tab value="users" leftSection={<IconUsers size={16} />} style={{ fontWeight: 600, color: 'var(--lm-dark)' }}>Спільнота</Tabs.Tab>
+            <Tabs.Tab value="psychologists" leftSection={<IconStethoscope size={16} />} style={{ fontWeight: 600, color: 'var(--lm-dark)' }}>Поради</Tabs.Tab>
+            <Tabs.Tab value="videos" leftSection={<IconVideo size={16} />} style={{ fontWeight: 600, color: 'var(--lm-dark)' }}>Релакс</Tabs.Tab>
           </Tabs.List>
         </Tabs>
 
         {activeTab === 'videos' ? (
-          <SimpleGrid cols={{ base: 1, md: 2 }} spacing={{ base: 'md', md: 'xl' }} className="animate-slideUp">
-            {RELAX_VIDEOS.map((video) => (
-              <Paper
-                key={video.id}
-                p={{ base: 'lg', md: 'xl' }}
-                radius="xl"
-                style={{
-                  backgroundColor: '#fff',
-                  border: '1px solid var(--lm-border)',
-                  boxShadow: 'var(--lm-shadow-sm)',
-                  display: 'flex',
-                  flexDirection: 'column'
-                }}
-              >
-                <AspectRatio ratio={16 / 9} mb="lg" style={{ borderRadius: '16px', overflow: 'hidden', backgroundColor: 'var(--lm-bg-alt)' }}>
-                  <iframe
-                    src={`https://www.youtube.com/embed/${video.youtubeId}`}
-                    title={video.title}
-                    style={{ border: 0 }}
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                  />
-                </AspectRatio>
-                <Title order={3} mb="xs" style={{ color: 'var(--lm-dark)', fontWeight: 800 }}>{video.title}</Title>
-                <Text style={{ color: 'var(--lm-dark-soft)', lineHeight: 1.6, fontSize: '15px' }}>{video.description}</Text>
-              </Paper>
-            ))}
-          </SimpleGrid>
+          loading ? (
+            <Center mt={50}><Loader color="orange" /></Center>
+          ) : videos.length === 0 ? (
+            <Text ta="center" c="dimmed" mt={30} size="lg">Адміністратори ще не додали відео 😔</Text>
+          ) : (
+            <SimpleGrid cols={{ base: 1, md: 2 }} spacing={{ base: 'md', md: 'xl' }} className="animate-slideUp">
+              {videos.map((video) => (
+                <Paper key={video._id} p={{ base: 'lg', md: 'xl' }} radius="xl" style={{ backgroundColor: 'var(--lm-card-bg)', border: '1px solid var(--lm-border)', boxShadow: 'var(--lm-shadow-sm)', display: 'flex', flexDirection: 'column' }}>
+                  <AspectRatio ratio={16 / 9} mb="lg" style={{ borderRadius: '16px', overflow: 'hidden', backgroundColor: 'var(--lm-bg-alt)' }}>
+                    <iframe src={`https://www.youtube.com/embed/${video.youtubeId}`} title={video.title} style={{ border: 0 }} allowFullScreen />
+                  </AspectRatio>
+                  <Title order={3} mb="xs" style={{ color: 'var(--lm-dark)', fontWeight: 800 }}>{video.title}</Title>
+                  <Text style={{ color: 'var(--lm-dark-soft)', lineHeight: 1.6, fontSize: '15px' }}>{video.description}</Text>
+                </Paper>
+              ))}
+            </SimpleGrid>
+          )
         ) : (
           loading ? (
             <Center mt={50}><Loader color="orange" /></Center>
@@ -182,31 +233,50 @@ export function DashboardPage() {
 
                 return (
                   <Paper
-                    key={post._id} shadow="none" p={{ base: 20, sm: 24, md: 30 }} radius="xl"
-                    className="card-hover"
-                    style={{
-                      border: isPsychologistPost ? '1px solid var(--lm-violet-border)' : '1px solid var(--lm-border)',
-                      backgroundColor: '#fff', cursor: 'pointer',
-                      boxShadow: 'var(--lm-shadow-sm)',
-                      display: 'flex', flexDirection: 'column'
-                    }}
+                    key={post._id} shadow="none" p={{ base: 20, sm: 24, md: 30 }} radius="xl" className="card-hover"
+                    style={{ border: isPsychologistPost ? '1px solid var(--lm-violet-border)' : '1px solid var(--lm-border)', backgroundColor: 'var(--lm-card-bg)', cursor: 'pointer', boxShadow: 'var(--lm-shadow-sm)', display: 'flex', flexDirection: 'column' }}
                     onClick={() => navigate(`/posts/${post._id}`)}
                   >
-                    <Group mb="md" gap="xs">
-                      <Badge color={post.status === 'active' ? 'orange' : 'gray'} variant="light" size="sm" radius="sm">
-                        {post.status === 'active' ? 'Актуально' : 'Вирішено'}
-                      </Badge>
-                      {post.isSupportOnly && <Badge color="pink" variant="dot" size="sm">Тільки підтримка</Badge>}
-                      {post.visibility === 'anonymous' && <Badge color="gray" variant="outline" size="sm">Анонімно</Badge>}
+                    <Group justify="space-between" mb="md" align="flex-start">
+                      <Group gap="xs">
+                        <Badge color={post.status === 'active' ? 'orange' : 'gray'} variant="light" size="sm" radius="sm">
+                          {post.status === 'active' ? 'Актуально' : 'Вирішено'}
+                        </Badge>
+                        {post.isSupportOnly && <Badge color="pink" variant="dot" size="sm">Тільки підтримка</Badge>}
+                        {post.visibility === 'anonymous' && <Badge color="gray" variant="outline" size="sm">Анонімно</Badge>}
+                      </Group>
+                      <Menu shadow="xl" width={220} position="bottom-end" radius="md" withArrow>
+                        <Menu.Target>
+                          <ActionIcon variant="subtle" color="gray" onClick={(e) => e.stopPropagation()}>
+                            <IconDotsVertical size={20} color="var(--lm-muted)" />
+                          </ActionIcon>
+                        </Menu.Target>
+                        <Menu.Dropdown onClick={(e) => e.stopPropagation()}>
+                          {isMyPost ? (
+                            <>
+                              <Menu.Item leftSection={<IconPencil size={16} />} onClick={() => navigate(`/edit-post/${post._id}`)}>Редагувати</Menu.Item>
+                              {!isPsychologistPost && (
+                                post.status === 'active' ? (
+                                  <Menu.Item leftSection={<IconCheck size={16} />} onClick={() => handleStatusChange(post._id, 'passed')}>Позначити "Вже пройшло"</Menu.Item>
+                                ) : (
+                                  <Menu.Item leftSection={<IconArchive size={16} />} onClick={() => handleStatusChange(post._id, 'active')}>Повернути в "Ще турбує"</Menu.Item>
+                                )
+                              )}
+                              <Menu.Divider />
+                              <Menu.Item color="red" leftSection={<IconTrash size={16} />} onClick={() => handleDelete(post._id)}>Видалити</Menu.Item>
+                            </>
+                          ) : (
+                            <Menu.Item color="red" leftSection={<IconAlertOctagon size={16} />} onClick={() => openReportModal(post._id)}>Поскаржитись</Menu.Item>
+                          )}
+                        </Menu.Dropdown>
+                      </Menu>
                     </Group>
 
                     <Group gap="sm" mb="lg" wrap="nowrap" onClick={(e) => { e.stopPropagation(); const authorId = post.author?._id || post.author; if (authorId) navigate(`/user/${authorId}`); }} style={{ cursor: 'pointer' }}>
                       <Avatar src={post.author?.avatarUrl ? `http://localhost:3000${post.author.avatarUrl}` : null} radius="xl" size="md" style={{ boxShadow: 'var(--lm-shadow-sm)' }} />
                       <Box style={{ flex: 1, overflow: 'hidden' }}>
                         <Group gap="xs" wrap="nowrap">
-                          <Text size="sm" fw={700} style={{ color: 'var(--lm-dark)' }} truncate>
-                            {post.author?.fullName || `${post.author?.firstName || ''} ${post.author?.lastName || ''}`.trim() || 'Анонім'}
-                          </Text>
+                          <Text size="sm" fw={700} style={{ color: 'var(--lm-dark)' }} truncate>{post.author?.fullName || `${post.author?.firstName || ''} ${post.author?.lastName || ''}`.trim() || 'Анонім'}</Text>
                           {isPsychologistPost && <Badge size="xs" color="violet" variant="filled" style={{ flexShrink: 0 }}>Психолог</Badge>}
                         </Group>
                         <Text size="xs" style={{ color: 'var(--lm-muted)' }} truncate>{new Date(post.createdAt).toLocaleDateString('uk-UA')} • {post.emotion}</Text>
@@ -229,7 +299,7 @@ export function DashboardPage() {
                         return (
                           <Badge
                             key={idx} size="md" radius="xl" variant={hasReacted ? "filled" : "light"} color={hasReacted ? "orange" : "gray"}
-                            style={{ cursor: isMyPost ? 'default' : 'pointer', textTransform: 'none', backgroundColor: hasReacted ? 'var(--lm-orange)' : 'var(--lm-input-bg)', color: hasReacted ? '#fff' : 'var(--lm-dark)' }}
+                            style={{ cursor: isMyPost ? 'default' : 'pointer', textTransform: 'none', backgroundColor: hasReacted ? 'var(--lm-orange)' : 'var(--lm-bg-input)', color: hasReacted ? '#fff' : 'var(--lm-dark)' }}
                             onClick={() => { if (!isMyPost) handleReaction(post._id, reaction.emoji); }}
                           >
                             {reaction.emoji} <span style={{ marginLeft: '4px', fontWeight: 600 }}>{count > 0 && count}</span>
@@ -256,7 +326,7 @@ export function DashboardPage() {
                         <TextInput
                           placeholder="Коротка порада..." size="sm" radius="xl" style={{ flex: 1 }} value={commentInputs[post._id] || ''}
                           onChange={(e) => setCommentInputs({ ...commentInputs, [post._id]: e.currentTarget.value })}
-                          styles={{ input: { backgroundColor: 'var(--lm-bg-input)', border: '1px solid var(--lm-border)', '&:focus': { borderColor: 'var(--lm-violet)' } } }}
+                          styles={{ input: { backgroundColor: 'var(--lm-bg-input)', border: '1px solid var(--lm-border)', color: 'var(--lm-dark)', '&:focus': { borderColor: 'var(--lm-violet)', backgroundColor: 'var(--lm-card-bg)' } } }}
                         />
                         <Button size="sm" radius="xl" color="violet" onClick={() => handleAddComment(post._id)} px={{ base: 'xs', sm: 'md' }}>Відправити</Button>
                       </Group>

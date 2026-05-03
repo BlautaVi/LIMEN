@@ -131,7 +131,7 @@ export function OnboardingPage() {
           <Grid.Col span={{ base: 12, md: 6 }}>
             <Box className="animate-scaleIn" style={{ maxWidth: '500px', margin: '0 auto' }}>
               <Paper shadow="md" radius="xl" style={{ overflow: 'hidden', border: '1px solid var(--lm-border)', display: 'flex', flexDirection: 'column', boxShadow: 'var(--lm-shadow-md)' }}>
-                <Box p={{ base: 20, sm: 30 }} bg="white" style={{ minHeight: 'auto', display: 'flex', alignItems: 'center' }}>
+                <Box p={{ base: 20, sm: 30 }} style={{ backgroundColor: 'var(--lm-card-bg)', minHeight: 'auto', display: 'flex', alignItems: 'center' }}>
                   <Text fw={800} style={{ color: 'var(--lm-dark)', lineHeight: 1.4, fontSize: 'clamp(18px, 4vw, 22px)' }}>
                     {currentQuestion.question}
                   </Text>
@@ -145,7 +145,7 @@ export function OnboardingPage() {
                         <Box
                           key={option} onClick={() => setSelectedOptionIndex(index)}
                           style={{
-                            backgroundColor: '#fff',
+                            backgroundColor: 'var(--lm-card-bg)', 
                             borderRadius: '16px', 
                             padding: '14px 16px', 
                             cursor: 'pointer', display: 'flex', alignItems: 'center',
@@ -155,7 +155,7 @@ export function OnboardingPage() {
                             transition: 'all 0.25s var(--lm-spring)'
                           }}
                         >
-                          <ThemeIcon size={26} radius="xl" variant="filled" color={isSelected ? 'orange' : 'gray.2'} style={{ marginRight: '12px', backgroundColor: isSelected ? 'var(--lm-orange)' : undefined, transition: 'all 0.2s', flexShrink: 0 }}>
+                          <ThemeIcon size={26} radius="xl" variant="filled" style={{ marginRight: '12px', backgroundColor: isSelected ? 'var(--lm-orange)' : 'var(--lm-bg-input)', color: isSelected ? '#fff' : 'transparent', transition: 'all 0.2s', flexShrink: 0 }}>
                             {isSelected && <IconCheck size={16} stroke={3} />}
                           </ThemeIcon>
                           <Text style={{ color: isSelected ? 'var(--lm-dark)' : 'var(--lm-dark-soft)', fontWeight: isSelected ? 700 : 500, fontSize: '15px', lineHeight: 1.3 }}>{option}</Text>
@@ -169,8 +169,8 @@ export function OnboardingPage() {
               <Button
                 fullWidth size="lg" radius="xl" mt={{ base: 24, md: 40 }} onClick={handleNext} disabled={selectedOptionIndex === null}
                 style={{
-                  backgroundColor: selectedOptionIndex !== null ? 'var(--lm-orange)' : '#EAEAEA',
-                  color: selectedOptionIndex !== null ? '#fff' : '#A0A0A0',
+                  backgroundColor: selectedOptionIndex !== null ? 'var(--lm-orange)' : 'var(--lm-bg-input)',
+                  color: selectedOptionIndex !== null ? '#fff' : 'var(--lm-muted)', 
                   boxShadow: selectedOptionIndex !== null ? 'var(--lm-shadow-orange)' : 'none',
                   fontWeight: 700, fontSize: '16px', height: '54px', transition: 'all 0.3s var(--lm-ease)'
                 }}
