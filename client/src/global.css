@@ -1,4 +1,3 @@
-/* ===== LIMEN — Global Design System ===== */
 
 /* --- CSS Custom Properties --- */
 :root {
@@ -15,9 +14,10 @@
   --lm-border: #F0EBE1;
   --lm-bg: #FCFBF8;
   --lm-bg-alt: #FAF9F6;
-  --lm-bg-input: #F8F9FA;
+  --lm-bg-input: #ffffff;
+  --lm-card-bg: #ffffff;
   --lm-warm: #F9F4EC;
-  --lm-input-bg: #F4F2EE;
+  --lm-input-bg: #ffffff;
 
   /* Psych */
   --lm-violet: #7950F2;

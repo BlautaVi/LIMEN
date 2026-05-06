@@ -1,9 +1,11 @@
 import { useState, useRef } from 'react';
-import { Container, Paper, TextInput, Textarea, Button, Group, Stack, Box, Center, Grid, Text, Image, CloseButton, Select, Switch, Title, Badge } from '@mantine/core';
+import { Container, Paper, TextInput, Textarea, Modal, SimpleGrid, ThemeIcon, Button, Group, Stack, Box, Center, Grid, Text, Image, CloseButton, Select, Switch, Title, Badge } from '@mantine/core';
 import { IconPhotoPlus, IconLock } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
 import { Header } from '../components/Header';
 import api from '../services/api';
+import { useDisclosure } from '@mantine/hooks';
+import { IconAlertTriangle, IconPhone, IconInfoCircle } from '@tabler/icons-react';
 
 export function CreatePostPage() {
   const navigate = useNavigate();
@@ -22,6 +24,7 @@ export function CreatePostPage() {
   const [requestType, setRequestType] = useState<string | null>('vent');
   const [visibility, setVisibility] = useState<string | null>('public');
   const [isSupportOnly, setIsSupportOnly] = useState(false);
+  
   const colors = {
     bgApp: 'var(--lm-bg)',
     bgLight: 'var(--lm-bg-input)',
@@ -69,6 +72,11 @@ export function CreatePostPage() {
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
+  const [sosOpened, { open: openSos, close: closeSos }] = useDisclosure(false);
+  
+  const [warningOpened, { open: openWarning, close: closeWarning }] = useDisclosure(false);
+  const [warningContent, setWarningContent] = useState({ title: '', text: '' });
+
   const handleSubmit = async () => {
     if (!content.trim()) return alert('Введіть текст поста!');
     setLoading(true);
@@ -77,7 +85,6 @@ export function CreatePostPage() {
       formData.append('title', title);
       formData.append('content', content);
       formData.append('emotion', emotion || 'Не визначено');
-
       formData.append('requestType', isPsychologist ? 'advice' : (requestType || 'vent'));
       formData.append('visibility', isPsychologist ? 'public' : (visibility || 'public'));
       formData.append('isSupportOnly', isPsychologist ? 'false' : String(isSupportOnly));
@@ -85,11 +92,37 @@ export function CreatePostPage() {
       if (file) formData.append('image', file);
 
       await api.post('/posts', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
-
       navigate('/dashboard');
-    } catch (error) {
+
+    } catch (error: any) {
       console.error(error);
-      alert('Не вдалося створити пост');
+      
+      if (error.response?.data?.reason) {
+        const reason = error.response.data.reason;
+        
+        if (reason === 'crisis') {
+          openSos();
+        } else if (reason === 'profanity') {
+          setWarningContent({
+            title: 'Зверніть увагу',
+            text: 'Здається, у вашому тексті є нецензурна лексика або агресія. Давайте збережемо LIMEN як безпечний та теплий простір для всіх. Будь ласка, перефразуйте текст 🤍'
+          });
+          openWarning();
+        } else if (reason === 'spam') {
+          setWarningContent({
+            title: 'Підозра на спам',
+            text: 'Цей контент схожий на спам або рекламу. Публікація таких матеріалів на платформі заборонена.'
+          });
+          openWarning();
+        }
+      } else {
+        setWarningContent({
+          title: 'Помилка',
+          text: 'Не вдалося створити пост. Спробуйте ще раз.'
+        });
+        openWarning();
+      }
+      
     } finally {
       setLoading(false);
     }
@@ -98,8 +131,89 @@ export function CreatePostPage() {
   return (
     <Box style={{ minHeight: '100vh', backgroundColor: colors.bgApp }}>
       <Header />
-      <Container size="lg" pt={{ base: 20, md: 60 }} pb={{ base: 40, md: 80 }} px={{ base: 'sm', sm: 'md' }}>
+      
+      {/* КРИЗОВА МОДАЛКА (SOS) - ЖОРСТКО БІЛИЙ ФОН */}
+      <Modal 
+        opened={sosOpened} 
+        onClose={closeSos} 
+        title={
+          <Group gap="sm">
+            <ThemeIcon color="red" variant="filled" radius="xl" size="lg"><IconAlertTriangle size={20} /></ThemeIcon>
+            <Text fw={800} size="xl" c="red.8">Ми бачимо, що вам дуже важко</Text>
+          </Group>
+        }
+        centered 
+        radius="xl"
+        size="lg"
+        overlayProps={{ blur: 5, opacity: 0.5 }}
+        styles={{ 
+          content: { backgroundColor: '#ffffff', border: '1px solid #ffe3e3', boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }, 
+          header: { backgroundColor: '#ffffff' } 
+        }}
+      >
+        <Stack gap="md">
+          <Text size="sm" fw={500} style={{ color: '#4a5b61' }}>
+            Текст вашого поста містить слова, які свідчать про критичний стан. Будь ласка, не залишайтеся з цим наодинці. Зверніться до спеціалістів негайно:
+          </Text>
+          
+          <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
+            <Paper p="md" radius="lg" withBorder style={{ backgroundColor: '#fff5f5', borderColor: '#ffe3e3' }}>
+              <Text fw={800} size="sm" c="red.9" mb={4}>Lifeline Ukraine</Text>
+              <Group gap="xs" mb={4}>
+                <IconPhone size={16} color="red" />
+                <Text fw={900} size="lg" c="red.7" component="a" href="tel:7333" style={{ textDecoration: 'none' }}>7333</Text>
+              </Group>
+              <Text size="xs" c="red.6" fw={500}>Національна лінія запобігання суїцидам</Text>
+            </Paper>
+            <Paper p="md" radius="lg" withBorder style={{ backgroundColor: '#fff5f5', borderColor: '#ffe3e3' }}>
+              <Text fw={800} size="sm" c="red.9" mb={4}>Служба порятунку</Text>
+              <Group gap="xs" mb={4}>
+                <IconPhone size={16} color="red" />
+                <Text fw={900} size="lg" c="red.7" component="a" href="tel:112" style={{ textDecoration: 'none' }}>112 / 101</Text>
+              </Group>
+              <Text size="xs" c="red.6" fw={500}>Екстрені ситуації</Text>
+            </Paper>
+          </SimpleGrid>
+        </Stack>
+      </Modal>
 
+      {/* МОДАЛКА ДЛЯ МАТІВ ТА СПАМУ - ЖОРСТКО БІЛИЙ ФОН */}
+      <Modal 
+        opened={warningOpened} 
+        onClose={closeWarning} 
+        title={
+          <Group gap="sm">
+            <ThemeIcon color="orange" variant="light" radius="xl" size="md"><IconInfoCircle size={20} /></ThemeIcon>
+            <Text fw={800} size="lg" style={{ color: '#2b454e' }}>{warningContent.title}</Text>
+          </Group>
+        }
+        centered 
+        radius="xl"
+        overlayProps={{ blur: 5, opacity: 0.5 }}
+        styles={{ 
+          content: { backgroundColor: '#ffffff', border: '1px solid #eaeaea', padding: '20px', boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }, 
+          header: { backgroundColor: '#ffffff' } 
+        }}
+      >
+        <Stack gap="md" mt="sm">
+          <Text size="md" fw={500} style={{ color: '#4a5b61', lineHeight: 1.5 }}>
+            {warningContent.text}
+          </Text>
+          <Button 
+            fullWidth 
+            mt="md" 
+            radius="xl" 
+            size="md" 
+            color="orange"
+            onClick={closeWarning}
+            style={{ fontWeight: 700 }}
+          >
+            Зрозуміло, виправлю
+          </Button>
+        </Stack>
+      </Modal>
+
+      <Container size="lg" pt={{ base: 20, md: 60 }} pb={{ base: 40, md: 80 }} px={{ base: 'sm', sm: 'md' }}>
         <Center>
           <Paper
             shadow="none"
@@ -122,7 +236,6 @@ export function CreatePostPage() {
             </Group>
 
             <Grid gutter={{ base: 30, md: 60 }}>
-
               <Grid.Col span={{ base: 12, md: 7 }}>
                 <Stack gap="lg" h="100%">
                   <TextInput
