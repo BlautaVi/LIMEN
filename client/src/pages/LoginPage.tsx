@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { TextInput, PasswordInput, Button, Title, Group, Anchor, Text, Stack, Image, Box, PinInput, Center } from '@mantine/core';
+import { TextInput, PasswordInput, Button, Title, Group, Anchor, Text, Stack, Image, Box, PinInput, Center, Modal, ThemeIcon } from '@mantine/core';
+import { IconMailFast, IconCheck, IconAlertTriangle } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 
@@ -10,437 +11,230 @@ export function LoginPage() {
   const [fullName, setFullName] = useState('');
   const [otp, setOtp] = useState('');
   
-  const [step, setStep] = useState<'login' | 'register-info' | 'register-otp'>('login');
+  const [step, setStep] = useState<'login' | 'register-info' | 'register-otp' | 'forgot-password' | 'reset-password'>('login');
   const [loading, setLoading] = useState(false);
+  const [loginAttempts, setLoginAttempts] = useState(0);
+
+  const [messageModal, setMessageModal] = useState({ opened: false, title: '', text: '', type: 'success' });
+
+  const closeMessageModal = () => setMessageModal({ ...messageModal, opened: false });
 
   const handleSendOtp = async () => {
-    if (!email || !password || !fullName) {
-      alert('Будь ласка, заповніть всі поля');
-      return;
-    }
-    
+    if (!email) return setMessageModal({ opened: true, title: 'Увага', text: 'Введіть Email', type: 'error' });
+    if (step === 'register-info' && (!fullName || !password)) return setMessageModal({ opened: true, title: 'Увага', text: 'Заповніть всі поля', type: 'error' });
+
     setLoading(true);
     try {
-      await api.post('/auth/send-otp', { email });
-      setStep('register-otp'); 
-    } catch (error: any) {
-      alert('Помилка: ' + (error.response?.data?.message || 'Не вдалося відправити код'));
-    } finally {
-      setLoading(false);
+      if (step === 'forgot-password') {
+        await api.post('/auth/reset-password-request', { email });
+        setMessageModal({ opened: true, title: 'Перевірте пошту', text: 'Код відновлення успішно надіслано на вашу електронну скриньку 📧', type: 'success' });
+        setStep('reset-password'); 
+      } else {
+        await api.post('/auth/send-otp', { email });
+        setMessageModal({ opened: true, title: 'Перевірте пошту', text: 'Код підтвердження надіслано на вашу електронну скриньку 📧', type: 'success' });
+        setStep('register-otp'); 
+      }
+    } catch (error: any) { 
+      setMessageModal({ opened: true, title: 'Помилка', text: error.response?.data?.message || 'Не вдалося відправити запит', type: 'error' });
+    } finally { 
+      setLoading(false); 
     }
   };
 
   const handleSubmit = async () => {
-    if (step === 'register-otp' && otp.length < 6) {
-      alert('Введіть 6-значний код');
-      return;
+    if ((step === 'register-otp' || step === 'reset-password') && otp.length < 6) return setMessageModal({ opened: true, title: 'Увага', text: 'Введіть 6-значний код', type: 'error' });
+    if (step === 'reset-password' && !password) return setMessageModal({ opened: true, title: 'Увага', text: 'Введіть новий пароль', type: 'error' });
+
+    if (loginAttempts >= 3 && step === 'login') {
+      return setMessageModal({ opened: true, title: 'Ліміт вичерпано', text: 'Ви перевищили ліміт спроб. Будь ласка, відновіть пароль.', type: 'error' });
     }
 
     setLoading(true);
     try {
-      const endpoint = step === 'login' ? '/auth/login' : '/auth/register';
-      const payload = step === 'login' 
-        ? { email, password } 
-        : { email, password, fullName, otp }; 
+      if (step === 'reset-password') {
+        await api.post('/auth/reset-password', { email, otp, newPassword: password });
+        setMessageModal({ opened: true, title: 'Готово!', text: 'Пароль успішно змінено. Тепер ви можете увійти.', type: 'success' });
+        setStep('login');
+        setOtp('');
+        setPassword('');
+      } else {
+        const endpoint = step === 'login' ? '/auth/login' : '/auth/register';
+        const payload = step === 'login' ? { email, password } : { email, password, fullName, otp }; 
 
-      const response = await api.post(endpoint, payload);
+        const response = await api.post(endpoint, payload);
 
-      if (response.data.access_token) {
-        localStorage.setItem('token', response.data.access_token);
-        const user = response.data.user;
-        localStorage.setItem('user', JSON.stringify(user));
-
-        if (user.isOnboarded) {
-          navigate('/dashboard');
-        } else {
-          navigate('/onboarding');
+        if (response.data.access_token) {
+          localStorage.setItem('token', response.data.access_token);
+          const user = response.data.user;
+          localStorage.setItem('user', JSON.stringify(user));
+          navigate(user.isOnboarded ? '/dashboard' : '/onboarding');
         }
       }
     } catch (error: any) {
-      alert('Помилка: ' + (error.response?.data?.message || 'Щось пішло не так'));
+      if (step === 'login') setLoginAttempts(prev => prev + 1);
+      setMessageModal({ opened: true, title: 'Помилка', text: error.response?.data?.message || 'Невірні дані', type: 'error' });
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Box
-      style={{
-        minHeight: '100vh',
-        display: 'flex',
-        backgroundColor: 'var(--lm-bg)',
-        backgroundImage: 'radial-gradient(circle at top left, var(--lm-bg-alt) 0%, transparent 60%)',
-        position: 'relative',
-        overflow: 'hidden',
-      }}
-    >
-      <Box style={{
-        position: 'absolute', top: '-15%', left: '-10%', width: '500px', height: '500px',
-        borderRadius: '50%',
-        background: 'radial-gradient(circle, rgba(232,106,83,0.12) 0%, rgba(232,106,83,0.04) 40%, transparent 70%)',
-        filter: 'blur(40px)', pointerEvents: 'none',
-      }} />
-      <Box style={{
-        position: 'absolute', bottom: '-20%', right: '-5%', width: '600px', height: '600px',
-        borderRadius: '50%',
-        background: 'radial-gradient(circle, rgba(43,69,78,0.06) 0%, rgba(43,69,78,0.02) 40%, transparent 70%)',
-        filter: 'blur(50px)', pointerEvents: 'none',
-      }} />
-      <Box style={{
-        position: 'absolute', top: '40%', right: '30%', width: '300px', height: '300px',
-        borderRadius: '50%',
-        background: 'radial-gradient(circle, rgba(232,106,83,0.06) 0%, transparent 60%)',
-        filter: 'blur(30px)', pointerEvents: 'none',
-      }} />
+    <>
+      <style>{`
+        @keyframes floatLogo {
+          0% { transform: translateY(0px); }
+          50% { transform: translateY(-20px); }
+          100% { transform: translateY(0px); }
+        }
+      `}</style>
 
-      <Box
-        style={{
-          flex: '1 1 50%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '60px',
-          position: 'relative',
-        }}
-        visibleFrom="md"
+      <Modal 
+        opened={messageModal.opened} 
+        onClose={closeMessageModal} 
+        centered 
+        radius="xl"
+        withCloseButton={false}
+        overlayProps={{ blur: 4, opacity: 0.4 }}
+        styles={{ content: { backgroundColor: 'var(--lm-card-bg)', border: '1px solid var(--lm-border)', padding: '24px', textAlign: 'center' } }}
       >
-        <Box style={{
-          position: 'absolute', top: '10%', left: '10%', width: '120px', height: '120px',
-          borderRadius: '50%', border: '1.5px solid rgba(232,106,83,0.12)',
-          pointerEvents: 'none',
-          animation: 'float 6s ease-in-out infinite',
-        }} />
-        <Box style={{
-          position: 'absolute', bottom: '15%', right: '15%', width: '80px', height: '80px',
-          borderRadius: '50%', border: '1.5px solid rgba(43,69,78,0.08)',
-          pointerEvents: 'none',
-          animation: 'float 5s ease-in-out infinite 1s',
-        }} />
-        <Box style={{
-          position: 'absolute', top: '55%', left: '5%', width: '50px', height: '50px',
-          borderRadius: '50%',
-          background: 'rgba(232,106,83,0.06)',
-          pointerEvents: 'none',
-          animation: 'float 7s ease-in-out infinite 0.5s',
-        }} />
-        <Box style={{
-          position: 'absolute', top: '20%', right: '10%', width: '36px', height: '36px',
-          borderRadius: '50%',
-          background: 'rgba(43,69,78,0.04)',
-          pointerEvents: 'none',
-          animation: 'float 4s ease-in-out infinite 2s',
-        }} />
-
-        <Box
-          className="animate-float"
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: '24px',
-            position: 'relative',
-            zIndex: 1,
-          }}
+        <ThemeIcon 
+          size={70} 
+          radius="100%" 
+          color={messageModal.type === 'success' ? 'teal' : 'red'} 
+          variant="light" 
+          mx="auto" 
+          mb="md"
         >
+          {messageModal.type === 'success' ? <IconCheck size={36} stroke={2.5} /> : <IconAlertTriangle size={36} stroke={2.5} />}
+        </ThemeIcon>
+        <Title order={3} style={{ color: 'var(--lm-dark)' }} mb="sm">{messageModal.title}</Title>
+        <Text style={{ color: 'var(--lm-dark-soft)' }} mb="xl">{messageModal.text}</Text>
+        <Button 
+          fullWidth size="md" radius="xl" 
+          color={messageModal.type === 'success' ? 'teal' : 'orange'} 
+          onClick={closeMessageModal}
+        >
+          Зрозуміло
+        </Button>
+      </Modal>
+
+      <Box style={{ minHeight: '100vh', display: 'flex', backgroundColor: 'var(--lm-bg)', position: 'relative', overflow: 'hidden' }}>
+        
+        <Box style={{ flex: '1 1 50%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '60px' }} visibleFrom="md">
           <Box style={{
             width: '320px',
             height: '320px',
-            borderRadius: '50%',
-            background: 'var(--lm-card-bg)',
+            borderRadius: '50%', 
+            backgroundColor: 'var(--lm-card-bg)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             boxShadow: 'var(--lm-shadow-lg)',
-            border: '1px solid var(--lm-border)',
+            border: '2px solid var(--lm-border)',
             overflow: 'hidden',
+            animation: 'floatLogo 5s ease-in-out infinite' 
           }}>
-            <Image
-              src="./vite.png"
-              fit="cover"
-              alt="Limen Fox Logo"
-              style={{
-                width: '100%',  
-                height: '100%',
-              }}
-            />
+            <Image src="./vite.png" fit="cover" w="100%" h="100%" />
           </Box>
-
-          <Box style={{ textAlign: 'center' }}>
-            <Text
-              style={{
-                fontSize: '13px',
-                color: 'var(--lm-muted)',
-                letterSpacing: '2px',
-                marginTop: '6px',
-                fontWeight: 500,
-              }}
-            >
-              Ваш безпечний простір
-            </Text>
-          </Box>
-        </Box>
-      </Box>
-
-      <Box
-        style={{
-          flex: '1 1 50%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '40px 24px',
-          position: 'relative',
-          zIndex: 1,
-        }}
-      >
-        <Box
-          className="animate-slideUp"
-          style={{
-            width: '100%',
-            maxWidth: '440px',
-            backgroundColor: 'var(--lm-card-bg)',
-            backdropFilter: 'blur(32px) saturate(1.4)',
-            WebkitBackdropFilter: 'blur(32px) saturate(1.4)',
-            borderRadius: '32px',
-            border: '1px solid var(--lm-border)',
-            boxShadow: 'var(--lm-shadow-lg)',
-            padding: 'clamp(30px, 5vw, 52px) clamp(24px, 4vw, 40px) clamp(28px, 4vw, 44px)',
-          }}
-        >
-          <Box hiddenFrom="md" style={{ textAlign: 'center', marginBottom: '28px' }}>
-            <Image
-              src="./vite.png"
-              fit="contain"
-              alt="Limen Fox Logo"
-              style={{
-                maxHeight: '100px',
-                margin: '0 auto',
-                filter: 'drop-shadow(0 4px 12px rgba(232,106,83,0.15))',
-              }}
-            />
-          </Box>
-
-          <Box style={{
-            width: '40px',
-            height: '3px',
-            borderRadius: '2px',
-            background: 'linear-gradient(90deg, var(--lm-orange), rgba(232,106,83,0.3))',
-            margin: '0 auto 24px',
-          }} />
-
-          <Title
-            order={1}
-            ta="center"
-            style={{
-              color: 'var(--lm-dark)',
-              fontSize: 'clamp(22px, 5vw, 30px)',
-              fontWeight: 800,
-              marginBottom: '8px',
-              letterSpacing: '-0.5px',
-              lineHeight: 1.2,
-            }}
-          >
-            {step === 'login' ? 'З поверненням!' : step === 'register-info' ? 'Створіть акаунт' : 'Перевірка пошти'}
-          </Title>
-
           <Text
-            ta="center"
-            mb={36}
+            mt="xl"
             style={{
+              fontSize: '14px',
               color: 'var(--lm-muted)',
-              fontSize: 'clamp(13px, 0.9rem, 15px)',
-              fontWeight: 500,
-              lineHeight: 1.5,
+              letterSpacing: '2px',
+              fontWeight: 600,
+              textTransform: 'uppercase',
+              animation: 'floatLogo 5s ease-in-out infinite 0.2s' 
             }}
           >
-            {step === 'login' ? 'Увійдіть у свій безпечний простір' : step === 'register-info' ? 'Ваш безпечний простір чекає на вас' : `Ми відправили код на ${email}`}
+            Ваш безпечний простір
           </Text>
+        </Box>
 
-          <Stack gap="md">
-            {step !== 'register-otp' && (
-              <>
-                {step === 'register-info' && (
-                  <TextInput
-                    placeholder="Як до вас звертатися?"
-                    radius="xl"
-                    size="lg"
-                    styles={{
-                      input: {
-                        backgroundColor: 'var(--lm-bg-input)',
-                        border: '1px solid transparent',
-                        color: 'var(--lm-dark)',
-                        fontSize: 'clamp(13px, 0.9rem, 15px)',
-                        padding: '12px 22px',
-                        height: '54px',
-                        transition: 'all 0.3s cubic-bezier(0.4,0,0.2,1)',
-                        '&:focus': {
-                          borderColor: 'var(--lm-orange)',
-                          backgroundColor: 'var(--lm-card-bg)',
-                          boxShadow: '0 0 0 3px rgba(232,106,83,0.1)',
-                        },
-                        '&::placeholder': {
-                          color: 'var(--lm-muted)',
-                          fontWeight: 400,
-                        }
-                      }
-                    }}
-                    value={fullName}
-                    onChange={(e) => setFullName(e.currentTarget.value)}
-                  />
+        <Box style={{ flex: '1 1 50%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 'clamp(16px, 4vw, 40px) clamp(16px, 4vw, 20px)', zIndex: 1 }}>
+          <Box style={{ 
+            width: '100%', 
+            maxWidth: '400px', 
+            backgroundColor: 'var(--lm-card-bg)', 
+            borderRadius: 'clamp(20px, 4vw, 32px)', 
+            border: '1px solid var(--lm-border)', 
+            boxShadow: 'var(--lm-shadow-lg)', 
+            padding: 'clamp(24px, 5vw, 44px) clamp(20px, 4vw, 36px)' 
+          }}>
+            
+            <Title order={1} ta="center" style={{ color: 'var(--lm-dark)', fontWeight: 800, marginBottom: '8px', fontSize: 'clamp(20px, 4vw, 28px)' }}>
+              {step === 'login' ? 'З поверненням!' : step === 'register-info' ? 'Створіть акаунт' : step === 'forgot-password' ? 'Відновлення' : step === 'reset-password' ? 'Новий пароль' : 'Перевірка пошти'}
+            </Title>
+
+            <Text ta="center" mb={32} style={{ color: 'var(--lm-muted)', fontWeight: 500, fontSize: '14px' }}>
+              {step === 'login' ? 'Увійдіть у свій безпечний простір' : step === 'forgot-password' ? 'Введіть email для скидання пароля' : step === 'reset-password' ? 'Введіть код з пошти та новий пароль' : 'Заповніть дані нижче'}
+            </Text>
+
+            <form onSubmit={(e) => { 
+              e.preventDefault(); 
+              if (step === 'register-info' || step === 'forgot-password') {
+                handleSendOtp();
+              } else {
+                handleSubmit();
+              }
+            }}>
+              <Stack gap="md">
+                
+                {(step === 'login' || step === 'register-info' || step === 'forgot-password') && (
+                  <>
+                    {step === 'register-info' && (
+                      <TextInput placeholder="Як до вас звертатися?" radius="xl" size="md" value={fullName} onChange={(e) => setFullName(e.currentTarget.value)} styles={{ input: { backgroundColor: 'var(--lm-bg-input)', borderColor: 'transparent', color: 'var(--lm-dark)', height: '50px' } }} />
+                    )}
+                    <TextInput placeholder="Ваш Email" radius="xl" size="md" value={email} onChange={(e) => setEmail(e.currentTarget.value)} styles={{ input: { backgroundColor: 'var(--lm-bg-input)', borderColor: 'transparent', color: 'var(--lm-dark)', height: '50px' } }} />
+
+                    {(step === 'login' || step === 'register-info') && (
+                      <PasswordInput placeholder="Пароль" radius="xl" size="md" value={password} onChange={(e) => setPassword(e.currentTarget.value)} styles={{ input: { backgroundColor: 'var(--lm-bg-input)', borderColor: 'transparent', color: 'var(--lm-dark)', height: '50px' }, innerInput: { backgroundColor: 'transparent' } }} />
+                    )}
+                  </>
                 )}
 
-                <TextInput
-                  placeholder="Ваш Email"
-                  radius="xl"
-                  size="lg"
-                  styles={{
-                    input: {
-                      backgroundColor: 'var(--lm-bg-input)',
-                      border: '1px solid transparent',
-                      color: 'var(--lm-dark)',
-                      fontSize: 'clamp(13px, 0.9rem, 15px)',
-                      padding: '12px 22px',
-                      height: '54px',
-                      transition: 'all 0.3s cubic-bezier(0.4,0,0.2,1)',
-                      '&:focus': {
-                        borderColor: 'var(--lm-orange)',
-                        backgroundColor: 'var(--lm-card-bg)',
-                        boxShadow: '0 0 0 3px rgba(232,106,83,0.1)',
-                      },
-                      '&::placeholder': {
-                        color: 'var(--lm-muted)',
-                        fontWeight: 400,
-                      }
-                    }
-                  }}
-                  value={email}
-                  onChange={(e) => setEmail(e.currentTarget.value)}
-                />
+                {(step === 'register-otp' || step === 'reset-password') && (
+                  <>
+                    <Text ta="center" size="sm" fw={600} mb={-10} style={{ color: 'var(--lm-dark)' }}>Код з пошти:</Text>
+                    <Center mb="sm">
+                      <PinInput length={6} size="xl" value={otp} onChange={setOtp} type="number" />
+                    </Center>
+                    
+                    {step === 'reset-password' && (
+                      <PasswordInput placeholder="Введіть новий пароль" radius="xl" size="md" value={password} onChange={(e) => setPassword(e.currentTarget.value)} styles={{ input: { backgroundColor: 'var(--lm-bg-input)', borderColor: 'transparent', color: 'var(--lm-dark)', height: '50px' }, innerInput: { backgroundColor: 'transparent' } }} />
+                    )}
+                  </>
+                )}
 
-                <PasswordInput
-                  placeholder="Пароль"
-                  radius="xl"
-                  size="lg"
-                  styles={{
-                    input: {
-                      backgroundColor: 'var(--lm-bg-input)',
-                      border: '1px solid transparent',
-                      color: 'var(--lm-dark)',
-                      fontSize: 'clamp(13px, 0.9rem, 15px)',
-                      padding: '12px 22px',
-                      height: '54px',
-                      transition: 'all 0.3s cubic-bezier(0.4,0,0.2,1)',
-                      '&:focus-within': {
-                        borderColor: 'var(--lm-orange)',
-                        backgroundColor: 'var(--lm-card-bg)',
-                        boxShadow: '0 0 0 3px rgba(232,106,83,0.1)',
-                      },
-                      '&::placeholder': {
-                        color: 'var(--lm-muted)',
-                        fontWeight: 400,
-                      }
-                    },
-                    innerInput: {
-                      backgroundColor: 'transparent',
-                    }
-                  }}
-                  value={password}
-                  onChange={(e) => setPassword(e.currentTarget.value)}
-                />
-              </>
-            )}
+                {step === 'login' && loginAttempts > 0 && (
+                  <Text size="xs" c="red" ta="right">Спроб залишилось: {3 - loginAttempts}</Text>
+                )}
 
-            {step === 'register-otp' && (
-              <Center mb="lg">
-                <PinInput 
-                  length={6} 
-                  size="xl" 
-                  value={otp} 
-                  onChange={setOtp} 
-                  type="number" 
-                  styles={{ 
-                    input: { 
-                      borderColor: 'transparent', 
-                      backgroundColor: 'var(--lm-bg-input)', 
-                      color: 'var(--lm-dark)', 
-                      fontWeight: 700,
-                      '&:focus': {
-                        borderColor: 'var(--lm-orange)',
-                        backgroundColor: 'var(--lm-card-bg)'
-                      }
-                    } 
-                  }}
-                />
-              </Center>
-            )}
+                {step === 'login' && (
+                  <Anchor component="button" type="button" size="sm" ta="right" c="dimmed" onClick={() => setStep('forgot-password')}>Забули пароль?</Anchor>
+                )}
 
-            <Button
-              fullWidth
-              mt="lg"
-              size="lg"
-              radius="xl"
-              loading={loading}
-              onClick={step === 'register-info' ? handleSendOtp : handleSubmit}
-              style={{
-                background: 'linear-gradient(135deg, #E86A53 0%, #D65A44 100%)',
-                color: '#fff',
-                fontSize: 'clamp(14px, 1rem, 16px)',
-                fontWeight: 700,
-                height: '54px',
-                border: 'none',
-                boxShadow: 'var(--lm-shadow-orange)',
-                transition: 'all 0.35s cubic-bezier(0.2,0.8,0.2,1)',
-                letterSpacing: '0.3px',
-              }}
-              styles={{
-                root: {
-                  '&:hover': {
-                    background: 'linear-gradient(135deg, #D65A44 0%, #c04a38 100%)',
-                    transform: 'translateY(-3px)',
-                  },
-                  '&:active': {
-                    transform: 'translateY(-1px)',
-                  }
-                }
-              }}
-            >
-              {step === 'login' ? 'Увійти' : step === 'register-info' ? 'Далі' : 'Приєднатися'}
-            </Button>
-          </Stack>
+                <Button
+                  type="submit"
+                  fullWidth size="md" radius="xl" loading={loading} disabled={loginAttempts >= 3 && step === 'login'}
+                  style={{ background: 'var(--lm-orange)', color: '#fff', fontWeight: 700, height: '50px' }}
+                >
+                  {step === 'login' ? 'Увійти' : step === 'register-info' ? 'Далі' : step === 'forgot-password' ? 'Отримати код' : 'Підтвердити'}
+                </Button>
+              </Stack>
+            </form>
 
-          <Box style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '16px',
-            margin: '28px 0 4px',
-          }}>
-            <Box style={{ flex: 1, height: '1px', background: 'linear-gradient(90deg, transparent, var(--lm-border), transparent)' }} />
+            <Group justify="center" mt="xl">
+              <Text size="sm" style={{ color: 'var(--lm-muted)', fontWeight: 500 }}>
+                {step === 'login' ? 'Немає акаунту? ' : 'Вже маєте акаунт? '}
+                <Anchor component="button" fw={700} style={{ color: 'var(--lm-orange)' }} onClick={() => { setStep(step === 'login' ? 'register-info' : 'login'); setOtp(''); setPassword(''); }}>
+                  {step === 'login' ? 'Зареєструйтесь' : 'Авторизуйтесь'}
+                </Anchor>
+              </Text>
+            </Group>
           </Box>
-
-          <Group justify="center" mt="sm">
-            <Text size="sm" style={{ color: 'var(--lm-muted)', fontSize: '14px', fontWeight: 500 }}>
-              {step === 'login' ? 'Немає акаунту? ' : 'Вже маєте акаунт? '}
-              <Anchor
-                component="button"
-                fw={700}
-                onClick={() => { 
-                  setStep(step === 'login' ? 'register-info' : 'login'); 
-                  setOtp(''); 
-                }}
-                style={{
-                  color: 'var(--lm-orange)',
-                  textDecoration: 'none',
-                  fontSize: '14px',
-                  borderBottom: '1.5px solid rgba(232,106,83,0.3)',
-                  paddingBottom: '1px',
-                  transition: 'all 0.25s ease',
-                }}
-              >
-                {step === 'login' ? 'Зареєструйтесь' : 'Авторизуйтесь'}
-              </Anchor>
-            </Text>
-          </Group>
         </Box>
       </Box>
-    </Box>
+    </>
   );
 }

@@ -21,6 +21,7 @@ export function DashboardPage() {
   const [commentInputs, setCommentInputs] = useState<Record<string, string>>({});
 
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [reportSuccessOpened, setReportSuccessOpened] = useState(false);
   const [reportReason, setReportReason] = useState<string | null>('');
   const [reportDetails, setReportDetails] = useState('');
   const [isReporting, setIsReporting] = useState(false);
@@ -104,11 +105,11 @@ export function DashboardPage() {
         reason: reportReason,
         details: reportDetails
       });
-      alert('Скаргу надіслано модераторам. Дякуємо, що робите LIMEN безпечнішим! 🛡️');
       setIsReportModalOpen(false);
       setReportReason('');
       setReportDetails('');
       setReportingPostId(null);
+      setReportSuccessOpened(true);
     } catch (error) {
       console.error('Помилка при відправці скарги', error);
       alert('Не вдалося надіслати скаргу.');
@@ -124,8 +125,27 @@ export function DashboardPage() {
   });
 
   return (
-    <Box style={{ minHeight: '100vh', backgroundColor: 'var(--lm-bg)' }}>
+    <Box className="page-content" style={{ minHeight: '100vh', backgroundColor: 'var(--lm-bg)' }}>
       <Header />
+
+      <Modal 
+        opened={reportSuccessOpened} 
+        onClose={() => setReportSuccessOpened(false)} 
+        centered 
+        radius="xl" 
+        withCloseButton={false} 
+        overlayProps={{ blur: 4, opacity: 0.4 }}
+        styles={{ content: { backgroundColor: 'var(--lm-card-bg)', padding: '30px', textAlign: 'center', border: '1px solid var(--lm-border)' } }}
+      >
+        <Text size="60px" mb="sm">🛡️✨</Text>
+        <Title order={3} style={{ color: 'var(--lm-dark)' }} mb="sm">Скаргу надіслано!</Title>
+        <Text style={{ color: 'var(--lm-dark-soft)' }} mb="xl">
+          Дякуємо, що допомагаєте робити LIMEN безпечним простором для всіх. Модератори вже перевіряють цей контент.
+        </Text>
+        <Button fullWidth size="md" radius="xl" color="orange" onClick={() => setReportSuccessOpened(false)}>
+          Зрозуміло
+        </Button>
+      </Modal>
 
       <Modal 
         opened={isReportModalOpen} 
@@ -133,12 +153,13 @@ export function DashboardPage() {
         title={
           <Group gap="sm">
             <ThemeIcon color="red" variant="light" radius="xl"><IconFlag size={18} /></ThemeIcon>
-            <Text fw={800}>Поскаржитись на контент</Text>
+            <Text fw={800} style={{ color: 'var(--lm-dark)' }}>Поскаржитись на контент</Text>
           </Group>
         }
         radius="xl"
         centered
         overlayProps={{ blur: 3, opacity: 0.3 }}
+        styles={{ content: { backgroundColor: 'var(--lm-card-bg)' }, header: { backgroundColor: 'var(--lm-card-bg)' } }}
       >
         <Stack gap="md">
           <Select
@@ -149,7 +170,10 @@ export function DashboardPage() {
             onChange={setReportReason}
             required
             radius="md"
-            styles={{ input: { backgroundColor: 'var(--lm-bg-input)', borderColor: 'transparent', color: 'var(--lm-dark)', '&:focus': { borderColor: 'var(--lm-orange)', backgroundColor: 'var(--lm-card-bg)' } } }}
+            styles={{ 
+              input: { backgroundColor: 'var(--lm-bg-input)', borderColor: 'transparent', color: 'var(--lm-dark)', '&:focus': { borderColor: 'var(--lm-orange)', backgroundColor: 'var(--lm-card-bg)' } },
+              label: { color: 'var(--lm-dark)' }
+            }}
           />
           <Textarea
             label="Деталі (опціонально)"
@@ -158,7 +182,10 @@ export function DashboardPage() {
             onChange={(e) => setReportDetails(e.currentTarget.value)}
             minRows={3}
             radius="md"
-            styles={{ input: { backgroundColor: 'var(--lm-bg-input)', borderColor: 'transparent', color: 'var(--lm-dark)', '&:focus': { borderColor: 'var(--lm-orange)', backgroundColor: 'var(--lm-card-bg)' } } }}
+            styles={{ 
+              input: { backgroundColor: 'var(--lm-bg-input)', borderColor: 'transparent', color: 'var(--lm-dark)', '&:focus': { borderColor: 'var(--lm-orange)', backgroundColor: 'var(--lm-card-bg)' } },
+              label: { color: 'var(--lm-dark)' }
+            }}
           />
           <Button color="red" fullWidth radius="xl" size="md" mt="sm" loading={isReporting} onClick={submitReport}>
             Надіслати скаргу
@@ -166,7 +193,7 @@ export function DashboardPage() {
         </Stack>
       </Modal>
 
-      <Container size="xl" py={{ base: 20, md: 60 }} px={{ base: 'md', sm: 'xl' }}>
+      <Container size="xl" pt={{ base: 20, md: 60 }} pb={{ base: 100, sm: 60, md: 80 }} px={{ base: 'md', sm: 'xl' }}>
 
         <SimpleGrid cols={{ base: 1, xs: 2, md: 3 }} spacing={{ base: 'md', md: 'xl' }} mb={{ base: 40, md: 70 }} className="animate-slideUp">
           {ACTIONS.map((action, index) => (
@@ -205,7 +232,7 @@ export function DashboardPage() {
           loading ? (
             <Center mt={50}><Loader color="orange" /></Center>
           ) : videos.length === 0 ? (
-            <Text ta="center" c="dimmed" mt={30} size="lg">Адміністратори ще не додали відео 😔</Text>
+            <Text ta="center" c="dimmed" mt={30} size="lg">Адміністратори ще не додали відео</Text>
           ) : (
             <SimpleGrid cols={{ base: 1, md: 2 }} spacing={{ base: 'md', md: 'xl' }} className="animate-slideUp">
               {videos.map((video) => (
@@ -251,15 +278,15 @@ export function DashboardPage() {
                             <IconDotsVertical size={20} color="var(--lm-muted)" />
                           </ActionIcon>
                         </Menu.Target>
-                        <Menu.Dropdown onClick={(e) => e.stopPropagation()}>
+                        <Menu.Dropdown onClick={(e) => e.stopPropagation()} style={{ backgroundColor: 'var(--lm-card-bg)', border: '1px solid var(--lm-border)' }}>
                           {isMyPost ? (
                             <>
-                              <Menu.Item leftSection={<IconPencil size={16} />} onClick={() => navigate(`/edit-post/${post._id}`)}>Редагувати</Menu.Item>
+                              <Menu.Item leftSection={<IconPencil size={16} />} onClick={() => navigate(`/edit-post/${post._id}`)} style={{ color: 'var(--lm-dark)' }}>Редагувати</Menu.Item>
                               {!isPsychologistPost && (
                                 post.status === 'active' ? (
-                                  <Menu.Item leftSection={<IconCheck size={16} />} onClick={() => handleStatusChange(post._id, 'passed')}>Позначити "Вже пройшло"</Menu.Item>
+                                  <Menu.Item leftSection={<IconCheck size={16} />} onClick={() => handleStatusChange(post._id, 'passed')} style={{ color: 'var(--lm-dark)' }}>Позначити "Вже пройшло"</Menu.Item>
                                 ) : (
-                                  <Menu.Item leftSection={<IconArchive size={16} />} onClick={() => handleStatusChange(post._id, 'active')}>Повернути в "Ще турбує"</Menu.Item>
+                                  <Menu.Item leftSection={<IconArchive size={16} />} onClick={() => handleStatusChange(post._id, 'active')} style={{ color: 'var(--lm-dark)' }}>Повернути в "Ще турбує"</Menu.Item>
                                 )
                               )}
                               <Menu.Divider />

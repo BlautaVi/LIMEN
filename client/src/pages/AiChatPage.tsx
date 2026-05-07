@@ -74,7 +74,7 @@ export function AiChatPage() {
   };
 
   return (
-    <Box style={{ height: '100vh', backgroundColor: 'var(--lm-bg)', display: 'flex', flexDirection: 'column' }}>
+    <Box className="page-content" style={{ height: '100vh', backgroundColor: 'var(--lm-bg)', display: 'flex', flexDirection: 'column' }}>
       <Header />
 
       <Container size="md" py={{ base: 10, md: 30 }} px={{ base: 0, sm: 'md' }} style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', height: 'calc(100vh - 80px)' }}>

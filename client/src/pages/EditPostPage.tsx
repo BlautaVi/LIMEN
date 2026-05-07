@@ -111,7 +111,7 @@ export function EditPostPage() {
   if (pageLoading) return <Center h="100vh" bg={colors.bgApp}><Loader color={isPsychologist ? "violet" : "orange"} /></Center>;
 
   return (
-    <Box style={{ minHeight: '100vh', backgroundColor: colors.bgApp }}>
+    <Box className="page-content" style={{ minHeight: '100vh', backgroundColor: colors.bgApp }}>
       <Header />
       <Container size="lg" pt={{ base: 20, md: 40 }} pb={{ base: 40, md: 80 }} px={{ base: 'sm', sm: 'md' }}>
         <Group mb="xl">

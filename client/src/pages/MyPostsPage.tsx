@@ -36,9 +36,9 @@ export function MyPostsPage() {
   };
 
   return (
-    <Box style={{ minHeight: '100vh', backgroundColor: 'var(--lm-bg)' }}>
+    <Box className="page-content" style={{ minHeight: '100vh', backgroundColor: 'var(--lm-bg)' }}>
       <Header />
-      <Container size="md" pt={{ base: 30, md: 60 }} pb={80}>
+      <Container size="md" pt={{ base: 30, md: 60 }} pb={{ base: 100, sm: 80 }}>
 
         <Group justify="space-between" mb={40} align="center" className="animate-slideUp">
           <Title order={2} style={{ color: 'var(--lm-dark)', fontWeight: 800, fontSize: '28px' }}>

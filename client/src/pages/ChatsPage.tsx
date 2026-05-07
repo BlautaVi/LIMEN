@@ -196,7 +196,7 @@ export function ChatsPage() {
   const amIPsychologist = currentUser.role === 'psychologist';
 
   return (
-    <Box style={{ height: '100vh', backgroundColor: 'var(--lm-bg)', display: 'flex', flexDirection: 'column' }}>
+    <Box className="page-content" style={{ height: '100vh', backgroundColor: 'var(--lm-bg)', display: 'flex', flexDirection: 'column' }}>
       <Header />
 
       <Modal opened={isConsultModalOpen} onClose={() => setIsConsultModalOpen(false)} title={<Text fw={800} size="xl" style={{ color: 'var(--lm-dark)', letterSpacing: '-0.5px' }}>{amIPsychologist ? 'Запропонувати консультацію' : 'Записатись на консультацію'}</Text>} centered radius="xl" overlayProps={{ blur: 4, opacity: 0.4 }}>

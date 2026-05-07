@@ -129,7 +129,7 @@ export function CreatePostPage() {
   };
 
   return (
-    <Box style={{ minHeight: '100vh', backgroundColor: colors.bgApp }}>
+    <Box className="page-content" style={{ minHeight: '100vh', backgroundColor: colors.bgApp }}>
       <Header />
       
       {/* КРИЗОВА МОДАЛКА (SOS) - ЖОРСТКО БІЛИЙ ФОН */}
@@ -213,7 +213,7 @@ export function CreatePostPage() {
         </Stack>
       </Modal>
 
-      <Container size="lg" pt={{ base: 20, md: 60 }} pb={{ base: 40, md: 80 }} px={{ base: 'sm', sm: 'md' }}>
+      <Container size="lg" pt={{ base: 20, md: 60 }} pb={{ base: 100, sm: 80 }} px={{ base: 'sm', sm: 'md' }}>
         <Center>
           <Paper
             shadow="none"

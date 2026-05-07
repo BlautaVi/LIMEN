@@ -119,9 +119,9 @@ export function SpecialistsPage() {
   };
 
   return (
-    <Box style={{ minHeight: '100vh', backgroundColor: 'var(--lm-bg)' }}>
+    <Box className="page-content" style={{ minHeight: '100vh', backgroundColor: 'var(--lm-bg)' }}>
       <Header />
-      <Container size="lg" pt={{ base: 20, md: 50 }} pb={{ base: 40, md: 80 }} px={{ base: 'md', sm: 'xl' }}>
+      <Container size="lg" pt={{ base: 20, md: 50 }} pb={{ base: 100, sm: 80 }} px={{ base: 'md', sm: 'xl' }}>
         <Title ta="center" order={1} mb={10} className="animate-slideUp" style={{ color: 'var(--lm-dark)', fontWeight: 800, fontSize: 'clamp(26px, 5vw, 34px)' }}>
           Наші спеціалісти
         </Title>

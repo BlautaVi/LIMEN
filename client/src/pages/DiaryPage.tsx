@@ -240,7 +240,7 @@ export function DiaryPage() {
   const chartData = getChartData();
 
   return (
-    <Box style={{ minHeight: '100vh', backgroundColor: 'var(--lm-bg)' }}>
+    <Box className="page-content" style={{ minHeight: '100vh', backgroundColor: 'var(--lm-bg)' }}>
       <Header />
 
       <Modal
@@ -308,7 +308,7 @@ export function DiaryPage() {
         @media print { body * { visibility: hidden; } html, body { height: auto !important; overflow: visible !important; background: #fff !important; } #report-print-area { display: block !important; position: absolute; left: 0; top: 0; width: 100%; visibility: visible; } #report-print-area * { visibility: visible; -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
       `}</style>
 
-      <Container size="lg" pt={{ base: 20, md: 60 }} pb={80} px={{ base: 'md', sm: 'xl' }}>
+      <Container size="lg" pt={{ base: 20, md: 60 }} pb={{ base: 100, sm: 80 }} px={{ base: 'md', sm: 'xl' }}>
 
         <Group justify="space-between" align="center" mb={{ base: 30, md: 50 }} className="animate-slideUp" wrap="wrap">
           <Group gap="md">

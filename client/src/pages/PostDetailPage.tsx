@@ -115,7 +115,7 @@ export function PostDetailPage() {
   const isPsychologistPost = post.author?.role === 'psychologist';
 
   return (
-    <Box style={{ minHeight: '100vh', backgroundColor: 'var(--lm-bg)' }}>
+    <Box className="page-content" style={{ minHeight: '100vh', backgroundColor: 'var(--lm-bg)' }}>
       <Header />
 
       <Modal 
@@ -166,7 +166,7 @@ export function PostDetailPage() {
         </Stack>
       </Modal>
 
-      <Container size="lg" pt={{ base: 20, md: 40 }} pb={80} px={{ base: 'md', sm: 'xl' }}>
+      <Container size="lg" pt={{ base: 20, md: 40 }} pb={{ base: 100, sm: 80 }} px={{ base: 'md', sm: 'xl' }}>
         
         <Box maw={800} mx="auto">
           <Group mb="xl" className="animate-fadeIn">
@@ -379,7 +379,6 @@ export function PostDetailPage() {
                   </Paper>
                 )}
 
-                {/* БЛОК НАПИСАННЯ НОВОГО КОМЕНТАРЯ */}
                 <Paper p={{ base: 16, sm: 24 }} radius="xl" mt="md" style={{ backgroundColor: 'var(--lm-card-bg)', border: '1px solid var(--lm-border)', boxShadow: 'var(--lm-shadow-sm)' }}> {/* Замінено */}
                   <Group align="flex-start" wrap="nowrap">
                     <Avatar src={currentUser.avatarUrl ? `http://localhost:3000${currentUser.avatarUrl}` : null} radius="xl" size="md" display={{ base: 'none', sm: 'block' }} />

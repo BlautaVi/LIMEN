@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import { Group, ActionIcon, Menu, Indicator, Text, Box, ScrollArea, Avatar, Tooltip, Burger, Drawer, Stack, Button, Divider, Modal, ThemeIcon, SimpleGrid, Paper } from '@mantine/core';
+import { Group, ActionIcon, Menu, Indicator, Text, Box, ScrollArea, Avatar, Tooltip, Burger, Drawer, Stack, Button, Divider, Modal, ThemeIcon, SimpleGrid, Paper, Select } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { 
   IconBell, IconMessageCircle, IconBook, IconUser, IconLogout, 
-  IconLayoutList, IconChecks, IconAlertTriangle, IconPhone, IconShieldCheck 
+  IconLayoutList, IconChecks, IconAlertTriangle, IconPhone, IconShieldCheck, IconDeviceGamepad2 
 } from '@tabler/icons-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { IconShieldLock } from '@tabler/icons-react';
@@ -29,7 +29,8 @@ export function Header() {
   const [notifications, setNotifications] = useState<any[]>([]);
   const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] = useDisclosure(false);
   const [sosOpened, { open: openSos, close: closeSos }] = useDisclosure(false);
-
+  const [gamesOpened, { open: openGames, close: closeGames }] = useDisclosure(false);
+  const [gameUrl, setGameUrl] = useState('https://paveldogreat.github.io/WebGL-Fluid-Simulation/');
   const toggleColorScheme = () => {
     setColorScheme(computedColorScheme === 'dark' ? 'light' : 'dark');
   };
@@ -168,6 +169,42 @@ export function Header() {
         </Stack>
       </Modal>
 
+      <Modal 
+        opened={gamesOpened} 
+        onClose={closeGames} 
+        fullScreen 
+        title={
+          <Group gap="md">
+            <Text fw={800} size="xl" style={{ color: 'var(--lm-dark)' }}>Зняти стрес 🎮</Text>
+            <Select 
+              size="sm"
+              radius="xl"
+              value={gameUrl} 
+              data={[
+                { value: 'https://paveldogreat.github.io/WebGL-Fluid-Simulation/', label: 'Магія рідини' },
+                { value: 'https://gabrielecirulli.github.io/2048/', label: 'Головоломка 2048' },
+                { value: 'https://chvin.github.io/react-tetris/', label: 'Ретро Тетріс' }
+              ]}
+              onChange={(val) => {
+                if (val) setGameUrl(val); 
+              }}
+              styles={{ input: { backgroundColor: 'var(--lm-bg-input)', borderColor: 'var(--lm-border)', color: 'var(--lm-dark)', fontWeight: 600 } }}
+            />
+          </Group>
+        }
+        styles={{ content: { backgroundColor: 'var(--lm-bg)' }, header: { backgroundColor: 'var(--lm-card-bg)', borderBottom: '1px solid var(--lm-border)' } }}
+      >
+        <Box style={{ width: '100%', height: 'calc(100vh - 80px)' }}>
+          <iframe 
+            src={gameUrl} 
+            style={{ width: '100%', height: '100%', border: 'none', borderRadius: '16px', backgroundColor: '#222' }}
+            title="Mini Games"
+            allowFullScreen
+          />
+        </Box>
+      </Modal>
+
+      {/* ===== Top Header Bar ===== */}
       <Box
         className="glass"
         style={{
@@ -175,104 +212,117 @@ export function Header() {
           position: 'sticky',
           top: 0,
           zIndex: 100,
+          minHeight: 'var(--header-h)',
         }}
-        px={{ base: 'md', sm: 40 }} 
-        py={10}
+        px={{ base: 'md', sm: 'xl', md: 40 }}
+        py={{ base: 8, sm: 10 }}
       >
-        <Group justify="space-between" h="100%">
+        <Group justify="space-between" h="100%" wrap="nowrap">
 
+          {/* Logo */}
           <Text
             fw={900}
-            size="26px"
             style={{
-              color: 'var(--lm-dark)',
+              fontSize: 'clamp(20px, 4vw, 26px)',
               cursor: 'pointer',
               letterSpacing: '-1px',
+              lineHeight: 1,
               transition: 'all 0.3s var(--lm-ease)',
               background: 'linear-gradient(135deg, var(--lm-dark) 0%, var(--lm-orange) 100%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text',
+              flexShrink: 0,
             }}
             onClick={() => navigate('/dashboard')}
-            onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.75'; e.currentTarget.style.transform = 'scale(1.02)'; }}
+            onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.75'; e.currentTarget.style.transform = 'scale(1.03)'; }}
             onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'scale(1)'; }}
           >
             LIMEN
           </Text>
 
-          <Group gap="sm">
-            <Tooltip label="Екстрена допомога" position="bottom" withArrow color="red">
-              <Button 
-                color="red" 
-                variant="filled" 
-                radius="xl" 
-                size="xs" 
-                leftSection={<IconAlertTriangle size={16} stroke={3} />}
+          {/* Right Actions */}
+          <Group gap={{ base: 4, sm: 'sm' }} wrap="nowrap">
+
+            {/* Games */}
+            <Tooltip label="Відволіктись (Ігри)" position="bottom">
+              <ActionIcon
+                onClick={openGames}
+                variant="light"
+                color="violet"
+                size={{ base: 'md', sm: 'xl' }}
+                radius="xl"
+                style={{ transition: 'all 0.2s' }}
+              >
+                <IconDeviceGamepad2 size={20} stroke={2} />
+              </ActionIcon>
+            </Tooltip>
+
+            {/* SOS */}
+            <Tooltip label="Екстрена допомога" position="bottom" color="red">
+              <Button
+                color="red"
+                variant="filled"
+                radius="xl"
+                size="xs"
+                leftSection={<IconAlertTriangle size={14} stroke={3} />}
                 onClick={openSos}
-                style={{ 
-                  boxShadow: '0 4px 12px rgba(255, 0, 0, 0.2)',
-                  animation: 'pulse 2s infinite'
+                style={{
+                  boxShadow: '0 4px 12px rgba(255,0,0,0.2)',
+                  animation: 'pulse 2s infinite',
+                  fontWeight: 800,
+                  letterSpacing: '0.5px',
+                  flexShrink: 0,
                 }}
               >
                 SOS
               </Button>
             </Tooltip>
-            <Tooltip label={computedColorScheme === 'dark' ? "Світла тема" : "Темна тема"} position="bottom" withArrow>
+
+            {/* Theme toggle */}
+            <Tooltip label={computedColorScheme === 'dark' ? 'Світла тема' : 'Темна тема'} position="bottom">
               <ActionIcon
                 onClick={toggleColorScheme}
                 variant="subtle"
-                size="xl"
+                size={{ base: 'md', sm: 'xl' }}
                 radius="xl"
                 style={{ color: 'var(--lm-muted)', transition: 'all 0.25s var(--lm-ease)' }}
                 styles={{ root: { '&:hover': { backgroundColor: 'var(--lm-bg-input)', transform: 'translateY(-1px)' } } }}
               >
                 {computedColorScheme === 'dark' ? (
-                  <IconSun size={22} stroke={2} color="var(--lm-orange)" />
+                  <IconSun size={20} stroke={2} color="var(--lm-orange)" />
                 ) : (
-                  <IconMoon size={22} stroke={2} />
+                  <IconMoon size={20} stroke={2} />
                 )}
               </ActionIcon>
             </Tooltip>
 
-            <Group visibleFrom="sm" gap="sm">
-              <ActionIcon
-                variant="subtle"
-                onClick={() => navigate('/dashboard')} size="xl" radius="xl" title="Стрічка"
-                style={navBtnStyle('/dashboard')}
-                styles={navBtnHover('/dashboard')}
-              >
+            {/* Desktop nav links */}
+            <Group visibleFrom="sm" gap="xs">
+              <ActionIcon variant="subtle" onClick={() => navigate('/dashboard')} size="xl" radius="xl" title="Стрічка" style={navBtnStyle('/dashboard')} styles={navBtnHover('/dashboard')}>
                 <IconLayoutList size={22} stroke={2} />
               </ActionIcon>
-
-              <ActionIcon
-                variant="subtle"
-                onClick={() => navigate('/diary')} size="xl" radius="xl" title="Щоденник"
-                style={navBtnStyle('/diary')}
-                styles={navBtnHover('/diary')}
-              >
+              <ActionIcon variant="subtle" onClick={() => navigate('/diary')} size="xl" radius="xl" title="Щоденник" style={navBtnStyle('/diary')} styles={navBtnHover('/diary')}>
                 <IconBook size={22} stroke={2} />
               </ActionIcon>
-
-              <ActionIcon
-                variant="subtle"
-                onClick={() => navigate('/chats')} size="xl" radius="xl" title="Повідомлення"
-                style={navBtnStyle('/chats')}
-                styles={navBtnHover('/chats')}
-              >
+              <ActionIcon variant="subtle" onClick={() => navigate('/chats')} size="xl" radius="xl" title="Повідомлення" style={navBtnStyle('/chats')} styles={navBtnHover('/chats')}>
                 <IconMessageCircle size={22} stroke={2} />
               </ActionIcon>
             </Group>
 
+            {/* Notifications */}
             <Menu shadow="xl" width={320} position="bottom-end" radius="lg" withArrow>
               <Menu.Target>
-                <Indicator color="var(--lm-orange)" size={10} offset={5} withBorder disabled={notifications.length === 0}>
+                <Indicator color="var(--lm-orange)" size={9} offset={5} withBorder disabled={notifications.length === 0}>
                   <ActionIcon
-                    variant="subtle" size="xl" radius="xl" title="Сповіщення"
+                    variant="subtle"
+                    size={{ base: 'md', sm: 'xl' }}
+                    radius="xl"
+                    title="Сповіщення"
                     style={{ color: 'var(--lm-muted)', transition: 'all 0.25s var(--lm-ease)' }}
                     styles={{ root: { '&:hover': { backgroundColor: 'var(--lm-bg-input)', transform: 'translateY(-1px)' } } }}
                   >
-                    <IconBell size={22} stroke={2} />
+                    <IconBell size={20} stroke={2} />
                   </ActionIcon>
                 </Indicator>
               </Menu.Target>
@@ -283,15 +333,8 @@ export function Header() {
                     Нові сповіщення
                   </Text>
                   {notifications.length > 0 && (
-                    <Tooltip label="Позначити всі як прочитані" position="left" withArrow color="orange" size="xs">
-                      <ActionIcon
-                        variant="subtle"
-                        color="orange"
-                        size="sm"
-                        radius="xl"
-                        onClick={handleMarkAllAsRead}
-                        style={{ transition: 'all 0.2s', '&:hover': { backgroundColor: 'var(--lm-orange-light)' } }}
-                      >
+                    <Tooltip label="Позначити всі як прочитані" position="left" color="orange">
+                      <ActionIcon variant="subtle" color="orange" size="sm" radius="xl" onClick={handleMarkAllAsRead}>
                         <IconChecks size={18} stroke={2} />
                       </ActionIcon>
                     </Tooltip>
@@ -301,17 +344,22 @@ export function Header() {
                 {notifications.length === 0 ? (
                   <Text size="sm" fw={500} style={{ color: 'var(--lm-muted)' }} p="xl" ta="center">Немає нових сповіщень 🔕</Text>
                 ) : (
-                  <ScrollArea h={350} type="auto">
+                  <ScrollArea h={300} type="auto">
                     {notifications.map((notif) => (
                       <Menu.Item
                         key={notif._id}
                         onClick={() => handleNotificationClick(notif)}
-                        style={{ borderBottom: '1px solid var(--lm-border)', padding: '14px 12px', borderRadius: '12px', transition: 'background-color 0.2s', '&:hover': { backgroundColor: 'var(--lm-bg-input)' } }}
+                        style={{
+                          borderBottom: '1px solid var(--lm-border)',
+                          padding: '12px',
+                          borderRadius: '10px',
+                          transition: 'background-color 0.2s',
+                        }}
                       >
-                        <Text size="14px" fw={600} style={{ color: 'var(--lm-dark)', whiteSpace: 'normal', lineHeight: 1.5 }}>
+                        <Text size="sm" fw={600} style={{ color: 'var(--lm-dark)', whiteSpace: 'normal', lineHeight: 1.5 }}>
                           {getNotificationText(notif)}
                         </Text>
-                        <Text size="12px" fw={500} style={{ color: 'var(--lm-muted)' }} mt={6}>
+                        <Text size="xs" fw={500} style={{ color: 'var(--lm-muted)' }} mt={4}>
                           {new Date(notif.createdAt).toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' })}
                         </Text>
                       </Menu.Item>
@@ -321,6 +369,7 @@ export function Header() {
               </Menu.Dropdown>
             </Menu>
 
+            {/* Avatar + User menu (desktop) */}
             <Box visibleFrom="sm">
               <Menu shadow="xl" width={220} position="bottom-end" radius="lg" withArrow>
                 <Menu.Target>
@@ -340,14 +389,8 @@ export function Header() {
                   <Menu.Label style={{ fontSize: '13px', fontWeight: 600, color: 'var(--lm-muted)' }}>
                     Привіт, {currentUser.fullName || 'Користувач'}
                   </Menu.Label>
-                  
                   {currentUser.role === 'admin' && (
-                    <Menu.Item 
-                      color="red" 
-                      leftSection={<IconShieldLock size={16} stroke={2} />} 
-                      onClick={() => navigate('/admin')} 
-                      style={{ fontWeight: 600 }}
-                    >
+                    <Menu.Item color="red" leftSection={<IconShieldLock size={16} stroke={2} />} onClick={() => navigate('/admin')} style={{ fontWeight: 600 }}>
                       Панель керування
                     </Menu.Item>
                   )}
@@ -362,9 +405,64 @@ export function Header() {
               </Menu>
             </Box>
 
+            {/* Burger (mobile) */}
             <Burger opened={drawerOpened} onClick={toggleDrawer} hiddenFrom="sm" size="sm" color="var(--lm-dark)" />
           </Group>
         </Group>
+      </Box>
+
+      {/* ===== Mobile Bottom Navigation Bar ===== */}
+      <Box
+        hiddenFrom="sm"
+        className="mobile-nav"
+        style={{
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: 'var(--mobile-nav-h)',
+          background: 'var(--lm-glass-bg)',
+          backdropFilter: 'var(--lm-glass-blur)',
+          WebkitBackdropFilter: 'var(--lm-glass-blur)' as any,
+          borderTop: '1px solid var(--lm-glass-border)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-around',
+          zIndex: 200,
+          paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+        }}
+      >
+        {[          { path: '/dashboard', icon: <IconLayoutList size={22} stroke={2} />, label: 'Стрічка' },
+          { path: '/diary',     icon: <IconBook size={22} stroke={2} />,         label: 'Щоденник' },
+          { path: '/chats',    icon: <IconMessageCircle size={22} stroke={2} />, label: 'Чати' },
+          { path: '/profile',  icon: <IconUser size={22} stroke={2} />,          label: 'Профіль' },
+        ].map((item) => (
+          <button
+            key={item.path}
+            onClick={() => navigate(item.path)}
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '3px',
+              minWidth: '44px',
+              minHeight: '44px',
+              padding: '6px 12px',
+              borderRadius: '14px',
+              cursor: 'pointer',
+              transition: 'all 0.2s var(--lm-ease)',
+              textDecoration: 'none',
+              border: 'none',
+              background: isActive(item.path) ? 'var(--lm-orange-light)' : 'transparent',
+              color: isActive(item.path) ? 'var(--lm-orange)' : 'var(--lm-muted)',
+              fontFamily: 'inherit',
+            }}
+          >
+            {item.icon}
+            <span style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.2px' }}>{item.label}</span>
+          </button>
+        ))}
       </Box>
 
       <Drawer
@@ -381,6 +479,7 @@ export function Header() {
       >
         <Stack gap="sm" mt="md">
           <Button color="red" leftSection={<IconAlertTriangle size={20} />} onClick={() => { openSos(); closeDrawer(); }} radius="md" size="lg" justify="flex-start" mb="sm">Екстрена допомога (SOS)</Button>
+          <Button color="violet" variant="light" leftSection={<IconDeviceGamepad2 size={20} />} onClick={() => { openGames(); closeDrawer(); }} radius="md" size="lg" justify="flex-start" mb="sm" style={{ fontWeight: 600 }}>Міні-ігри (Антистрес)</Button>
           {currentUser.role === 'admin' && (
             <Button 
               color="red"
