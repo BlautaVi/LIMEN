@@ -30,7 +30,9 @@ export function Header() {
   const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] = useDisclosure(false);
   const [sosOpened, { open: openSos, close: closeSos }] = useDisclosure(false);
   const [gamesOpened, { open: openGames, close: closeGames }] = useDisclosure(false);
+  
   const [gameUrl, setGameUrl] = useState('https://paveldogreat.github.io/WebGL-Fluid-Simulation/');
+  
   const toggleColorScheme = () => {
     setColorScheme(computedColorScheme === 'dark' ? 'light' : 'dark');
   };
@@ -181,9 +183,13 @@ export function Header() {
               radius="xl"
               value={gameUrl} 
               data={[
-                { value: 'https://paveldogreat.github.io/WebGL-Fluid-Simulation/', label: 'Магія рідини' },
-                { value: 'https://gabrielecirulli.github.io/2048/', label: 'Головоломка 2048' },
-                { value: 'https://chvin.github.io/react-tetris/', label: 'Ретро Тетріс' }
+                { value: 'https://cloud.onlinegames.io/games/2024/unity2/super-car-driving/index-og.html', label: 'Super Car Driving' },
+                { value: 'https://cloud.onlinegames.io/games/2021/1/julie-beauty-salon/index-og.html', label: 'Julie Beauty Salon' },
+                { value: 'https://www.onlinegames.io/games/2022/unity4/cat-simulator/index.html', label: 'Cat Simulator' },
+                { value: 'https://www.onlinegames.io/games/2021/unity/stack-fire-ball/index.html', label: 'Stack Fire Ball' },
+                { value: 'https://www.madkidgames.com/full/blob-line-colorful-puzzle-game', label: 'Blob Line: Colorful Puzzle Game' },
+                { value: 'https://cloud.onlinegames.io/games/2025/unity4/fast-food-manager/index-og.html', label: 'Fast Food Manager' },
+                { value: 'https://www.onlinegames.io/games/2023/q2/dinosaur-game/index.html', label: 'Dinosaur Game' }
               ]}
               onChange={(val) => {
                 if (val) setGameUrl(val); 
@@ -204,7 +210,6 @@ export function Header() {
         </Box>
       </Modal>
 
-      {/* ===== Top Header Bar ===== */}
       <Box
         className="glass"
         style={{
@@ -279,7 +284,6 @@ export function Header() {
               </Button>
             </Tooltip>
 
-            {/* Theme toggle */}
             <Tooltip label={computedColorScheme === 'dark' ? 'Світла тема' : 'Темна тема'} position="bottom">
               <ActionIcon
                 onClick={toggleColorScheme}
@@ -297,7 +301,6 @@ export function Header() {
               </ActionIcon>
             </Tooltip>
 
-            {/* Desktop nav links */}
             <Group visibleFrom="sm" gap="xs">
               <ActionIcon variant="subtle" onClick={() => navigate('/dashboard')} size="xl" radius="xl" title="Стрічка" style={navBtnStyle('/dashboard')} styles={navBtnHover('/dashboard')}>
                 <IconLayoutList size={22} stroke={2} />
@@ -310,7 +313,6 @@ export function Header() {
               </ActionIcon>
             </Group>
 
-            {/* Notifications */}
             <Menu shadow="xl" width={320} position="bottom-end" radius="lg" withArrow>
               <Menu.Target>
                 <Indicator color="var(--lm-orange)" size={9} offset={5} withBorder disabled={notifications.length === 0}>
@@ -369,7 +371,6 @@ export function Header() {
               </Menu.Dropdown>
             </Menu>
 
-            {/* Avatar + User menu (desktop) */}
             <Box visibleFrom="sm">
               <Menu shadow="xl" width={220} position="bottom-end" radius="lg" withArrow>
                 <Menu.Target>
@@ -405,13 +406,11 @@ export function Header() {
               </Menu>
             </Box>
 
-            {/* Burger (mobile) */}
             <Burger opened={drawerOpened} onClick={toggleDrawer} hiddenFrom="sm" size="sm" color="var(--lm-dark)" />
           </Group>
         </Group>
       </Box>
 
-      {/* ===== Mobile Bottom Navigation Bar ===== */}
       <Box
         hiddenFrom="sm"
         className="mobile-nav"
