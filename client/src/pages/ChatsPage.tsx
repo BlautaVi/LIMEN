@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Paper, Text, Avatar, Group, Box, Stack, TextInput, ActionIcon, Loader, Center, ScrollArea, Menu, Badge, ThemeIcon, Button, Modal } from '@mantine/core';
-import { IconSend, IconMessageCircleOff, IconMoodSmile, IconPencil, IconTrash, IconPin, IconX, IconCheck, IconCalendarEvent, IconArrowLeft } from '@tabler/icons-react';
+import { IconSend, IconMessageCircleOff, IconMoodSmile, IconPencil, IconTrash, IconPin, IconX, IconCheck, IconCalendarEvent, IconArrowLeft, IconSearch } from '@tabler/icons-react';
 import { DatePickerInput } from '@mantine/dates';
 import dayjs from 'dayjs';
 import { Header } from '../components/Header';
@@ -26,21 +26,46 @@ export function ChatsPage() {
   const [consultDate, setConsultDate] = useState<Date | null>(null);
   const [consultNote, setConsultNote] = useState('');
 
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+
   const viewportRef = useRef<HTMLDivElement>(null);
 
+  const fetchConversations = async () => {
+    try {
+      const response = await api.get('/conversations');
+      setConversations(response.data);
+    } catch (error) {
+      console.error('Помилка завантаження чатів', error);
+    } finally {
+      setLoadingChats(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchConversations = async () => {
-      try {
-        const response = await api.get('/conversations');
-        setConversations(response.data);
-      } catch (error) {
-        console.error('Помилка завантаження чатів', error);
-      } finally {
-        setLoadingChats(false);
-      }
-    };
     fetchConversations();
   }, [activeChatId]); 
+
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(async () => {
+      if (searchQuery.trim().length >= 2) {
+        setIsSearching(true);
+        try {
+          const res = await api.get(`/users/search?q=${searchQuery}`);
+          setSearchResults(res.data);
+        } catch (error) {
+          console.error('Помилка пошуку', error);
+        } finally {
+          setIsSearching(false);
+        }
+      } else {
+        setSearchResults([]);
+      }
+    }, 400);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchQuery]);
 
   useEffect(() => {
     if (!activeChatId) {
@@ -71,6 +96,18 @@ export function ChatsPage() {
         viewportRef.current.scrollTo({ top: viewportRef.current.scrollHeight, behavior: 'smooth' });
       }
     }, 100);
+  };
+
+  const handleStartChat = async (userId: string) => {
+    try {
+      const res = await api.post('/conversations/find-or-create', { participantId: userId });
+      setSearchQuery(''); 
+      setSearchResults([]);
+      navigate(`/chats/${res.data._id}`); 
+      fetchConversations(); 
+    } catch (error) {
+      console.error('Помилка створення чату', error);
+    }
   };
 
   const handleSendMessage = async () => {
@@ -244,7 +281,53 @@ export function ChatsPage() {
             style={{ width: '100%', maxWidth: '380px', minWidth: '300px', flex: '0 0 auto', backgroundColor: 'var(--lm-card-bg)', borderRight: '1px solid var(--lm-border)', flexDirection: 'column', zIndex: 2 }}
           >
             <Box p="24px" style={{ borderBottom: '1px solid var(--lm-border)', backgroundColor: 'var(--lm-card-bg)' }}>
-              <Text fw={800} size="24px" style={{ color: 'var(--lm-dark)', letterSpacing: '-0.5px' }}>Діалоги</Text>
+              <Text fw={800} size="24px" mb="md" style={{ color: 'var(--lm-dark)', letterSpacing: '-0.5px' }}>Діалоги</Text>
+              
+              {/* ПОЛЕ ПОШУКУ */}
+              <Box style={{ position: 'relative' }}>
+                <TextInput
+                  placeholder="Знайти користувача..."
+                  leftSection={<IconSearch size={18} stroke={2} />}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.currentTarget.value)}
+                  radius="xl"
+                  styles={{ 
+                    input: { backgroundColor: 'var(--lm-bg-input)', border: '1px solid transparent', color: 'var(--lm-dark)' } 
+                  }}
+                />
+                
+                {searchQuery.trim().length >= 2 && (
+                  <Paper shadow="lg" radius="md" p="xs" style={{ position: 'absolute', top: '50px', left: 0, right: 0, zIndex: 100, maxHeight: '300px', overflowY: 'auto', backgroundColor: 'var(--lm-card-bg)', border: '1px solid var(--lm-border)' }}>
+                    {isSearching ? (
+                      <Center p="sm"><Loader size="sm" color="orange" /></Center>
+                    ) : searchResults.length > 0 ? (
+                      <Stack gap="xs">
+                        {searchResults.map(user => (
+                          <Group 
+                            key={user._id} 
+                            p="xs" 
+                            wrap="nowrap"
+                            style={{ cursor: 'pointer', borderRadius: '8px', transition: 'background 0.2s' }}
+                            onClick={() => handleStartChat(user._id)}
+                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--lm-bg-input)'}
+                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                          >
+                            <Avatar src={user.avatarUrl ? `http://localhost:3000${user.avatarUrl}` : null} radius="xl" size="sm" />
+                            <Box style={{ flex: 1, overflow: 'hidden' }}>
+                              <Text size="sm" fw={600} truncate style={{ color: 'var(--lm-dark)' }}>{user.fullName}</Text>
+                              <Text size="xs" style={{ color: 'var(--lm-muted)' }}>
+                                {user.role === 'psychologist' ? 'Психолог' : user.role === 'admin' ? 'Адміністратор' : 'Користувач'}
+                              </Text>
+                            </Box>
+                          </Group>
+                        ))}
+                      </Stack>
+                    ) : (
+                      <Text p="sm" size="sm" ta="center" style={{ color: 'var(--lm-muted)' }}>Нікого не знайдено</Text>
+                    )}
+                  </Paper>
+                )}
+              </Box>
             </Box>
             
             <ScrollArea style={{ flexGrow: 1, backgroundColor: 'var(--lm-bg-alt)' }}>
@@ -477,7 +560,8 @@ export function ChatsPage() {
                 <Box style={{ backgroundColor: 'var(--lm-card-bg)', borderTop: '1px solid var(--lm-border)', display: 'flex', flexDirection: 'column' }}>
                   
                   {editingMessageId && (
-<Box p="8px 20px" style={{ backgroundColor: 'var(--lm-orange-light)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--lm-border)' }}>                      <Group gap="xs">
+                  <Box p="8px 20px" style={{ backgroundColor: 'var(--lm-orange-light)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--lm-border)' }}>
+                      <Group gap="xs">
                         <IconPencil size={14} color="var(--lm-orange)" />
                         <Text size="xs" fw={600} style={{ color: 'var(--lm-orange)' }}>Редагування повідомлення...</Text>
                       </Group>

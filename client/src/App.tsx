@@ -37,10 +37,10 @@ function App() {
       <Route path="/admin" element={<AdminDashboardPage />} />
       <Route path="/user/:id" element={<UserProfilePage />} />
       <Route path="/edit-post/:id" element={<EditPostPage />} />
-      <Route path="*" element={<Navigate to="/login" replace />} />
       <Route path="/chats" element={<ChatsPage />} />
       <Route path="/ai-chat" element={<AiChatPage />} />
       <Route path="/chats/:id" element={<ChatsPage />} />
+      <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
 }

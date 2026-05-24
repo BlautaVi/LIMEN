@@ -6,9 +6,9 @@ import api from '../services/api';
 import { useNavigate } from 'react-router-dom';
 
 const ACTIONS = [
-  { title: 'Додати обговорення', icon: <IconPlus size={28} stroke={2.5} />, image: 'https://www.dropbox.com/scl/fi/rntgnp3jm0hfwiuh5onc7/17054008_5809569.jpg?rlkey=q8qfltyg3wckj0e8axe5c4kkb&st=nmc4xqp2&dl=1', link: '/create-post' },
-  { title: 'Знайти фахівця', icon: <IconSearch size={28} stroke={2.5} />, image: 'https://www.dropbox.com/scl/fi/nzgkj9fegaxph3q4b3x38/12469236_Wavy_Ppl-04_Single-11.jpg?rlkey=5ulfwh37np64cj6llgfxj2vcu&st=4lrvgx7r&dl=1', link: '/specialists' },
-  { title: 'AI-асистент', icon: <IconMessageChatbot size={28} stroke={2.5} />, image: 'https://www.dropbox.com/scl/fi/suiuyqky2m3u21ixkntza/12290914_Wavy_Tech-12_Single-01.jpg?rlkey=ektzdop1zndqp8wjxil35cm5r&st=6bqrq81s&dl=1', link: '/ai-chat' },
+  { title: 'Додати обговорення', icon: <IconPlus size={28} stroke={2.5} />, image: 'https://www.dropbox.com/scl/fi/pqkvsn48wmhdcvdoxebot/17054008_5809569-removebg-preview.png?rlkey=gxnilg9prsklch5lpdrfwvd64&st=r3743awg&dl=1', link: '/create-post' },
+  { title: 'Знайти фахівця', icon: <IconSearch size={28} stroke={2.5} />, image: 'https://www.dropbox.com/scl/fi/e7wln90q6h1pt9j0yu03r/12469236_Wavy_Ppl-04_Single-11-Photoroom.png?rlkey=2p3kxhf1ah0kxhfv8c5c0t8n2&st=1hzgqk0a&dl=1', link: '/specialists' },
+  { title: 'AI-асистент', icon: <IconMessageChatbot size={28} stroke={2.5} />, image: 'https://www.dropbox.com/scl/fi/f1c1v749l74yvw83efxg3/12290914_Wavy_Tech-12_Single-01-Photoroom.png?rlkey=rwddly24jpjh6y62oo7m9oyjg&st=ws3r1rlv&dl=1', link: '/ai-chat' },
 ];
 
 export function DashboardPage() {
@@ -267,7 +267,7 @@ export function DashboardPage() {
                     <Group justify="space-between" mb="md" align="flex-start">
                       <Group gap="xs">
                         <Badge color={post.status === 'active' ? 'orange' : 'gray'} variant="light" size="sm" radius="sm">
-                          {post.status === 'active' ? 'Актуально' : 'Вирішено'}
+                          {post.status === 'active' ? 'Актуально' : 'Вже пройшло'}
                         </Badge>
                         {post.isSupportOnly && <Badge color="pink" variant="dot" size="sm">Тільки підтримка</Badge>}
                         {post.visibility === 'anonymous' && <Badge color="gray" variant="outline" size="sm">Анонімно</Badge>}

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Container, Paper, Text, Avatar, Center, Loader, Button, Group, Badge, Box, Stack, Divider, ThemeIcon, Title, ActionIcon, SimpleGrid } from '@mantine/core';
-import { IconMessageCircle, IconHeart, IconHeartFilled, IconArrowLeft, IconCertificate, IconUser, IconBrain } from '@tabler/icons-react';
+import { Container, Paper, Text, Avatar, Center, Loader, Button, Group, Badge, Box, Stack, Divider, ThemeIcon, Title, SimpleGrid } from '@mantine/core';
+import { IconMessageCircle, IconArrowLeft, IconCertificate, IconUser, IconBrain } from '@tabler/icons-react';
 import { Header } from '../components/Header';
 import api from '../services/api';
 
@@ -10,7 +10,6 @@ export function SpecialistProfilePage() {
   const navigate = useNavigate();
   const [specialist, setSpecialist] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [isFavorite, setIsFavorite] = useState(false);
 
   useEffect(() => {
     const fetchSpecialist = async () => {
@@ -72,19 +71,6 @@ export function SpecialistProfilePage() {
           }}
         >
 
-          <ActionIcon
-            size="xl" radius="xl" variant="subtle" color="red"
-            style={{ 
-              position: 'absolute', 
-              top: 'clamp(16px, 4vw, 30px)', 
-              right: 'clamp(16px, 4vw, 30px)', 
-              transition: 'transform 0.2s var(--lm-ease)', 
-              '&:hover': { transform: 'scale(1.1)', backgroundColor: 'var(--lm-orange-light)' } 
-            }}
-            onClick={() => setIsFavorite(!isFavorite)}
-          >
-            {isFavorite ? <IconHeartFilled size={32} /> : <IconHeart size={32} />}
-          </ActionIcon>
 
           <Center mb={{ base: 'lg', md: 'xl' }} mt={{ base: 'lg', md: 0 }}>
             <Avatar

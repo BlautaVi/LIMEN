@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Container, Title, Text, Paper, Button, Group, Stack, Badge, Box, Center, Loader, Tabs, Avatar, SimpleGrid, ThemeIcon } from '@mantine/core';
+import { Container, Title, Text, Paper, Button, Group, Stack, Badge, Box, Center, Loader, Tabs, Avatar, SimpleGrid, ThemeIcon, Divider } from '@mantine/core';
 import { IconShieldLock, IconUsers, IconAlertTriangle, IconChartBar, IconUserMinus, IconHeart } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
 import { Header } from '../components/Header';

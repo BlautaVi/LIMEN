@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Container, Paper, Text, Stack, Image, Center, Loader, Group, ActionIcon, Badge, Menu, Box, Divider, TextInput, Avatar, Button, Modal, Select, Textarea, ThemeIcon } from '@mantine/core';
+import { Container, Paper, Text, Stack, Image, Center, Loader, Group, ActionIcon, Badge, Menu, Box, Divider, TextInput, Avatar, Button, Modal, Select, Textarea, ThemeIcon, useComputedColorScheme } from '@mantine/core';
 import { IconArrowLeft, IconDotsVertical, IconTrash, IconCheck, IconArchive, IconPencil, IconAlertOctagon } from '@tabler/icons-react';
 import { Header } from '../components/Header';
 import api from '../services/api';
@@ -8,6 +8,9 @@ import api from '../services/api';
 export function PostDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const computedColorScheme = useComputedColorScheme('light');
+  const isDark = computedColorScheme === 'dark';
+
   const [post, setPost] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -177,16 +180,18 @@ export function PostDetailPage() {
           </Group>
 
           <Paper
-            shadow="none"
-            p={{ base: 20, sm: 30, md: 40 }} 
-            radius="xl"
-            className="animate-slideUp"
-            style={{
-              border: isPsychologistPost ? '1px solid var(--lm-violet-border)' : '1px solid var(--lm-border)',
-              backgroundColor: isPsychologistPost ? 'var(--lm-violet-light)' : 'var(--lm-card-bg)', 
-              boxShadow: 'var(--lm-shadow-md)'
-            }}
-          >
+          shadow="none"
+          p={{ base: 20, sm: 30, md: 40 }} 
+          radius="xl"
+          className="animate-slideUp"
+          style={{
+            border: isPsychologistPost ? '1px solid var(--lm-violet-border)' : '1px solid var(--lm-border)',
+            backgroundColor: isPsychologistPost 
+              ? (isDark ? 'rgba(121, 80, 242, 0.1)' : 'var(--lm-violet-light)') 
+              : 'var(--lm-card-bg)', 
+            boxShadow: 'var(--lm-shadow-md)'
+          }}
+        >
 
             <Group justify="space-between" mb={{ base: 'md', md: 'xl' }} align="flex-start">
               <Group gap="xs" style={{ flex: 1 }}>

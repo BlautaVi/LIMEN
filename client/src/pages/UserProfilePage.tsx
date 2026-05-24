@@ -22,7 +22,9 @@ export function UserProfilePage() {
         setUserProfile(userRes.data);
 
         const postsRes = await api.get('/posts');
-        const filteredPosts = postsRes.data.filter((post: any) => post.author?._id === id);
+        const filteredPosts = postsRes.data.filter(
+          (post: any) => post.author?._id === id && post.visibility !== 'anonymous'
+        );
         setUserPosts(filteredPosts);
 
       } catch (error) {

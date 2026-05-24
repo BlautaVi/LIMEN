@@ -120,7 +120,7 @@ export function MyPostsPage() {
                 </Text>
 
                 {post.imageUrl && (
-                  <Image src={`http://localhost:3000${post.imageUrl}`} height={250} fit="cover" radius="lg" mb="xl" style={{ border: '1px solid var(--lm-border)' }} />
+                  <Image src={`http://localhost:3000${post.imageUrl}`} h={250} fit="cover" radius="lg" mb="xl" style={{ border: '1px solid var(--lm-border)' }} />
                 )}
 
                 <Text fw={800} size="xl" style={{ color: 'var(--lm-dark)' }} mb="sm">{post.title || 'Без заголовка'}</Text>

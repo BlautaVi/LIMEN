@@ -99,40 +99,54 @@ export function OnboardingPage() {
   const progressPercent = ((currentStep + 1) / QUESTIONS.length) * 100;
 
   return (
-    <Box pt={{ base: 30, md: 40 }} pb={{ base: 40, md: 60 }} style={{ backgroundColor: 'var(--lm-bg)', minHeight: '100vh', position: 'relative' }}>
+    <Box 
+      style={{ 
+        backgroundColor: 'var(--lm-bg)', 
+        minHeight: '100dvh',
+        display: 'flex', 
+        flexDirection: 'column',
+        position: 'relative' 
+      }}
+    >
       <LoadingOverlay visible={loading} overlayProps={{ radius: "sm", blur: 2 }} />
-      <Container size="lg" px={{ base: 'md', sm: 'xl' }}>
-
-        <Box mb={{ base: 24, md: 40 }} style={{ maxWidth: '500px', margin: '0 auto' }}>
+      
+      <Box pt={{ base: 30, md: 40 }} px={{ base: 'md', sm: 'xl' }}>
+        <Box mb={{ base: 20, md: 30 }} style={{ maxWidth: '600px', margin: '0 auto' }}>
           <Box style={{ height: '6px', backgroundColor: 'var(--lm-border)', borderRadius: 'var(--lm-radius-full)', overflow: 'hidden' }}>
             <Box style={{ height: '100%', width: `${progressPercent}%`, backgroundColor: 'var(--lm-orange)', borderRadius: 'var(--lm-radius-full)', transition: 'width 0.5s var(--lm-spring)' }} />
           </Box>
         </Box>
-
         <Title ta="center" order={2} style={{ color: 'var(--lm-muted)', marginBottom: '8px', fontWeight: 600, fontSize: '16px', textTransform: 'uppercase', letterSpacing: '1px' }}>
           Крок {currentStep + 1} з {QUESTIONS.length}
         </Title>
-        <Text ta="center" mb={{ base: 30, md: 50 }} fw={800} style={{ color: 'var(--lm-dark)', fontSize: 'clamp(24px, 5vw, 30px)' }}>
+        <Text ta="center" fw={800} style={{ color: 'var(--lm-dark)', fontSize: '28px' }}>
           Аналізуємо ваш стан...
         </Text>
+      </Box>
 
-        <Grid align="center" gutter={{ base: 30, md: 60 }}>
+      <Container size="lg" px={{ base: 'md', sm: 'xl' }} style={{ flex: 1, display: 'flex', alignItems: 'center', width: '100%', paddingBottom: '40px' }}>
+        <Grid align="center" gutter={{ base: 30, md: 60 }} style={{ width: '100%' }}>
+          
           <Grid.Col span={{ base: 12, md: 6 }} display={{ base: 'none', md: 'block' }}>
             <Center>
               <Image
                 src="https://st4.depositphotos.com/17134304/26411/v/600/depositphotos_264114218-stock-illustration-friends-giving-high-five-flat.jpg"
                 alt="Illustration"
                 className="animate-float"
-                style={{ maxWidth: '420px', width: '100%', borderRadius: 'var(--lm-radius-lg)', mixBlendMode: 'multiply', filter: 'drop-shadow(0 16px 40px rgba(0,0,0,0.06))' }}
+                style={{ 
+                  maxWidth: '420px', width: '100%', 
+                  borderRadius: 'var(--lm-radius-lg)', 
+                  filter: 'drop-shadow(0 16px 40px rgba(0,0,0,0.06))' 
+                }}
               />
             </Center>
           </Grid.Col>
-
           <Grid.Col span={{ base: 12, md: 6 }}>
             <Box className="animate-scaleIn" style={{ maxWidth: '500px', margin: '0 auto' }}>
               <Paper shadow="md" radius="xl" style={{ overflow: 'hidden', border: '1px solid var(--lm-border)', display: 'flex', flexDirection: 'column', boxShadow: 'var(--lm-shadow-md)' }}>
-                <Box p={{ base: 20, sm: 30 }} style={{ backgroundColor: 'var(--lm-card-bg)', minHeight: 'auto', display: 'flex', alignItems: 'center' }}>
-                  <Text fw={800} style={{ color: 'var(--lm-dark)', lineHeight: 1.4, fontSize: 'clamp(18px, 4vw, 22px)' }}>
+                
+                <Box p={{ base: 20, sm: 30 }} style={{ backgroundColor: 'var(--lm-card-bg)', minHeight: '100px', display: 'flex', alignItems: 'center' }}>
+                  <Text fw={800} style={{ color: 'var(--lm-dark)', lineHeight: 1.3, fontSize: '20px' }}>
                     {currentQuestion.question}
                   </Text>
                 </Box>

@@ -77,7 +77,7 @@ export function ProfilePage() {
     if (!eduDegree.trim() || !experience.trim() || !diplomaLink.trim()) return;
     setIsSubmittingApp(true);
     try {
-      const response = await api.put('/users/become-psychologist');
+      const response = await api.put('/users/become-psychologist', { eduDegree, experience, diplomaLink });
       localStorage.setItem('user', JSON.stringify(response.data));
       setUser(response.data);
       setIsModalOpen(false);
@@ -160,11 +160,48 @@ export function ProfilePage() {
                   </Indicator>
                   <Text fw={800} size="xl" mt="xs" style={{ color: 'var(--lm-dark)' }}>{user?.email}</Text>
                   
-                  {user?.role !== 'psychologist' ? (
-                    <Button variant="light" color="orange" radius="xl" mt="sm" onClick={() => setIsModalOpen(true)}>Подати заявку психолога</Button>
-                  ) : (
+                  {user?.role === 'psychologist' && (
                     <Badge color="violet" size="lg" radius="md" mt="xs" variant="light" style={{ padding: '0 16px', height: '32px', textTransform: 'none' }}>Підтверджений психолог</Badge>
                   )}
+
+                  {user?.role === 'admin' && (
+                    <Badge color="red" size="lg" radius="md" mt="xs" variant="light" style={{ padding: '0 16px', height: '32px', textTransform: 'none' }}>Адміністратор</Badge>
+                  )}
+
+                  {user?.role === 'user' && (
+                    <Stack gap="sm" mt="xs" align="center" style={{ width: '100%' }}>
+                      
+                      {user?.personalityType && (
+                        <Paper p="sm" radius="md" style={{ backgroundColor: 'var(--lm-bg-alt)', border: '1px solid var(--lm-border)', width: '100%' }}>
+                          <Text size="sm" fw={700} ta="center" style={{ color: 'var(--lm-dark)' }}>Ваш стан: {user.personalityType}</Text>
+                          <Text size="xs" ta="center" mt={4} style={{ color: 'var(--lm-muted)' }}>{getTipForPersonality(user.personalityType)}</Text>
+                        </Paper>
+                      )}
+
+                      <Button 
+                        variant="light" color="blue" radius="xl" fullWidth 
+                        onClick={() => navigate('/onboarding')}
+                        styles={{
+                          root: { height: 'auto', minHeight: '42px', padding: '10px 16px' },
+                          label: { whiteSpace: 'normal', textAlign: 'center', lineHeight: 1.2 }
+                        }}
+                      >
+                        {user?.personalityType ? 'Пройти тест знову' : 'Пройти тест на особистість'}
+                      </Button>
+
+                      <Button 
+                        variant="light" color="orange" radius="xl" fullWidth 
+                        onClick={() => setIsModalOpen(true)}
+                        styles={{
+                          root: { height: 'auto', minHeight: '42px', padding: '10px 16px' },
+                          label: { whiteSpace: 'normal', textAlign: 'center', lineHeight: 1.2 }
+                        }}
+                      >
+                        Подати заявку психолога
+                      </Button>
+                    </Stack>
+                  )}
+
                 </Stack>
               </Grid.Col>
 
